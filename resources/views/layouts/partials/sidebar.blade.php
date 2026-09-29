@@ -40,6 +40,9 @@
             'Performance' => ['Métricas', 'Conversões'],
             'Sistema' => ['IA', 'Custos', 'Integrações', 'Configurações'],
         ];
+        $activeLinks = [
+            'Produtos' => ['route' => 'products.index', 'active' => request()->routeIs('products.*')],
+        ];
     @endphp
 
     @foreach ($sections as $section => $items)
@@ -48,10 +51,17 @@
             <ul class="space-y-1">
                 @foreach ($items as $item)
                     <li>
-                        <span class="flex cursor-not-allowed items-center justify-between rounded-lg px-3 py-2 text-sidebar-muted opacity-70" title="Disponível em sprints futuras">
-                            <span>{{ $item }}</span>
-                            <x-ui.badge variant="neutral">Em breve</x-ui.badge>
-                        </span>
+                        @if (isset($activeLinks[$item]))
+                            <a href="{{ route($activeLinks[$item]['route']) }}" @if($activeLinks[$item]['active']) aria-current="page" @endif
+                                class="flex items-center justify-between rounded-lg px-3 py-2 transition {{ $activeLinks[$item]['active'] ? 'bg-sidebar-hover font-medium text-white' : 'text-sidebar-muted hover:bg-sidebar-hover hover:text-white' }}">
+                                <span>{{ $item }}</span>
+                            </a>
+                        @else
+                            <span class="flex cursor-not-allowed items-center justify-between rounded-lg px-3 py-2 text-sidebar-muted opacity-70" title="Disponível em sprints futuras">
+                                <span>{{ $item }}</span>
+                                <x-ui.badge variant="neutral">Em breve</x-ui.badge>
+                            </span>
+                        @endif
                     </li>
                 @endforeach
             </ul>

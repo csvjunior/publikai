@@ -19,7 +19,11 @@
         />
     </x-ui.card>
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <x-ui.stat-card title="Produtos" :value="$productsCount" hint="Produtos cadastrados para as operações.">
+            <a href="{{ route('products.index') }}" class="text-sm font-medium text-primary hover:text-primary-hover">Ver produtos</a>
+        </x-ui.stat-card>
+
         <x-ui.stat-card title="Conteúdos" value="—" hint="Roteiros, ideias e peças ainda não existem.">
             <x-ui.badge variant="neutral">Ainda sem dados</x-ui.badge>
         </x-ui.stat-card>

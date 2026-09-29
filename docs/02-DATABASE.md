@@ -19,6 +19,8 @@
 | `0001_01_01_000001_create_cache_table` (oficial) | `cache`, `cache_locks` — preservada |
 | `0001_01_01_000002_create_jobs_table` (oficial) | `jobs`, `job_batches`, `failed_jobs` — preservada |
 | `2026_09_29_000001_add_role_to_users_table` (**nova, Sprint 0.1**) | adiciona `users.role` (`string(20)`, default `operator`) |
+| `2026_09_29_000002_create_products_table` (**nova, Sprint 1**) | `products` (ver modelagem abaixo) |
+| `2026_09_29_000003_create_affiliate_links_table` (**nova, Sprint 1**) | `affiliate_links` com FK `product_id` + `cascadeOnDelete` |
 
 ## Modelagem atual
 
@@ -32,5 +34,23 @@
 
 ## Regra permanente respeitada
 
-Nenhuma migration já aplicada foi editada; a alteração de `users` foi feita
-em migration nova com `up`/`down` reversíveis.
+Nenhuma migration já aplicada foi editada; as alterações foram feitas
+em migrations novas com `up`/`down` reversíveis.
+
+## Modelagem da Sprint 1 (produtos afiliados)
+
+- `products`: `id, name, slug (único), description?, category?, product_url?,
+  price decimal(10,2)?, currency(3)?, market(10)?, language(10)?,
+  affiliate_network?, commission_type(20)?, commission_value decimal(10,2)?,
+  status string(20) default `active`, notes?, timestamps` + índice em `status`.
+- `status` é string controlada + `App\Enums\ProductStatus`
+  (`active`/`paused`/`archived`) — sem `ENUM` nativo (mesmo motivo de `users.role`).
+- `slug` gerado de `name` com sufixo de unicidade (`ProductService`).
+- Sem soft delete; arquivamento = mudança de status (sem delete físico de produto).
+- `affiliate_links`: `id, product_id (FK, cascade), label, url(2048),
+  network?, market(10)?, is_primary bool default false, notes?, timestamps`
+  + índice composto `(product_id, is_primary)`.
+- Regra de unicidade lógica do link principal em `AffiliateLinkService`
+  (transação; sem constraint parcial para manter compatibilidade MariaDB/MySQL).
+- Banco guarda códigos (`US`, `en-US`, `USD`, `percent`); rótulos em
+  `config/products.php`.

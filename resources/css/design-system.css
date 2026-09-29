@@ -138,4 +138,17 @@
     .t-label {
         @apply text-sm font-medium text-ink;
     }
+
+    /* Tabela global (x-ui.table). */
+    .pk-table thead th {
+        @apply bg-surface-muted px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-muted;
+    }
+
+    .pk-table tbody td {
+        @apply border-t border-border px-4 py-3 align-top text-sm text-ink;
+    }
+
+    .pk-table tbody tr {
+        @apply transition hover:bg-surface-muted;
+    }
 }

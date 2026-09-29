@@ -132,11 +132,11 @@ Não usar cores diferentes para o mesmo significado em telas distintas.
 Variantes: `info`, `success`, `warning`, `danger`. Renderiza `role="alert"`.
 Mensagens claras, sem expor detalhes técnicos internos.
 
-## 11. Tabelas (`x-ui.table`) — diferido
+## 11. Tabelas (`x-ui.table`) — implementado (Sprint 1)
 
-Sem caso de uso limpo nesta Sprint (nenhuma tela com dados tabulares).
-Regra mantida: quando implementado, header consistente + wrapper com scroll
-horizontal próprio, nunca overflow no body.
+Primeiro caso real: listagem de produtos. Props `headers`, slot com `tbody`;
+células padronizadas via `.pk-table` (`design-system.css`); wrapper com scroll
+horizontal próprio em telas menores, nunca overflow no body.
 Em telas menores: **sem overflow horizontal do body**; se necessário, wrapper com
 scroll horizontal **apenas na tabela**.
 

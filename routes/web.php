@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AffiliateLinkController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,4 +40,20 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update'])->name('products.update');
+
+    Route::scopeBindings()->group(function () {
+        Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])
+            ->name('affiliate-links.store');
+        Route::match(['put', 'patch'], '/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'update'])
+            ->name('affiliate-links.update');
+        Route::delete('/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'destroy'])
+            ->name('affiliate-links.destroy');
+    });
 });
