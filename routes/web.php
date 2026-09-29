@@ -9,6 +9,8 @@ use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReferenceContentController;
+use App\Http\Controllers\ReferenceProfileController;
 use App\Http\Controllers\SocialAccountController;
 use Illuminate\Support\Facades\Route;
 
@@ -71,6 +73,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/avatars/{avatar}', [AvatarController::class, 'show'])->name('avatars.show');
     Route::get('/avatars/{avatar}/edit', [AvatarController::class, 'edit'])->name('avatars.edit');
     Route::match(['put', 'patch'], '/avatars/{avatar}', [AvatarController::class, 'update'])->name('avatars.update');
+
+    Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');
+    Route::get('/references/create', [ReferenceProfileController::class, 'create'])->name('references.create');
+    Route::post('/references', [ReferenceProfileController::class, 'store'])->name('references.store');
+    Route::get('/references/{referenceProfile}', [ReferenceProfileController::class, 'show'])->name('references.show');
+    Route::get('/references/{referenceProfile}/edit', [ReferenceProfileController::class, 'edit'])->name('references.edit');
+    Route::match(['put', 'patch'], '/references/{referenceProfile}', [ReferenceProfileController::class, 'update'])->name('references.update');
+
+    Route::scopeBindings()->group(function () {
+        Route::post('/references/{referenceProfile}/contents', [ReferenceContentController::class, 'store'])
+            ->name('reference-contents.store');
+        Route::match(['put', 'patch'], '/references/{referenceProfile}/contents/{referenceContent}', [ReferenceContentController::class, 'update'])
+            ->name('reference-contents.update');
+    });
     Route::scopeBindings()->group(function () {
         Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])
             ->name('affiliate-links.store');

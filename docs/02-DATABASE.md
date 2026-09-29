@@ -22,9 +22,13 @@
 | `2026_09_29_000002_create_products_table` (**nova, Sprint 1**) | `products` (ver modelagem abaixo) |
 | `2026_09_29_000003_create_affiliate_links_table` (**nova, Sprint 1**) | `affiliate_links` com FK `product_id` + `cascadeOnDelete` |
 | `2026_09_29_000004_create_social_accounts_table` (**nova, Sprint 2**) | `social_accounts` (ver modelagem abaixo) |
+| `2026_09_29_000008_create_reference_profiles_table` (**nova, Sprint 4**) | `reference_profiles` (ver modelagem abaixo) |
+| `2026_09_29_000009_create_reference_contents_table` (**nova, Sprint 4**) | `reference_contents` |
 | `2026_09_29_000005_create_personas_table` (**nova, Sprint 3**) | `personas` (ver modelagem abaixo) |
 | `2026_09_29_000006_create_avatars_table` (**nova, Sprint 3**) | `avatars` (ver modelagem abaixo) |
 | `2026_09_29_000007_add_default_identity_to_social_accounts_table` (**nova, Sprint 3**) | FKs `default_persona_id`/`default_avatar_id` em `social_accounts` |
+| `2026_09_29_000008_create_reference_profiles_table` (**nova, Sprint 4**) | `reference_profiles` (ver modelagem acima) |
+| `2026_09_29_000009_create_reference_contents_table` (**nova, Sprint 4**) | `reference_contents` |
 
 ## Modelagem atual
 
@@ -54,6 +58,16 @@ em migrations novas com `up`/`down` reversíveis.
 - `affiliate_links`: `id, product_id (FK, cascade), label, url(2048),
   network?, market(10)?, is_primary bool default false, notes?, timestamps`
   + índice composto `(product_id, is_primary)`.
+- `reference_profiles`: `id, name, platform(20), username(100)?,
+  profile_url(2048), language(10)?, market(10)?, niche?, reason(text)?,
+  status default `active`, notes?, timestamps` + índices `platform`, `status`.
+- `reference_contents`: `id, reference_profile_id (FK, cascade), url(2048),
+  title?, content_type(30)?, observed_hook?, observed_structure(text)?,
+  observed_cta?, observed_style?, duration_seconds uint?, performance_notes(text)?,
+  why_it_works(text)?, status default `active`, notes?, timestamps` + índice
+  `(reference_profile_id, status)`.
+- Relação `ReferenceProfile::referenceContents()` (nome convencional exigido
+  pelo `scopeBindings` das rotas aninhadas — mesmo padrão de `affiliateLinks`).
 - Regra de unicidade lógica do link principal em `AffiliateLinkService`
   (transação; sem constraint parcial para manter compatibilidade MariaDB/MySQL).
 - Banco guarda códigos (`US`, `en-US`, `USD`, `percent`); rótulos em

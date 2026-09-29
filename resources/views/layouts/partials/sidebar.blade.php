@@ -45,6 +45,7 @@
             'Contas' => ['route' => 'social-accounts.index', 'active' => request()->routeIs('social-accounts.*')],
             'Personas' => ['route' => 'personas.index', 'active' => request()->routeIs('personas.*')],
             'Avatares' => ['route' => 'avatars.index', 'active' => request()->routeIs('avatars.*')],
+            'Referências' => ['route' => 'references.index', 'active' => request()->routeIs('references.*')],
         ];
     @endphp
 

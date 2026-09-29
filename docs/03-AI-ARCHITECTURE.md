@@ -22,6 +22,15 @@
 - Nenhuma chamada a Gemini/OpenAI/Nano Banana/Veo/TTS; nenhuma geração de
   texto, imagem, vídeo ou voz; nenhum prompt automático.
 
+## Base da Sprint 4 (continua sem IA)
+
+- `ReferenceProfile` + `ReferenceContent` formam a **base estruturada de
+  referências** (perfil, plataforma, mercado, idioma, nicho, URLs, hooks,
+  estruturas, CTAs, estilos, performance, why_it_works) que a próxima Sprint
+  poderá analisar para sugerir Personas/Avatares.
+- Nenhum campo de análise por IA criado (`ai_analysis`, embeddings, scores,
+  prompts): só observações manuais organizadas.
+
 ## Pendências
 
 - Definir variáveis de ambiente do provider escolhido (somente quando integrar).

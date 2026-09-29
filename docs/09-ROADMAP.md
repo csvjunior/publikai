@@ -38,6 +38,15 @@
   dashboard inalterado.
 - IA, geração, assets e OAuth seguem futuros.
 
+## Sprint 4 — Referências (concluída)
+
+- `ReferenceProfile` (reusa `SocialPlatform`) + `ReferenceContent` (tipos em
+  `config/references.php`), policies com regra de archived, CRUD com `ui.table`,
+  detalhe com seção de conteúdos (quick flow só-URL + detailed flow).
+- Sem vínculo com Product (contexto via language/market/niche); sem IA,
+  scraping, download ou embeddings. Geração assistida documentada como plano.
+- Sidebar Inteligência/Referências ativa; Blueprints segue "Em breve".
+
 ## Próximas sprints (sugestão, sem compromisso)
 
 - **Domínio base (restante):** campanhas e conteúdos (CRUD interno,

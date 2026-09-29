@@ -19,6 +19,13 @@
 - Sprint 3 cadastrou **Communication DNA** (personas) e **Visual DNA**
   (avatares); contas referenciam defaults. Atores futuros (ideias, roteiros,
   campanhas) ainda não existem.
+- Sprint 4 cadastrou a **base de referências** (perfis + conteúdos com
+  observações manuais de padrões). Fluxo futuro planejado: Produto/Nicho →
+  ReferenceProfiles → ReferenceContents → análise por IA → padrões detectados
+  → proposta de Persona → proposta de Avatar → revisão humana → salvar
+  (propostas e análise **não implementadas**; sem botões de IA).
+- O preenchimento manual de Persona e Avatar continuará disponível como
+  fallback e edição final mesmo após a geração assistida existir.
 
 ## Pendências
 
