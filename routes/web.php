@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AffiliateLinkController;
+use App\Http\Controllers\AiSettingsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -46,6 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+    Route::get('/settings/ai', [AiSettingsController::class, 'index'])->name('settings.ai');
+    Route::post('/settings/ai/test', [AiSettingsController::class, 'test'])
+        ->middleware('throttle:5,1')
+        ->name('settings.ai.test');
+
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
@@ -82,17 +88,12 @@ Route::middleware('auth')->group(function () {
     Route::match(['put', 'patch'], '/references/{referenceProfile}', [ReferenceProfileController::class, 'update'])->name('references.update');
 
     Route::scopeBindings()->group(function () {
-        Route::post('/references/{referenceProfile}/contents', [ReferenceContentController::class, 'store'])
-            ->name('reference-contents.store');
-        Route::match(['put', 'patch'], '/references/{referenceProfile}/contents/{referenceContent}', [ReferenceContentController::class, 'update'])
-            ->name('reference-contents.update');
+        Route::post('/references/{referenceProfile}/contents', [ReferenceContentController::class, 'store'])->name('reference-contents.store');
+        Route::match(['put', 'patch'], '/references/{referenceProfile}/contents/{referenceContent}', [ReferenceContentController::class, 'update'])->name('reference-contents.update');
     });
     Route::scopeBindings()->group(function () {
-        Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])
-            ->name('affiliate-links.store');
-        Route::match(['put', 'patch'], '/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'update'])
-            ->name('affiliate-links.update');
-        Route::delete('/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'destroy'])
-            ->name('affiliate-links.destroy');
+        Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])->name('affiliate-links.store');
+        Route::match(['put', 'patch'], '/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'update'])->name('affiliate-links.update');
+        Route::delete('/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'destroy'])->name('affiliate-links.destroy');
     });
 });

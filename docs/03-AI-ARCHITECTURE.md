@@ -1,37 +1,48 @@
 # 03 — Arquitetura de IA
 
-**Estado:** planejado (nada implementado) · **Atualizado em:** 2026-09-29
+**Estado:** fundação implementada (Sprint 5.0); sem análise de negócio · **Atualizado em:** 2026-09-29
 
 ## Decisão atual
 
-- **Nenhum provider de IA integrado** nesta Sprint.
-- **Planejado:** Google/Gemini como primeiro provider de geração
-  (texto/imagem/vídeo), ainda sem credenciais, sem SDK e sem chamadas.
+- **Google Gemini como primeiro (e único) provider**, via **Interactions API REST**
+  (`POST {base}/interactions`), sem SDK — Laravel HTTP Client é suficiente.
+- Referência oficial: `https://ai.google.dev/gemini-api/docs` (vigente em 09/2026).
+- Modelo configurável via `.env` (`GOOGLE_AI_MODEL`); configuração inicial
+  planejada: `gemini-3.8-flash` (confirmado disponível na documentação oficial).
+- **Autenticação: Authorization (auth) key do AI Studio** (todas as chaves novas
+  já são auth keys), enviada no header `x-goog-api-key`. Chaves standard
+  irrestritas são rejeitadas pela API — usar sempre chave válida/restrita.
+  Variável: `GOOGLE_AI_AUTH_KEY` (só no `.env`, nunca no código/logs/telas/testes).
+- Structured output via `response_format {type: "text", mime_type:
+  "application/json", schema}` + validação de `required` no provider.
 
-## Diretrizes futuras (quando a operação justificar)
+## O que existe (Sprint 5.0)
 
-- Isolar provedores atrás de interfaces/serviços próprios (evitar acoplamento).
-- Registrar custo por chamada para o futuro módulo de custos.
-- Nunca colocar API keys no código; usar `.env` + `.env.example` (nomes vazios).
-- Não registrar prompts sensíveis, tokens ou segredos em logs.
+- Contrato `App\AI\Contracts\AiTextProvider::generateStructured()` + binding
+  no container (`AppServiceProvider`) — troca futura sem tocar consumidores.
+- `GoogleGeminiTextProvider`: timeout configurável, retry conservador (1x só
+  para 429/5xx; nunca 401/403/validação), erros sanitizados (`errorCode`,
+  sem corpo técnico), parsing defensivo de `output_text`/`usage`.
+- `AiGenerationResult` (sem resposta bruta) + `AiService::testConnection()`
+  (orquestra chamada + log).
+- `ai_generations` (provider, model, operation, status, tokens, custo
+  **nullable sem cálculo**, duration, external id, error_code, metadata):
+  sem credenciais, sem prompts completos. Custo real depois, com tabela/config
+  atualizável — nunca fingido.
+- Tela admin `Sistema → IA` (`/settings/ai`): provider, modelo, status de
+  configuração (nunca a chave) + botão "Testar conexão" (chamada real mínima,
+  `throttle:5,1`). Só admin (`access-admin` reutilizado); operator 403.
+- Testes com `Http::fake()` (sem rede): disabled, credencial ausente, sucesso,
+  401, 429 (+retry), timeout, JSON inválido, schema mismatch, logs, rotas.
 
-## Estado após a Sprint 3 (continua sem IA)
+## Continua sem IA de negócio
 
-- Personas (Communication DNA) e avatares (Visual DNA) existem como **dados
-  cadastrais organizados** para consumo futuro do Content Engine.
-- Nenhuma chamada a Gemini/OpenAI/Nano Banana/Veo/TTS; nenhuma geração de
-  texto, imagem, vídeo ou voz; nenhum prompt automático.
-
-## Base da Sprint 4 (continua sem IA)
-
-- `ReferenceProfile` + `ReferenceContent` formam a **base estruturada de
-  referências** (perfil, plataforma, mercado, idioma, nicho, URLs, hooks,
-  estruturas, CTAs, estilos, performance, why_it_works) que a próxima Sprint
-  poderá analisar para sugerir Personas/Avatares.
-- Nenhum campo de análise por IA criado (`ai_analysis`, embeddings, scores,
-  prompts): só observações manuais organizadas.
+- Nenhuma análise de referências, proposta de Persona/Avatar, Blueprint,
+  imagem, vídeo, TTS, embeddings ou scraping. Fluxo futuro: References →
+  AI Analysis → propostas → revisão humana → salvar (só plano).
 
 ## Pendências
 
-- Definir variáveis de ambiente do provider escolhido (somente quando integrar).
-- Definir estratégia de fila para gerações demoradas (nativa Laravel).
+- Confirmar mapeamento de `usage` da Interactions API no teste real
+  (extração defensiva implementada; campos exatos a validar).
+- Estratégia de custo com tabela/config atualizável.

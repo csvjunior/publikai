@@ -46,6 +46,7 @@
             'Personas' => ['route' => 'personas.index', 'active' => request()->routeIs('personas.*')],
             'Avatares' => ['route' => 'avatars.index', 'active' => request()->routeIs('avatars.*')],
             'Referências' => ['route' => 'references.index', 'active' => request()->routeIs('references.*')],
+            'IA' => ['route' => 'settings.ai', 'active' => request()->routeIs('settings.ai*')],
         ];
     @endphp
 

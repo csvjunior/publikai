@@ -47,6 +47,22 @@
   scraping, download ou embeddings. Geração assistida documentada como plano.
 - Sidebar Inteligência/Referências ativa; Blueprints segue "Em breve".
 
+## Sprint 5.0 — Fundação Gemini (concluída, teste real pendente de credencial)
+
+- `AiTextProvider` + `GoogleGeminiTextProvider` (Interactions API, auth key,
+  structured output), `ai_generations` sanitizado, tela admin Sistema → IA
+  com teste real de conexão. Sem análise de negócio; testes com `Http::fake`.
+
+## Validação real (pós-implementação, registrada)
+
+- Endpoint/model/auth **confirmados** (HTTP 200 com interaction id).
+- Structured output real **não validado**: `gemini-3.8-flash` e `gemini-3.7-flash`
+  retornaram timeout/503 (`service_unavailable`, high demand). Sem evidência
+  de erro de implementação; sem correção indicada.
+- **Pendente: repetir teste real de structured output da Gemini Interactions
+  API em janela sem service_unavailable/high demand** — verificar antes de
+  considerar o primeiro fluxo real de análise de referências pronto.
+
 ## Próximas sprints (sugestão, sem compromisso)
 
 - **Domínio base (restante):** campanhas e conteúdos (CRUD interno,

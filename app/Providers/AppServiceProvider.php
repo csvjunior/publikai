@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\AI\Contracts\AiTextProvider;
+use App\AI\Providers\GoogleGeminiTextProvider;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
@@ -14,7 +16,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Provider de IA via container (troca futura sem tocar consumidores).
+        $this->app->bind(AiTextProvider::class, function () {
+            return match (config('ai.provider', 'google')) {
+                default => new GoogleGeminiTextProvider,
+            };
+        });
     }
 
     /**
