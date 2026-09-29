@@ -91,6 +91,7 @@ papel do 1º/2º usuário e logout. Testes usam SQLite em memória (`phpunit.xml
 - `docs/08-DEPLOY.md` — ambientes
 - `docs/09-ROADMAP.md` — roadmap
 - `docs/10-DECISIONS.md` — decisões
+- `docs/11-DESIGN-SYSTEM.md` — contrato permanente de UX/responsividade (implementação pendente)
 - `docs/sprints/` — uma nota por Sprint finalizada
 
 ## Segurança

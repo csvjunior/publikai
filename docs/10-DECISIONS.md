@@ -15,3 +15,4 @@
 | 09 | 2026-09-29 | `.env.example` com `REGISTRATION_*` vazios; segredos só no `.env` | Segurança | Atual |
 | 10 | 2026-09-29 | Repositório Git local inicializado; primeiro commit da Sprint 0.1 criado (sem remote, sem tag) | Fechamento técnico da Sprint | Atual |
 | 11 | 2026-09-29 | `.env.example` alinhado com MySQL/MariaDB (`publikai_db`); FFmpeg 9.0.2 / FFprobe 9.0.2 validado no Windows | Encerramento: sem senha real, sem reinstalação | Atual |
+| 12 | 2026-09-29 | Contrato permanente de Design System/UX/responsividade (`docs/11-DESIGN-SYSTEM.md`); implementação inicial a cargo da Sprint 0.2, telas 0.1 marcadas para migração | Complemento permanente ao contrato do projeto | Atual |
