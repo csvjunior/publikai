@@ -2,49 +2,25 @@
 
 @section('title', 'Cadastro interno')
 @section('content')
-<h1 class="text-lg font-semibold">Cadastro interno</h1>
-<p class="mt-1 text-sm text-slate-500">Uso exclusivo da equipe Jaguartec.</p>
+<h1 class="t-section-title text-lg">Cadastro interno</h1>
+<p class="t-body mt-1">Uso exclusivo da equipe Jaguartec.</p>
 
-<form method="POST" action="{{ route('register') }}" class="mt-6 space-y-4">
+<form method="POST" action="{{ route('register') }}" class="mt-6 space-y-4" novalidate>
     @csrf
 
-    <div>
-        <label for="name" class="block text-sm font-medium">Nome</label>
-        <input id="name" name="name" type="text" required autofocus autocomplete="name" value="{{ old('name') }}"
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-    </div>
+    <x-ui.input label="Nome" name="name" type="text" required autofocus autocomplete="name" />
 
-    <div>
-        <label for="email" class="block text-sm font-medium">E-mail</label>
-        <input id="email" name="email" type="email" required autocomplete="username" value="{{ old('email') }}"
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @error('email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-    </div>
+    <x-ui.input label="E-mail" name="email" type="email" required autocomplete="username" />
 
     <div class="grid gap-4 sm:grid-cols-2">
-        <div>
-            <label for="password" class="block text-sm font-medium">Senha</label>
-            <input id="password" name="password" type="password" required autocomplete="new-password"
-                class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-            @error('password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-        </div>
-        <div>
-            <label for="password_confirmation" class="block text-sm font-medium">Confirmar senha</label>
-            <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
-                class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        </div>
+        <x-ui.input label="Senha" name="password" type="password" required autocomplete="new-password" helper="Mínimo de 8 caracteres." />
+        <x-ui.input label="Confirmar senha" name="password_confirmation" type="password" required autocomplete="new-password" />
     </div>
 
-    <div>
-        <label for="registration_code" class="block text-sm font-medium">Código interno</label>
-        <input id="registration_code" name="registration_code" type="password" autocomplete="off" placeholder="Solicite ao administrador"
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @error('registration_code')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-    </div>
+    <x-ui.input label="Código interno" name="registration_code" type="password" autocomplete="off" helper="Solicite o código ao administrador." />
 
-    <button type="submit" class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Criar conta</button>
+    <x-ui.button variant="primary" size="md" full>Criar conta</x-ui.button>
 </form>
 
-<p class="mt-4 text-center text-sm text-slate-500">Já tem acesso? <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Entrar</a></p>
+<p class="mt-4 text-center text-sm text-ink-secondary">Já tem acesso? <a href="{{ route('login') }}" class="font-medium text-primary hover:text-primary-hover">Entrar</a></p>
 @endsection

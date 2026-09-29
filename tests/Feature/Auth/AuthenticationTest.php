@@ -45,7 +45,13 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->withoutVite()->actingAs($user)->get('/dashboard')->assertOk()->assertSee('Publikai');
+        $this->withoutVite()->actingAs($user)->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Publikai')
+            ->assertSee('Dashboard')
+            ->assertSee('Ainda sem dados', false)
+            ->assertSee('aria-current="page"', false)
+            ->assertSee('aria-expanded', false);
     }
 
     public function test_logout_encerra_sessao(): void

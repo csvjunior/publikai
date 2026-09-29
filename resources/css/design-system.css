@@ -1,0 +1,141 @@
+/*
+ * Publikai Design System — tokens globais (Sprint 0.2).
+ *
+ * Contrato: docs/11-DESIGN-SYSTEM.md
+ * Arquivo canônico de tokens. Nenhuma página deve duplicar estes valores.
+ *
+ * Mapeamento contrato → utilitários Tailwind v4:
+ * canvas→bg-canvas · surface→bg-surface · surface-muted→bg-surface-muted
+ * border→border-border · text-primary→text-ink · text-secondary→text-ink-secondary
+ * text-muted→text-ink-muted · primary→bg-primary/text-primary · primary-hover→hover:bg-primary-hover
+ * success/warning/danger/info/accent→bg-*-soft / text-* / border-*-border
+ */
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Superfícies */
+    --color-canvas: #eef1f6;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f6f8fb;
+    --color-border: #e3e8f0;
+
+    /* Texto (contraste AA em superfícies claras) */
+    --color-ink: #101828;
+    --color-ink-secondary: #475467;
+    --color-ink-muted: #667085;
+
+    /* Ação principal (violeta/índigo provisório) */
+    --color-primary: #4f46e5;
+    --color-primary-hover: #4338ca;
+    --color-primary-soft: #eef2ff;
+
+    /* Semânticas */
+    --color-success: #067647;
+    --color-success-soft: #ecfdf3;
+    --color-success-border: #a6f4c5;
+    --color-warning: #b54708;
+    --color-warning-soft: #fffaeb;
+    --color-warning-border: #fedf89;
+    --color-danger: #b42318;
+    --color-danger-hover: #912018;
+    --color-danger-soft: #fef3f2;
+    --color-danger-border: #fecdca;
+    --color-info: #175cd3;
+    --color-info-soft: #eff8ff;
+    --color-info-border: #b2ddff;
+
+    /* IA / acento */
+    --color-accent: #7c3aed;
+    --color-accent-hover: #6d28d9;
+    --color-accent-soft: #f4f3ff;
+    --color-accent-border: #d9d6fe;
+
+    /* Sidebar (superfície escura própria) */
+    --color-sidebar: #0f172a;
+    --color-sidebar-hover: #1e293b;
+    --color-sidebar-ink: #e2e8f0;
+    --color-sidebar-muted: #94a3b8;
+
+    /* Raio e sombra padronizados */
+    --radius-card: 1rem;
+    --shadow-card: 0 1px 2px rgb(16 24 40 / 0.06);
+
+    /* Larguras globais */
+    --sidebar-width: 15.5rem; /* 248px */
+    --workspace-max: 90rem; /* 1440px */
+}
+
+/* Gutters do workspace pertencem ao shell global (mobile-first). */
+:root {
+    --gutter: 1rem; /* <768px: 16px */
+}
+
+@media (min-width: 768px) {
+    :root {
+        --gutter: 1.25rem; /* 768–1023px: 20px */
+    }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --gutter: 1.5rem; /* 1024–1439px: 24px */
+    }
+}
+
+@media (min-width: 1440px) {
+    :root {
+        --gutter: 2rem; /* >=1440px: 32px */
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-canvas font-sans text-ink antialiased;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    /* Workspace global: max-width + gutters. Páginas não recriam margens externas. */
+    .pk-workspace {
+        width: 100%;
+        max-width: var(--workspace-max);
+        margin-inline: auto;
+        padding-inline: var(--gutter);
+    }
+
+    /* Escala tipográfica global. */
+    .t-page-title {
+        @apply text-xl font-bold tracking-tight text-ink sm:text-2xl;
+    }
+
+    .t-section-title {
+        @apply text-base font-semibold text-ink;
+    }
+
+    .t-card-title {
+        @apply text-sm font-semibold text-ink;
+    }
+
+    .t-body {
+        @apply text-sm text-ink-secondary;
+    }
+
+    .t-small {
+        @apply text-xs text-ink-secondary;
+    }
+
+    .t-muted {
+        @apply text-xs text-ink-muted;
+    }
+
+    .t-label {
+        @apply text-sm font-medium text-ink;
+    }
+}

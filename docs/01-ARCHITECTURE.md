@@ -35,6 +35,11 @@
   (Breeze/Jetstream/Fortify) e nenhum pacote externo de auth instalado.
 - Layouts Blade: `layouts/guest` (acesso) e `layouts/app` (shell admin
   responsivo com sidebar desktop + drawer mobile).
+- **Design System (Sprint 0.2):** tokens em `resources/css/design-system.css`
+  (importado por `app.css`, pipeline Tailwind v4) e 10 componentes Blade em
+  `resources/views/components/ui/` (`button`, `input`, `select`, `textarea`,
+  `card`, `stat-card`, `badge`, `alert`, `empty-state`, `page-header`).
+  Contrato permanente em `docs/11-DESIGN-SYSTEM.md`.
 - Rotas em `routes/web.php` (guest/auth), CSRF mantido.
 
 ## Decisões

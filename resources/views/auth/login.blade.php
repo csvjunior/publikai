@@ -2,41 +2,32 @@
 
 @section('title', 'Entrar')
 @section('content')
-<h1 class="text-lg font-semibold">Entrar no Publikai</h1>
-<p class="mt-1 text-sm text-slate-500">Acesso restrito à equipe interna.</p>
+<h1 class="t-section-title text-lg">Entrar no Publikai</h1>
+<p class="t-body mt-1">Acesso restrito à equipe interna.</p>
 
 @if (session('status'))
-    <div class="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 ring-1 ring-emerald-200">{{ session('status') }}</div>
+    <x-ui.alert variant="success" class="mt-4">{{ session('status') }}</x-ui.alert>
 @endif
 
-<form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
+<form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4" novalidate>
     @csrf
 
-    <div>
-        <label for="email" class="block text-sm font-medium">E-mail</label>
-        <input id="email" name="email" type="email" required autofocus autocomplete="username" value="{{ old('email') }}"
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @error('email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-    </div>
+    <x-ui.input label="E-mail" name="email" type="email" required autofocus autocomplete="username" />
 
-    <div>
-        <label for="password" class="block text-sm font-medium">Senha</label>
-        <input id="password" name="password" type="password" required autocomplete="current-password"
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @error('password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-    </div>
+    <x-ui.input label="Senha" name="password" type="password" required autocomplete="current-password" />
 
-    <div class="flex items-center justify-between text-sm">
-        <label class="flex items-center gap-2 text-slate-600">
-            <input type="checkbox" name="remember" class="rounded border-slate-300"> Lembrar
+    <div class="flex items-center justify-between gap-2 text-sm">
+        <label class="flex cursor-pointer items-center gap-2 text-ink-secondary">
+            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-border accent-primary">
+            Lembrar
         </label>
-        <a href="{{ route('password.request') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Esqueci a senha</a>
+        <a href="{{ route('password.request') }}" class="font-medium text-primary hover:text-primary-hover">Esqueci a senha</a>
     </div>
 
-    <button type="submit" class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Entrar</button>
+    <x-ui.button variant="primary" size="md" full>Entrar</x-ui.button>
 </form>
 
 @if (config('registration.enabled'))
-    <p class="mt-4 text-center text-sm text-slate-500">Sem acesso? <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Criar conta interna</a></p>
+    <p class="mt-4 text-center text-sm text-ink-secondary">Sem acesso? <a href="{{ route('register') }}" class="font-medium text-primary hover:text-primary-hover">Criar conta interna</a></p>
 @endif
 @endsection
