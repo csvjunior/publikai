@@ -15,6 +15,13 @@
 - Nunca colocar API keys no código; usar `.env` + `.env.example` (nomes vazios).
 - Não registrar prompts sensíveis, tokens ou segredos em logs.
 
+## Estado após a Sprint 3 (continua sem IA)
+
+- Personas (Communication DNA) e avatares (Visual DNA) existem como **dados
+  cadastrais organizados** para consumo futuro do Content Engine.
+- Nenhuma chamada a Gemini/OpenAI/Nano Banana/Veo/TTS; nenhuma geração de
+  texto, imagem, vídeo ou voz; nenhum prompt automático.
+
 ## Pendências
 
 - Definir variáveis de ambiente do provider escolhido (somente quando integrar).

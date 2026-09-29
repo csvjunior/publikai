@@ -43,6 +43,8 @@ abstract class SocialAccountRequest extends FormRequest
             'content_style' => ['nullable', 'string', 'max:255'],
             'default_cta' => ['nullable', 'string', 'max:255'],
             'posting_frequency' => ['nullable', 'string', 'max:255'],
+            'default_persona_id' => ['nullable', 'integer', Rule::exists('personas', 'id')],
+            'default_avatar_id' => ['nullable', 'integer', Rule::exists('avatars', 'id')],
             'status' => ['required', Rule::enum(SocialAccountStatus::class)],
             'notes' => ['nullable', 'string'],
         ];

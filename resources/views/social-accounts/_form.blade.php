@@ -51,6 +51,13 @@
         </div>
     </x-ui.card>
 
+    <x-ui.card title="Identidade de conteúdo" description="Persona e avatar padrão desta conta (opcionais).">
+        <div class="grid gap-4 sm:grid-cols-2">
+            <x-ui.select label="Persona padrão" name="default_persona_id" :options="$personaOptions ?? []" placeholder="Nenhuma persona" :value="old('default_persona_id', $account->default_persona_id ?? null)" />
+            <x-ui.select label="Avatar padrão" name="default_avatar_id" :options="$avatarOptions ?? []" placeholder="Nenhum avatar" :value="old('default_avatar_id', $account->default_avatar_id ?? null)" />
+        </div>
+    </x-ui.card>
+
     <x-ui.card title="Controle" description="Status e observações internas.">
         <div class="space-y-4">
             @if ($statusLocked)

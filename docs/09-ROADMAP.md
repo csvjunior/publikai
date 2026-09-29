@@ -28,6 +28,16 @@
 - Sidebar Distribuição/Contas ativa; dashboard inalterado (sem poluição visual).
 - OAuth, tokens, publicação e métricas seguem futuros.
 
+## Sprint 3 — Personas e avatares (concluída)
+
+- `Persona` (Communication DNA) + `Avatar` (Visual DNA, sem upload, só
+  `reference_notes`), policies com regra de archived, CRUD com `ui.table`.
+- `SocialAccount` com `default_persona_id`/`default_avatar_id` (belongsTo,
+  selects só ativos/pausados, detalhe mostra defaults).
+- Sidebar Creative Studio: Personas e Avatares ativos (no topo do grupo);
+  dashboard inalterado.
+- IA, geração, assets e OAuth seguem futuros.
+
 ## Próximas sprints (sugestão, sem compromisso)
 
 - **Domínio base (restante):** campanhas e conteúdos (CRUD interno,

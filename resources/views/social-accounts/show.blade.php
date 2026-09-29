@@ -85,6 +85,26 @@
                 <dt class="t-small font-medium uppercase tracking-wide">Frequência de postagem</dt>
                 <dd class="t-body mt-0.5">{{ $account->posting_frequency ?? '—' }}</dd>
             </div>
+            <div>
+                <dt class="t-small font-medium uppercase tracking-wide">Persona padrão</dt>
+                <dd class="t-body mt-0.5">
+                    @if ($account->defaultPersona)
+                        <a href="{{ route('personas.show', $account->defaultPersona) }}" class="font-medium text-primary hover:text-primary-hover">{{ $account->defaultPersona->name }}</a>
+                    @else
+                        Não definida
+                    @endif
+                </dd>
+            </div>
+            <div>
+                <dt class="t-small font-medium uppercase tracking-wide">Avatar padrão</dt>
+                <dd class="t-body mt-0.5">
+                    @if ($account->defaultAvatar)
+                        <a href="{{ route('avatars.show', $account->defaultAvatar) }}" class="font-medium text-primary hover:text-primary-hover">{{ $account->defaultAvatar->name }}</a>
+                    @else
+                        Não definido
+                    @endif
+                </dd>
+            </div>
         </dl>
     </x-ui.card>
 </div>

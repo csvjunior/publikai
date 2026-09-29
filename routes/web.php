@@ -5,7 +5,9 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SocialAccountController;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +57,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/social-accounts/{socialAccount}', [SocialAccountController::class, 'show'])->name('social-accounts.show');
     Route::get('/social-accounts/{socialAccount}/edit', [SocialAccountController::class, 'edit'])->name('social-accounts.edit');
     Route::match(['put', 'patch'], '/social-accounts/{socialAccount}', [SocialAccountController::class, 'update'])->name('social-accounts.update');
+
+    Route::get('/personas', [PersonaController::class, 'index'])->name('personas.index');
+    Route::get('/personas/create', [PersonaController::class, 'create'])->name('personas.create');
+    Route::post('/personas', [PersonaController::class, 'store'])->name('personas.store');
+    Route::get('/personas/{persona}', [PersonaController::class, 'show'])->name('personas.show');
+    Route::get('/personas/{persona}/edit', [PersonaController::class, 'edit'])->name('personas.edit');
+    Route::match(['put', 'patch'], '/personas/{persona}', [PersonaController::class, 'update'])->name('personas.update');
+
+    Route::get('/avatars', [AvatarController::class, 'index'])->name('avatars.index');
+    Route::get('/avatars/create', [AvatarController::class, 'create'])->name('avatars.create');
+    Route::post('/avatars', [AvatarController::class, 'store'])->name('avatars.store');
+    Route::get('/avatars/{avatar}', [AvatarController::class, 'show'])->name('avatars.show');
+    Route::get('/avatars/{avatar}/edit', [AvatarController::class, 'edit'])->name('avatars.edit');
+    Route::match(['put', 'patch'], '/avatars/{avatar}', [AvatarController::class, 'update'])->name('avatars.update');
     Route::scopeBindings()->group(function () {
         Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])
             ->name('affiliate-links.store');

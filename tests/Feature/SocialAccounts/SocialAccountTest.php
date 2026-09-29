@@ -4,6 +4,8 @@ namespace Tests\Feature\SocialAccounts;
 
 use App\Enums\SocialAccountStatus;
 use App\Enums\UserRole;
+use App\Models\Avatar;
+use App\Models\Persona;
 use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -47,6 +49,59 @@ class SocialAccountTest extends TestCase
             ->assertOk()
             ->assertSee('Contas')
             ->assertSee('Nenhuma conta cadastrada', false);
+    }
+
+    public function test_conta_aceita_persona_e_avatar_validos(): void
+    {
+        $user = User::factory()->create();
+        $persona = Persona::factory()->create();
+        $avatar = Avatar::factory()->create();
+
+        $response = $this->actingAs($user)->post('/social-accounts', $this->validData([
+            'default_persona_id' => $persona->id,
+            'default_avatar_id' => $avatar->id,
+        ]));
+
+        $account = SocialAccount::where('username', 'beautyfindsus')->firstOrFail();
+        $response->assertRedirect(route('social-accounts.show', $account));
+        $this->assertTrue($account->defaultPersona->is($persona));
+        $this->assertTrue($account->defaultAvatar->is($avatar));
+    }
+
+    public function test_ids_inexistentes_sao_rejeitados(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/social-accounts', $this->validData([
+            'default_persona_id' => 999,
+            'default_avatar_id' => 999,
+        ]));
+
+        $response->assertSessionHasErrors(['default_persona_id', 'default_avatar_id']);
+        $this->assertDatabaseCount('social_accounts', 0);
+    }
+
+    public function test_conta_funciona_sem_persona_avatar_e_show_apresenta_quando_definidos(): void
+    {
+        $user = User::factory()->create();
+        $persona = Persona::factory()->create(['name' => 'Emma US Beauty']);
+        $avatar = Avatar::factory()->create(['name' => 'Emma']);
+
+        $plain = SocialAccount::factory()->create();
+        $linked = SocialAccount::factory()->create([
+            'default_persona_id' => $persona->id,
+            'default_avatar_id' => $avatar->id,
+        ]);
+
+        $this->assertNull($plain->default_persona_id);
+
+        $response = $this->withoutVite()->actingAs($user)->get(route('social-accounts.show', $linked))->assertOk();
+        $response->assertSee('Emma US Beauty');
+        $response->assertSee('Persona padrão', false);
+
+        $responsePlain = $this->withoutVite()->actingAs($user)->get(route('social-accounts.show', $plain))->assertOk();
+        $responsePlain->assertSee('Não definida', false);
+        $responsePlain->assertSee('Não definido', false);
     }
 
     public function test_username_e_renderizado_com_valor_real(): void

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AvatarStatus;
+use App\Enums\PersonaStatus;
 use App\Http\Requests\StoreSocialAccountRequest;
 use App\Http\Requests\UpdateSocialAccountRequest;
+use App\Models\Avatar;
+use App\Models\Persona;
 use App\Models\SocialAccount;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
@@ -26,7 +30,7 @@ class SocialAccountController extends Controller
     {
         $this->authorize('create', SocialAccount::class);
 
-        return view('social-accounts.create');
+        return view('social-accounts.create', $this->identityOptions());
     }
 
     public function store(StoreSocialAccountRequest $request): RedirectResponse
@@ -46,6 +50,8 @@ class SocialAccountController extends Controller
     {
         $this->authorize('view', $socialAccount);
 
+        $socialAccount->load(['defaultPersona', 'defaultAvatar']);
+
         return view('social-accounts.show', ['account' => $socialAccount]);
     }
 
@@ -53,7 +59,7 @@ class SocialAccountController extends Controller
     {
         $this->authorize('update', $socialAccount);
 
-        return view('social-accounts.edit', ['account' => $socialAccount]);
+        return view('social-accounts.edit', ['account' => $socialAccount] + $this->identityOptions());
     }
 
     public function update(UpdateSocialAccountRequest $request, SocialAccount $socialAccount): RedirectResponse
@@ -69,5 +75,21 @@ class SocialAccountController extends Controller
         $socialAccount->update($data);
 
         return redirect()->route('social-accounts.show', $socialAccount)->with('status', 'Conta atualizada.');
+    }
+
+    /**
+     * Opções de identidade padrão: apenas registros ativos/pausados.
+     * Arquivados seguem referenciáveis historicamente, mas não selecionáveis.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function identityOptions(): array
+    {
+        return [
+            'personaOptions' => Persona::where('status', '!=', PersonaStatus::Archived->value)
+                ->orderBy('name')->pluck('name', 'id')->all(),
+            'avatarOptions' => Avatar::where('status', '!=', AvatarStatus::Archived->value)
+                ->orderBy('name')->pluck('name', 'id')->all(),
+        ];
     }
 }

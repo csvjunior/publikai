@@ -22,6 +22,9 @@
 | `2026_09_29_000002_create_products_table` (**nova, Sprint 1**) | `products` (ver modelagem abaixo) |
 | `2026_09_29_000003_create_affiliate_links_table` (**nova, Sprint 1**) | `affiliate_links` com FK `product_id` + `cascadeOnDelete` |
 | `2026_09_29_000004_create_social_accounts_table` (**nova, Sprint 2**) | `social_accounts` (ver modelagem abaixo) |
+| `2026_09_29_000005_create_personas_table` (**nova, Sprint 3**) | `personas` (ver modelagem abaixo) |
+| `2026_09_29_000006_create_avatars_table` (**nova, Sprint 3**) | `avatars` (ver modelagem abaixo) |
+| `2026_09_29_000007_add_default_identity_to_social_accounts_table` (**nova, Sprint 3**) | FKs `default_persona_id`/`default_avatar_id` em `social_accounts` |
 
 ## Modelagem atual
 
@@ -68,3 +71,21 @@ em migrations novas com `up`/`down` reversíveis.
 - Unicidade `unique(platform, username)`: mesmo nome permitido em redes
   diferentes, não duplicado na mesma plataforma.
 - Sem soft delete; sem tokens OAuth; sem FKs para módulos inexistentes.
+
+## Modelagem da Sprint 3 (personas e avatares)
+
+- `personas`: `id, name, language(10)?, market(10)?, audience?, personality?,
+  tone?, communication_style?, vocabulary?, expressions(text)?,
+  content_preferences(text)?, avoidances(text)?, default_cta_style?,
+  status string(20) default `active`, notes?, timestamps` + índice `status`.
+- `avatars`: `id, name, apparent_age(20)?, gender_presentation?,
+  ethnicity_description? (descrição visual manual, sem inferência),
+  hair?, eyes?, skin?, body_description?, default_clothing?, visual_style?,
+  preferred_scenarios?, voice_description?, language(10)?, market(10)?,
+  reference_notes(text)? (instrução futura, sem upload), status default
+  `active`, notes?, timestamps` + índice `status`.
+- `status` como string + enums PHP (`PersonaStatus`, `AvatarStatus`).
+- `social_accounts.default_persona_id` / `default_avatar_id` (FKs nullable,
+  `nullOnDelete`): belongsTo reutilizável por várias contas, sem N:N.
+  Arquivar persona/avatar não remove a referência (histórico); selects de
+  troca listam só ativos/pausados.

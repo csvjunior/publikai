@@ -34,7 +34,7 @@
     @php
         $sections = [
             'Operação' => ['Produtos', 'Campanhas', 'Conteúdos'],
-            'Creative Studio' => ['Ideias', 'Roteiros', 'Imagens', 'Vídeos'],
+            'Creative Studio' => ['Personas', 'Avatares', 'Ideias', 'Roteiros', 'Imagens', 'Vídeos'],
             'Inteligência' => ['Referências', 'Blueprints'],
             'Distribuição' => ['Contas', 'Calendário', 'Publicações'],
             'Performance' => ['Métricas', 'Conversões'],
@@ -43,6 +43,8 @@
         $activeLinks = [
             'Produtos' => ['route' => 'products.index', 'active' => request()->routeIs('products.*')],
             'Contas' => ['route' => 'social-accounts.index', 'active' => request()->routeIs('social-accounts.*')],
+            'Personas' => ['route' => 'personas.index', 'active' => request()->routeIs('personas.*')],
+            'Avatares' => ['route' => 'avatars.index', 'active' => request()->routeIs('avatars.*')],
         ];
     @endphp
 

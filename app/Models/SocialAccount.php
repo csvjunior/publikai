@@ -7,6 +7,7 @@ use App\Enums\SocialPlatform;
 use Database\Factories\SocialAccountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Conta/perfil social gerenciado pelo Publikai (Sprint 2, cadastro manual).
@@ -32,6 +33,8 @@ class SocialAccount extends Model
         'content_style',
         'default_cta',
         'posting_frequency',
+        'default_persona_id',
+        'default_avatar_id',
         'status',
         'notes',
     ];
@@ -50,5 +53,21 @@ class SocialAccount extends Model
     public function isArchived(): bool
     {
         return $this->status === SocialAccountStatus::Archived;
+    }
+
+    /**
+     * @return BelongsTo<Persona, $this>
+     */
+    public function defaultPersona(): BelongsTo
+    {
+        return $this->belongsTo(Persona::class, 'default_persona_id');
+    }
+
+    /**
+     * @return BelongsTo<Avatar, $this>
+     */
+    public function defaultAvatar(): BelongsTo
+    {
+        return $this->belongsTo(Avatar::class, 'default_avatar_id');
     }
 }
