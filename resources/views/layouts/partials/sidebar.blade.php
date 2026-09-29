@@ -42,6 +42,7 @@
         ];
         $activeLinks = [
             'Produtos' => ['route' => 'products.index', 'active' => request()->routeIs('products.*')],
+            'Contas' => ['route' => 'social-accounts.index', 'active' => request()->routeIs('social-accounts.*')],
         ];
     @endphp
 

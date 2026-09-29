@@ -19,6 +19,15 @@
 - Sidebar "Produtos" ativa; dashboard mostra contagem real de produtos.
 - Campanhas e conteúdos seguem futuros (roadmap original mantido abaixo).
 
+## Sprint 2 — Contas sociais + Account DNA (concluída)
+
+- `SocialAccount` manual (Instagram/TikTok/YouTube) com DNA operacional,
+  `SocialAccountPolicy` (regra de archived), CRUD com `ui.table` e detalhe
+  em seções Conta + Account DNA.
+- `config/locale-options.php` neutro (idiomas/mercados compartilhados).
+- Sidebar Distribuição/Contas ativa; dashboard inalterado (sem poluição visual).
+- OAuth, tokens, publicação e métricas seguem futuros.
+
 ## Próximas sprints (sugestão, sem compromisso)
 
 - **Domínio base (restante):** campanhas e conteúdos (CRUD interno,

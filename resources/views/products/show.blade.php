@@ -25,7 +25,7 @@
                 <x-ui.badge variant="info">{{ $product->market }}</x-ui.badge>
             @endif
             @if ($product->language)
-                <x-ui.badge variant="neutral">{{ config('products.languages')[$product->language] ?? $product->language }}</x-ui.badge>
+                <x-ui.badge variant="neutral">{{ config('locale-options.languages')[$product->language] ?? $product->language }}</x-ui.badge>
             @endif
         </div>
 
@@ -122,7 +122,7 @@
                                         <x-ui.input label="Rótulo" name="label" type="text" required :value="old('label', $link->label)" />
                                         <x-ui.input label="URL" name="url" type="url" required :value="old('url', $link->url)" />
                                         <x-ui.input label="Rede" name="network" type="text" :value="old('network', $link->network)" />
-                                        <x-ui.select label="Mercado" name="market" :options="config('products.markets')" placeholder="Selecionar…" :value="old('market', $link->market)" />
+                                        <x-ui.select label="Mercado" name="market" :options="config('locale-options.markets')" placeholder="Selecionar…" :value="old('market', $link->market)" />
                                     </div>
                                     <label class="flex cursor-pointer items-center gap-2 text-sm text-ink">
                                         <input type="checkbox" name="is_primary" value="1" @checked(old('is_primary', $link->is_primary)) class="h-4 w-4 rounded border-border accent-primary">
@@ -154,7 +154,7 @@
                     <x-ui.input label="Rótulo" name="label" type="text" required helper="Ex.: Principal US, Instagram US." />
                     <x-ui.input label="URL" name="url" type="url" required />
                     <x-ui.input label="Rede" name="network" type="text" />
-                    <x-ui.select label="Mercado" name="market" :options="config('products.markets')" placeholder="Selecionar…" />
+                    <x-ui.select label="Mercado" name="market" :options="config('locale-options.markets')" placeholder="Selecionar…" />
                 </div>
                 <label class="flex cursor-pointer items-center gap-2 text-sm text-ink">
                     <input type="checkbox" name="is_primary" value="1" @checked(old('is_primary')) class="h-4 w-4 rounded border-border accent-primary">

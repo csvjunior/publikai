@@ -24,7 +24,7 @@ class AffiliateLinkRequest extends FormRequest
             'label' => ['required', 'string', 'max:255'],
             'url' => ['required', 'url', 'max:2048'],
             'network' => ['nullable', 'string', 'max:255'],
-            'market' => ['nullable', Rule::in(array_keys(config('products.markets')))],
+            'market' => ['nullable', Rule::in(array_keys(config('locale-options.markets')))],
             'is_primary' => ['sometimes', 'boolean'],
             'notes' => ['nullable', 'string'],
         ];

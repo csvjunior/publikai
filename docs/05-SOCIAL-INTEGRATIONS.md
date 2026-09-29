@@ -1,19 +1,26 @@
 # 05 — Integrações sociais
 
-**Estado:** planejado (nada implementado) · **Atualizado em:** 2026-09-29
+**Estado:** parcial (contas manuais implementadas na Sprint 2; OAuth/APIs pendentes) · **Atualizado em:** 2026-09-29
 
-## Escopo futuro
+## Implementado (Sprint 2)
 
-- Gestão de múltiplas contas: Instagram, TikTok, YouTube.
-- Publicação e agendamento **somente via APIs oficiais**.
-- Adaptação de formato por rede social.
+- Gestão de múltiplas contas (`social_accounts`, cadastro **manual**): nome,
+  plataforma (Instagram/TikTok/YouTube), username, URL, idioma/mercado, nicho,
+  público, tom, estilo, CTA padrão, frequência, status, observações.
+- Account DNA cadastrado e organizado para o futuro Content Engine (sem
+  interpretação por IA nesta Sprint).
+- Autorização `SocialAccountPolicy` (mesma regra de archived de produtos).
+- Interface: listagem `ui.table`, formulário em blocos, detalhe com seções
+  Conta + Account DNA, sidebar Distribuição/Contas ativa.
 
-## Estado atual
+## Ainda planejado (não implementado)
 
-- Nenhuma integração, nenhum token, nenhuma conta cadastrada.
-- Menu prevê: Contas, Calendário, Publicações (todos “Em breve”).
+- OAuth por rede, armazenamento seguro de tokens, publicação e agendamento
+  **somente via APIs oficiais**.
+- Adaptação de formato por rede social; fila nativa para publicações.
+- Calendário e Publicações seguem como “Em breve” no menu.
 
-## Pendências
+## Proibições vigentes
 
-- Definir estratégia OAuth por rede + armazenamento seguro de tokens.
-- Fila nativa para publicações agendadas.
+Sem `access_token`/`refresh_token` no banco, sem Meta/TikTok/Google conectados,
+sem scraping, sem upload de avatar.

@@ -21,6 +21,7 @@
 | `2026_09_29_000001_add_role_to_users_table` (**nova, Sprint 0.1**) | adiciona `users.role` (`string(20)`, default `operator`) |
 | `2026_09_29_000002_create_products_table` (**nova, Sprint 1**) | `products` (ver modelagem abaixo) |
 | `2026_09_29_000003_create_affiliate_links_table` (**nova, Sprint 1**) | `affiliate_links` com FK `product_id` + `cascadeOnDelete` |
+| `2026_09_29_000004_create_social_accounts_table` (**nova, Sprint 2**) | `social_accounts` (ver modelagem abaixo) |
 
 ## Modelagem atual
 
@@ -53,4 +54,17 @@ em migrations novas com `up`/`down` reversíveis.
 - Regra de unicidade lógica do link principal em `AffiliateLinkService`
   (transação; sem constraint parcial para manter compatibilidade MariaDB/MySQL).
 - Banco guarda códigos (`US`, `en-US`, `USD`, `percent`); rótulos em
-  `config/products.php`.
+  `config/products.php` (listas específicas) e `config/locale-options.php`
+  (idiomas/mercados compartilhados desde a Sprint 2).
+
+## Modelagem da Sprint 2 (contas sociais)
+
+- `social_accounts`: `id, name, platform(20), username, profile_url(2048)?,
+  language(10)?, market(10)?, niche?, audience?, tone?, content_style?,
+  default_cta?, posting_frequency?, status string(20) default `active`,
+  notes?, timestamps`.
+- `platform`/`status` como string + enums PHP (`SocialPlatform`,
+  `SocialAccountStatus`) — sem `ENUM` nativo.
+- Unicidade `unique(platform, username)`: mesmo nome permitido em redes
+  diferentes, não duplicado na mesma plataforma.
+- Sem soft delete; sem tokens OAuth; sem FKs para módulos inexistentes.

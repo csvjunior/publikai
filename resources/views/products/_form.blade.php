@@ -26,8 +26,8 @@
 
     <x-ui.card title="Mercado" description="Onde e em que idioma o produto será promovido.">
         <div class="grid gap-4 sm:grid-cols-2">
-            <x-ui.select label="Idioma" name="language" :options="config('products.languages')" placeholder="Selecionar…" :value="old('language', $product->language ?? null)" />
-            <x-ui.select label="Mercado" name="market" :options="config('products.markets')" placeholder="Selecionar…" :value="old('market', $product->market ?? null)" />
+            <x-ui.select label="Idioma" name="language" :options="config('locale-options.languages')" placeholder="Selecionar…" :value="old('language', $product->language ?? null)" />
+            <x-ui.select label="Mercado" name="market" :options="config('locale-options.markets')" placeholder="Selecionar…" :value="old('market', $product->market ?? null)" />
             <x-ui.select label="Moeda" name="currency" :options="config('products.currencies')" placeholder="Selecionar…" :value="old('currency', $product->currency ?? null)" />
             <x-ui.input label="Preço" name="price" type="number" step="0.01" min="0" :value="old('price', $product->price ?? null)" />
         </div>

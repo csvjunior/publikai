@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SocialAccountController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,6 +49,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update'])->name('products.update');
 
+    Route::get('/social-accounts', [SocialAccountController::class, 'index'])->name('social-accounts.index');
+    Route::get('/social-accounts/create', [SocialAccountController::class, 'create'])->name('social-accounts.create');
+    Route::post('/social-accounts', [SocialAccountController::class, 'store'])->name('social-accounts.store');
+    Route::get('/social-accounts/{socialAccount}', [SocialAccountController::class, 'show'])->name('social-accounts.show');
+    Route::get('/social-accounts/{socialAccount}/edit', [SocialAccountController::class, 'edit'])->name('social-accounts.edit');
+    Route::match(['put', 'patch'], '/social-accounts/{socialAccount}', [SocialAccountController::class, 'update'])->name('social-accounts.update');
     Route::scopeBindings()->group(function () {
         Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])
             ->name('affiliate-links.store');
