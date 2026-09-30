@@ -59,6 +59,15 @@
 - `source_type` manual (automático) preparado p/ `ai_assisted` futuro
   (ReferenceAnalysis + Persona + Avatar + Product context → proposta → revisão).
 
+## Sprint 5.4 — Script Studio (manual + IA, textual)
+
+- `ContentScript` (manual draft→ready→approved; IA generating→ready|failed):
+  texto estruturado a partir de Product + Blueprint + Persona + Avatar.
+- `ContentScriptSchema` + instruções versionáveis; conflito forte de
+  language/market rejeita a geração; CTA textual sem links.
+- hook/body/cta nullable no banco (falhados sem texto); fluxos válidos exigem
+  via validação. Sem vídeo/imagem/voz, sem Campaign/publicação.
+
 ## Pendências
 
 - Confirmar mapeamento de `usage` da Interactions API no teste real

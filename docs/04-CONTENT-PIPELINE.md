@@ -28,6 +28,8 @@
   Fluxo atual: References → análise → proposta → revisão → apply.
 - Sprint 5.3 cadastrou **Content Blueprints manuais** (estruturas reutilizáveis;
   roteiros seguem futuros).
+- Sprint 5.4 implementou **Script Studio** (roteiros manuais + por IA, texto
+  estruturado; vídeo/imagem/voz e publicação seguem futuros).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

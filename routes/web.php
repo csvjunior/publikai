@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\ContentBlueprintController;
+use App\Http\Controllers\ContentScriptController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IdentityProposalController;
 use App\Http\Controllers\PersonaController;
@@ -89,6 +90,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/blueprints/{contentBlueprint}', [ContentBlueprintController::class, 'show'])->name('blueprints.show');
     Route::get('/blueprints/{contentBlueprint}/edit', [ContentBlueprintController::class, 'edit'])->name('blueprints.edit');
     Route::match(['put', 'patch'], '/blueprints/{contentBlueprint}', [ContentBlueprintController::class, 'update'])->name('blueprints.update');
+
+    Route::get('/scripts', [ContentScriptController::class, 'index'])->name('scripts.index');
+    Route::get('/scripts/create', [ContentScriptController::class, 'create'])->name('scripts.create');
+    Route::post('/scripts', [ContentScriptController::class, 'store'])->name('scripts.store');
+    Route::post('/scripts/generate', [ContentScriptController::class, 'generate'])
+        ->middleware('throttle:5,1')
+        ->name('scripts.generate');
+    Route::get('/scripts/{contentScript}', [ContentScriptController::class, 'show'])->name('scripts.show');
+    Route::get('/scripts/{contentScript}/edit', [ContentScriptController::class, 'edit'])->name('scripts.edit');
+    Route::match(['put', 'patch'], '/scripts/{contentScript}', [ContentScriptController::class, 'update'])->name('scripts.update');
+    Route::post('/scripts/{contentScript}/ready', [ContentScriptController::class, 'ready'])->name('scripts.ready');
+    Route::post('/scripts/{contentScript}/approve', [ContentScriptController::class, 'approve'])->name('scripts.approve');
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');
     Route::get('/references/create', [ReferenceProfileController::class, 'create'])->name('references.create');

@@ -30,6 +30,8 @@
 | `2026_09_29_000011_create_reference_analyses_table` (**nova, Sprint 5.1**) | `reference_analyses` (histórico imutável, padrões em JSON) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 | `2026_09_29_000013_create_content_blueprints_table` (**nova, Sprint 5.3**) | `content_blueprints` (estruturas reutilizáveis, sem roteiro/mídia) |
+| `2026_09_29_000014_create_content_scripts_table` (**nova, Sprint 5.4**) | `content_scripts` (roteiros manuais/IA, sem mídia/publicação) |
+| `2026_09_30_000015_make_script_content_nullable` (**nova, Sprint 5.4**) | hook/body/cta nullable (roteiros falhados não têm texto; fluxos válidos exigem via validação) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
 ## Modelagem atual
@@ -74,6 +76,10 @@ em migrations novas com `up`/`down` reversíveis.
   (histórico imutável de execuções com padrões em JSON sanitizado).
 - `ReferenceProfile::identityProposals()` (latest) + `IdentityProposal`
   (persona_data/avatar_data/rationale em JSON; applied_* + applied_at no apply).
+- `content_scripts`: contexto obrigatório (product/blueprint/persona/avatar),
+  hook/body/cta **nullable no banco** (falhados não têm texto; fluxos válidos
+  exigem via validação), `generation_source` manual/ai, provider/model,
+  erro sanitizado, approved_at. Sem mídia, sem publicação.
 - `content_blueprints`: `id, name, slug (único), description?, content_type?,
   objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
   language/market/niche?, status, source_type (manual|ai_assisted),

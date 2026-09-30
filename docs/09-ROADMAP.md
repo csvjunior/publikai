@@ -74,6 +74,13 @@
   roteiro/mídia e sem vínculo Product/Persona/Avatar.
 - Sidebar Inteligência/Blueprints ativa; `ai_assisted` preparado p/ futuro.
 
+## Sprint 5.4 — Script Studio (concluída)
+
+- `ContentScript` manual (draft→ready→approved) + por IA (generating→ready|failed):
+  texto estruturado de Product + Blueprint + Persona + Avatar, com revisão e
+  aprovação humanas. CTA textual, sem links/mídia/publicação/Campaign.
+- Sidebar Creative Studio/Roteiros ativa.
+
 ## Validação real (pós-implementação, registrada)
 
 - Endpoint/model/auth **confirmados** (HTTP 200 com interaction id).

@@ -36,9 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Proteção de revisão não salva (Sprint 5.2): enquanto o formulário de
-    // revisão da proposta tiver alterações não persistidas, o botão de apply
-    // fica desabilitado. Sem alterações, o apply funciona normalmente.
+    // Proteção de revisão não salva (Sprint 5.2) + anti duplo submit (Sprint 5.4).
     const reviewForm = document.getElementById('proposal-review-form');
     const applyButton = document.getElementById('proposal-apply-button');
     const dirtyHelper = document.getElementById('proposal-dirty-helper');
@@ -62,4 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Anti duplo submit (Sprint 5.4): formulários com data-once desabilitam o
+    // botão de submit no envio (ex.: geração por IA).
+    document.querySelectorAll('form[data-once]').forEach((form) => {
+        form.addEventListener('submit', () => {
+            form.querySelectorAll('button[type="submit"]').forEach((button) => {
+                button.disabled = true;
+            });
+        });
+    });
 });
