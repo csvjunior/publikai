@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\IdentityProposalController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReferenceAnalysisController;
@@ -96,6 +97,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/references/{referenceProfile}/analyses', [ReferenceAnalysisController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('references.analyses.store');
+
+    Route::scopeBindings()->group(function () {
+        Route::post('/references/{referenceProfile}/proposals', [IdentityProposalController::class, 'store'])
+            ->middleware('throttle:5,1')
+            ->name('references.proposals.store');
+        Route::match(['put', 'patch'], '/references/{referenceProfile}/proposals/{identityProposal}', [IdentityProposalController::class, 'update'])->name('references.proposals.update');
+        Route::post('/references/{referenceProfile}/proposals/{identityProposal}/apply', [IdentityProposalController::class, 'apply'])->name('references.proposals.apply');
+        Route::post('/references/{referenceProfile}/proposals/{identityProposal}/discard', [IdentityProposalController::class, 'discard'])->name('references.proposals.discard');
+    });
     Route::scopeBindings()->group(function () {
         Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])->name('affiliate-links.store');
         Route::match(['put', 'patch'], '/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'update'])->name('affiliate-links.update');

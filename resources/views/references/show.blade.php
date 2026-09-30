@@ -243,5 +243,66 @@
             </div>
         @endif
     </x-ui.card>
+
+    <x-ui.card title="Identidade sugerida" description="Proposta de Persona e Avatar a partir da análise concluída. Nada é salvo sem revisão.">
+        @if (session('proposal_notice'))
+            <x-ui.alert variant="warning" class="mb-4">{{ session('proposal_notice') }}</x-ui.alert>
+        @endif
+
+        @if ($featuredProposal)
+            @include('references._proposal', ['proposal' => $featuredProposal])
+
+            @if ($featuredProposal->isReady())
+                <div class="mt-5 border-t border-border pt-4">
+                    <details class="w-full">
+                        <summary class="cursor-pointer text-sm font-medium text-primary hover:text-primary-hover">Revisar e editar antes de aplicar</summary>
+                        <div class="mt-4">
+                            @include('references._proposal_form', ['profile' => $profile, 'proposal' => $featuredProposal])
+                        </div>
+                    </details>
+                </div>
+
+                <div class="mt-4 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row">
+                    <form method="POST" action="{{ route('references.proposals.apply', [$profile, $featuredProposal]) }}" class="sm:w-auto">
+                        @csrf
+                        <x-ui.button variant="primary" type="submit" id="proposal-apply-button" full>Aplicar proposta</x-ui.button>
+                    </form>
+                    <p id="proposal-dirty-helper" class="t-small hidden sm:self-center" role="status">Salve as alterações da revisão antes de aplicar a proposta.</p>
+                    <form method="POST" action="{{ route('references.proposals.discard', [$profile, $featuredProposal]) }}" class="sm:w-auto" onsubmit="return confirm('Descartar esta proposta? O histórico será preservado.')">
+                        @csrf
+                        <x-ui.button variant="outline" type="submit" full>Descartar</x-ui.button>
+                    </form>
+                </div>
+            @endif
+
+            @if ($proposals->count() > 1)
+                <div class="mt-5 border-t border-border pt-4">
+                    <h4 class="t-section-title">Histórico de propostas</h4>
+                    <ul class="mt-2 space-y-2">
+                        @foreach ($proposals as $item)
+                            <li class="flex flex-wrap items-center gap-2 text-sm">
+                                <x-ui.badge :variant="$item->status->badgeVariant()">{{ $item->status->label() }}</x-ui.badge>
+                                <span class="text-ink-secondary">{{ $item->created_at?->display() }} · {{ $item->provider ?? '—' }} / {{ $item->model ?? '—' }}</span>
+                                @if (! empty($item->persona_data['name'] ?? null) || ! empty($item->avatar_data['name'] ?? null))
+                                    <span class="text-ink-secondary">{{ $item->persona_data['name'] ?? '' }}{{ (! empty($item->persona_data['name'] ?? null) && ! empty($item->avatar_data['name'] ?? null)) ? ' + ' : '' }}{{ $item->avatar_data['name'] ?? '' }}</span>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        @elseif (! $hasSuccessfulAnalysis)
+            <p class="t-body">Conclua uma análise por IA desta referência antes de gerar Persona e Avatar.</p>
+        @elseif (! $aiConfigured)
+            <x-ui.button variant="ai" type="button" disabled>Gerar Persona e Avatar</x-ui.button>
+            <p class="t-small mt-2">Configure a IA em Sistema → IA para gerar propostas.</p>
+        @else
+            <p class="t-body">Cria uma proposta de identidade com base na análise concluída desta referência.</p>
+            <form method="POST" action="{{ route('references.proposals.store', $profile) }}" class="mt-3">
+                @csrf
+                <x-ui.button variant="ai" type="submit">Gerar Persona e Avatar</x-ui.button>
+            </form>
+        @endif
+    </x-ui.card>
 </div>
 @endsection

@@ -20,12 +20,14 @@
   (avatares); contas referenciam defaults. Atores futuros (ideias, roteiros,
   campanhas) ainda não existem.
 - Sprint 4 cadastrou a **base de referências** (perfis + conteúdos com
-  observações manuais de padrões). Fluxo futuro planejado: Produto/Nicho →
-  ReferenceProfiles → ReferenceContents → análise por IA → padrões detectados
-  → proposta de Persona → proposta de Avatar → revisão humana → salvar
-  (propostas e análise **não implementadas**; sem botões de IA).
-- O preenchimento manual de Persona e Avatar continuará disponível como
-  fallback e edição final mesmo após a geração assistida existir.
+  observações manuais de padrões).
+- Sprint 5.1 implementou **AI Reference Analysis** (histórico imutável,
+  execução síncrona tolerante a falha).
+- Sprint 5.2 implementou **propostas assistidas de Persona/Avatar**
+  (`IdentityProposal` + revisão humana obrigatória + apply transacional).
+  Fluxo atual: References → análise → proposta → revisão → apply.
+- O preenchimento manual de Persona e Avatar continua disponível como
+  fallback e edição final.
 
 ## Pendências
 

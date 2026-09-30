@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\IdentityProposalStatus;
 use App\Enums\ReferenceAnalysisStatus;
 use App\Http\Requests\StoreReferenceProfileRequest;
 use App\Http\Requests\UpdateReferenceProfileRequest;
@@ -52,10 +53,22 @@ class ReferenceProfileController extends Controller
         $analyses = $referenceProfile->referenceAnalyses()->latest()->get();
         $featured = $analyses->firstWhere('status', ReferenceAnalysisStatus::Success) ?? $analyses->first();
 
+        $proposals = $referenceProfile->identityProposals()->latest()->get();
+        $featuredProposal = $proposals->firstWhere('status', IdentityProposalStatus::Ready)
+            ?? $proposals->firstWhere('status', IdentityProposalStatus::Applied)
+            ?? $proposals->first();
+
+        $hasSuccessfulAnalysis = $referenceProfile->referenceAnalyses()
+            ->where('status', ReferenceAnalysisStatus::Success)
+            ->exists();
+
         return view('references.show', [
             'profile' => $referenceProfile,
             'analyses' => $analyses,
             'featuredAnalysis' => $featured,
+            'proposals' => $proposals,
+            'featuredProposal' => $featuredProposal,
+            'hasSuccessfulAnalysis' => $hasSuccessfulAnalysis,
             'aiConfigured' => (bool) config('ai.google.enabled') && (string) config('ai.google.auth_key') !== '',
         ]);
     }

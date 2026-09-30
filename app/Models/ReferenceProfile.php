@@ -59,6 +59,14 @@ class ReferenceProfile extends Model
         return $this->hasMany(ReferenceAnalysis::class)->latest();
     }
 
+    /**
+     * @return HasMany<IdentityProposal, $this>
+     */
+    public function identityProposals(): HasMany
+    {
+        return $this->hasMany(IdentityProposal::class)->latest();
+    }
+
     public function isArchived(): bool
     {
         return $this->status === ReferenceProfileStatus::Archived;

@@ -60,6 +60,13 @@
   falha sanitizada, retry como nova análise, `latestSuccessful` em destaque.
 - Sem scraping, embeddings, Persona/Avatar gerados ou Blueprint.
 
+## Sprint 5.2 — AI Persona & Avatar Proposals (concluída)
+
+- `IdentityProposal` (ready/applied/discarded) via `IdentityProposalService`:
+  IA propõe a partir da latest successful; humano revisa/edita; apply cria
+  Persona + Avatar **active** em transação idempotente.
+- Sem imagem, voz, roteiro, Blueprint ou Campaign.
+
 ## Validação real (pós-implementação, registrada)
 
 - Endpoint/model/auth **confirmados** (HTTP 200 com interaction id).

@@ -35,4 +35,31 @@ document.addEventListener('DOMContentLoaded', () => {
             setMenu(false);
         }
     });
+
+    // Proteção de revisão não salva (Sprint 5.2): enquanto o formulário de
+    // revisão da proposta tiver alterações não persistidas, o botão de apply
+    // fica desabilitado. Sem alterações, o apply funciona normalmente.
+    const reviewForm = document.getElementById('proposal-review-form');
+    const applyButton = document.getElementById('proposal-apply-button');
+    const dirtyHelper = document.getElementById('proposal-dirty-helper');
+
+    if (reviewForm && applyButton) {
+        const snapshot = () => new URLSearchParams(new FormData(reviewForm)).toString();
+        const baseline = snapshot();
+
+        const refreshDirty = () => {
+            const dirty = snapshot() !== baseline;
+            applyButton.disabled = dirty;
+            dirtyHelper?.classList.toggle('hidden', !dirty);
+        };
+
+        reviewForm.addEventListener('input', refreshDirty);
+        reviewForm.addEventListener('change', refreshDirty);
+
+        window.addEventListener('beforeunload', (event) => {
+            if (snapshot() !== baseline) {
+                event.preventDefault();
+            }
+        });
+    }
 });

@@ -43,6 +43,15 @@
 - Fluxo futuro: propostas de Persona/Avatar a partir de análises → revisão
   humana → salvar (só plano).
 
+## Sprint 5.2 — propostas assistidas (human-in-the-loop obrigatório)
+
+- `IdentityProposal` (pending→processing→ready|failed; ready→applied|discarded)
+  via `IdentityProposalService`: IA propõe Persona + Avatar + rationale curto
+  a partir da latest successful; humano revisa/edita; apply cria ambos
+  **active** em transação (idempotente); descarte preserva histórico.
+- Guardrails: sem copiar criador real, sem estereótipos, sem inferir atributos
+  sensíveis (`ethnicity_description` editorial ou null). Sem imagem/voz.
+
 ## Pendências
 
 - Confirmar mapeamento de `usage` da Interactions API no teste real
