@@ -67,6 +67,13 @@
   Persona + Avatar **active** em transação idempotente.
 - Sem imagem, voz, roteiro, Blueprint ou Campaign.
 
+## Sprint 5.3 — Content Blueprints (concluída)
+
+- `ContentBlueprint` manual (slug único, `source_type` automático,
+  taxonomia `content_types` compartilhada): ESTRUTURAS reutilizáveis, sem
+  roteiro/mídia e sem vínculo Product/Persona/Avatar.
+- Sidebar Inteligência/Blueprints ativa; `ai_assisted` preparado p/ futuro.
+
 ## Validação real (pós-implementação, registrada)
 
 - Endpoint/model/auth **confirmados** (HTTP 200 com interaction id).

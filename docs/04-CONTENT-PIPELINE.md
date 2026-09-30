@@ -1,6 +1,6 @@
 # 04 — Pipeline de conteúdo
 
-**Estado:** planejado (nada implementado) · **Atualizado em:** 2026-09-29
+**Estado:** parcial (planejado + módulos 3/5.1/5.2/5.3) · **Atualizado em:** 2026-09-30
 
 ## Pipeline futuro previsto
 
@@ -26,6 +26,8 @@
 - Sprint 5.2 implementou **propostas assistidas de Persona/Avatar**
   (`IdentityProposal` + revisão humana obrigatória + apply transacional).
   Fluxo atual: References → análise → proposta → revisão → apply.
+- Sprint 5.3 cadastrou **Content Blueprints manuais** (estruturas reutilizáveis;
+  roteiros seguem futuros).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

@@ -52,6 +52,13 @@
 - Guardrails: sem copiar criador real, sem estereótipos, sem inferir atributos
   sensíveis (`ethnicity_description` editorial ou null). Sem imagem/voz.
 
+## Sprint 5.3 — Content Blueprints (manuais; IA futura)
+
+- `ContentBlueprint`: ESTRUTURAS reutilizáveis (formato, hook, sequência, CTA,
+  estilo), sem roteiro/mídia e sem vínculo Product/Persona/Avatar.
+- `source_type` manual (automático) preparado p/ `ai_assisted` futuro
+  (ReferenceAnalysis + Persona + Avatar + Product context → proposta → revisão).
+
 ## Pendências
 
 - Confirmar mapeamento de `usage` da Interactions API no teste real

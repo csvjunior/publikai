@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\ContentBlueprintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IdentityProposalController;
 use App\Http\Controllers\PersonaController;
@@ -81,6 +82,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/avatars/{avatar}', [AvatarController::class, 'show'])->name('avatars.show');
     Route::get('/avatars/{avatar}/edit', [AvatarController::class, 'edit'])->name('avatars.edit');
     Route::match(['put', 'patch'], '/avatars/{avatar}', [AvatarController::class, 'update'])->name('avatars.update');
+
+    Route::get('/blueprints', [ContentBlueprintController::class, 'index'])->name('blueprints.index');
+    Route::get('/blueprints/create', [ContentBlueprintController::class, 'create'])->name('blueprints.create');
+    Route::post('/blueprints', [ContentBlueprintController::class, 'store'])->name('blueprints.store');
+    Route::get('/blueprints/{contentBlueprint}', [ContentBlueprintController::class, 'show'])->name('blueprints.show');
+    Route::get('/blueprints/{contentBlueprint}/edit', [ContentBlueprintController::class, 'edit'])->name('blueprints.edit');
+    Route::match(['put', 'patch'], '/blueprints/{contentBlueprint}', [ContentBlueprintController::class, 'update'])->name('blueprints.update');
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');
     Route::get('/references/create', [ReferenceProfileController::class, 'create'])->name('references.create');

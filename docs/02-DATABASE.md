@@ -29,6 +29,8 @@
 | `2026_09_29_000009_create_reference_contents_table` (**nova, Sprint 4**) | `reference_contents` |
 | `2026_09_29_000011_create_reference_analyses_table` (**nova, Sprint 5.1**) | `reference_analyses` (histórico imutável, padrões em JSON) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
+| `2026_09_29_000013_create_content_blueprints_table` (**nova, Sprint 5.3**) | `content_blueprints` (estruturas reutilizáveis, sem roteiro/mídia) |
+| `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
 ## Modelagem atual
 
@@ -72,6 +74,11 @@ em migrations novas com `up`/`down` reversíveis.
   (histórico imutável de execuções com padrões em JSON sanitizado).
 - `ReferenceProfile::identityProposals()` (latest) + `IdentityProposal`
   (persona_data/avatar_data/rationale em JSON; applied_* + applied_at no apply).
+- `content_blueprints`: `id, name, slug (único), description?, content_type?,
+  objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
+  language/market/niche?, status, source_type (manual|ai_assisted),
+  source_reference_profile_id?/source_reference_analysis_id? (FKs nullable),
+  notes?, timestamps` + índices `status`, `content_type`.
 - Regra de unicidade lógica do link principal em `AffiliateLinkService`
   (transação; sem constraint parcial para manter compatibilidade MariaDB/MySQL).
 - Banco guarda códigos (`US`, `en-US`, `USD`, `percent`); rótulos em

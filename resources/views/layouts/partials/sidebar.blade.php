@@ -35,8 +35,7 @@
         $sections = [
             'Operação' => ['Produtos', 'Campanhas', 'Conteúdos'],
             'Creative Studio' => ['Personas', 'Avatares', 'Ideias', 'Roteiros', 'Imagens', 'Vídeos'],
-            'Inteligência' => ['Referências', 'Blueprints'],
-            'Distribuição' => ['Contas', 'Calendário', 'Publicações'],
+            'Inteligência' => ['Referências', 'Blueprints'],            'Distribuição' => ['Contas', 'Calendário', 'Publicações'],
             'Performance' => ['Métricas', 'Conversões'],
             'Sistema' => ['IA', 'Custos', 'Integrações', 'Configurações'],
         ];
@@ -46,6 +45,7 @@
             'Personas' => ['route' => 'personas.index', 'active' => request()->routeIs('personas.*')],
             'Avatares' => ['route' => 'avatars.index', 'active' => request()->routeIs('avatars.*')],
             'Referências' => ['route' => 'references.index', 'active' => request()->routeIs('references.*')],
+            'Blueprints' => ['route' => 'blueprints.index', 'active' => request()->routeIs('blueprints.*')],
             'IA' => ['route' => 'settings.ai', 'active' => request()->routeIs('settings.ai*')],
         ];
     @endphp
