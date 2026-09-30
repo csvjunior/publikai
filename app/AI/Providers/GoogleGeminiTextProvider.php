@@ -60,6 +60,7 @@ class GoogleGeminiTextProvider implements AiTextProvider
 
             try {
                 $response = Http::withHeaders(['x-goog-api-key' => $authKey])
+                    ->withOptions(['connect_timeout' => (int) $config['connect_timeout']])
                     ->timeout((int) $config['timeout'])
                     ->post(rtrim((string) $config['base_url'], '/').'/interactions', $payload);
             } catch (ConnectionException $e) {

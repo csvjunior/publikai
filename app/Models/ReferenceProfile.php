@@ -51,6 +51,14 @@ class ReferenceProfile extends Model
         return $this->hasMany(ReferenceContent::class)->orderBy('id');
     }
 
+    /**
+     * @return HasMany<ReferenceAnalysis, $this>
+     */
+    public function referenceAnalyses(): HasMany
+    {
+        return $this->hasMany(ReferenceAnalysis::class)->latest();
+    }
+
     public function isArchived(): bool
     {
         return $this->status === ReferenceProfileStatus::Archived;

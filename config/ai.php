@@ -22,7 +22,11 @@ return [
         'model' => env('GOOGLE_AI_MODEL', 'gemini-3.8-flash'),
         'base_url' => env('GOOGLE_AI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
         'auth_key' => env('GOOGLE_AI_AUTH_KEY', ''),
-        'timeout' => (int) env('GOOGLE_AI_TIMEOUT', 30),
+        // Orçamento síncrono: 10s/tentativa + connect 5s, 1 retry só p/ 429/5xx
+        // → pior caso ~20s, confortavelmente abaixo do max_execution_time (30s).
+        // Operações longas deverão migrar para Job/fila.
+        'timeout' => (int) env('GOOGLE_AI_TIMEOUT', 10),
+        'connect_timeout' => (int) env('GOOGLE_AI_CONNECT_TIMEOUT', 5),
     ],
 
 ];

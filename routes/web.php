@@ -10,6 +10,7 @@ use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReferenceAnalysisController;
 use App\Http\Controllers\ReferenceContentController;
 use App\Http\Controllers\ReferenceProfileController;
 use App\Http\Controllers\SocialAccountController;
@@ -91,6 +92,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/references/{referenceProfile}/contents', [ReferenceContentController::class, 'store'])->name('reference-contents.store');
         Route::match(['put', 'patch'], '/references/{referenceProfile}/contents/{referenceContent}', [ReferenceContentController::class, 'update'])->name('reference-contents.update');
     });
+
+    Route::post('/references/{referenceProfile}/analyses', [ReferenceAnalysisController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('references.analyses.store');
     Route::scopeBindings()->group(function () {
         Route::post('/products/{product}/affiliate-links', [AffiliateLinkController::class, 'store'])->name('affiliate-links.store');
         Route::match(['put', 'patch'], '/products/{product}/affiliate-links/{affiliateLink}', [AffiliateLinkController::class, 'update'])->name('affiliate-links.update');

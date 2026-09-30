@@ -17,6 +17,14 @@
     <x-ui.alert variant="success" class="mb-6">{{ session('status') }}</x-ui.alert>
 @endif
 
+@if (session('analysis_notice'))
+    <x-ui.alert variant="warning" class="mb-6">{{ session('analysis_notice') }}</x-ui.alert>
+@endif
+
+@if (session('analysis_error'))
+    <x-ui.alert variant="warning" class="mb-6">{{ session('analysis_error') }}</x-ui.alert>
+@endif
+
 <div class="space-y-6">
     <x-ui.card title="Perfil">
         <div class="flex flex-wrap items-center gap-2">
@@ -194,6 +202,46 @@
                 <x-ui.button variant="primary" size="sm">Adicionar conteúdo</x-ui.button>
             </form>
         </div>
+    </x-ui.card>
+
+    <x-ui.card title="Inteligência" description="Analisa os padrões registrados nos conteúdos desta referência.">
+        @if ($featuredAnalysis)
+            @include('references._analysis', ['analysis' => $featuredAnalysis])
+        @else
+            <x-ui.empty-state
+                title="Nenhuma análise por IA realizada"
+                description="As análises utilizam os padrões e observações cadastrados nos conteúdos de referência."
+            />
+        @endif
+
+        <div class="mt-5 border-t border-border pt-4">
+            @if ($aiConfigured)
+                <form method="POST" action="{{ route('references.analyses.store', $profile) }}">
+                    @csrf
+                    <x-ui.button variant="ai" type="submit">Analisar com IA</x-ui.button>
+                </form>
+            @else
+                <x-ui.button variant="ai" type="button" disabled>Analisar com IA</x-ui.button>
+                <p class="t-small mt-2">Configure a IA em Sistema → IA para executar análises.</p>
+            @endif
+        </div>
+
+        @if ($analyses->count() > 1 || ($analyses->count() === 1 && ! $featuredAnalysis?->is($analyses->first())))
+            <div class="mt-5 border-t border-border pt-4">
+                <h4 class="t-section-title">Histórico de análises</h4>
+                <ul class="mt-2 space-y-2">
+                    @foreach ($analyses as $item)
+                        <li class="flex flex-wrap items-center gap-2 text-sm">
+                            <x-ui.badge :variant="$item->status->badgeVariant()">{{ $item->status->label() }}</x-ui.badge>
+                            <span class="text-ink-secondary">{{ $item->created_at?->display() }} · {{ $item->provider ?? '—' }} / {{ $item->model ?? '—' }}</span>
+                            @if ($item->isSuccess() && ! is_null($item->confidence))
+                                <span class="text-ink-secondary">{{ number_format($item->confidence * 100, 0) }}%</span>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </x-ui.card>
 </div>
 @endsection

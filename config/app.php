@@ -69,6 +69,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Timestamps permanecem persistidos no padrão técnico (UTC). Este valor
+    | controla SOMENTE a apresentação em telas, via Carbon::display().
+    | Reutilizável por calendário, publicações, métricas e campanhas.
+    |
+    */
+
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'UTC'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

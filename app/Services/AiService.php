@@ -19,10 +19,33 @@ class AiService
 
     public function testConnection(): AiGenerationResult
     {
+        return $this->generate(
+            operation: 'connection_test',
+            instructions: 'Return a connectivity test result.',
+            input: 'Connectivity test from Publikai.',
+            schema: [
+                'type' => 'object',
+                'properties' => [
+                    'status' => ['type' => 'string'],
+                    'message' => ['type' => 'string'],
+                ],
+                'required' => ['status', 'message'],
+            ],
+        );
+    }
+
+    /**
+     * Geração genérica com logging sanitizado (Sprint 5.1).
+     * Reutilizada por todos os casos de uso (ex.: reference_analysis).
+     *
+     * @param  array<string, mixed>  $schema
+     */
+    public function generate(string $operation, string $instructions, string $input, array $schema): AiGenerationResult
+    {
         $log = AiGeneration::create([
             'provider' => config('ai.provider', 'google'),
             'model' => (string) config('ai.google.model'),
-            'operation' => 'connection_test',
+            'operation' => $operation,
             'status' => AiGenerationStatus::Pending,
         ]);
 
@@ -30,17 +53,10 @@ class AiService
 
         try {
             $result = $this->provider->generateStructured(
-                operation: 'connection_test',
-                instructions: 'Return a connectivity test result.',
-                input: 'Connectivity test from Publikai.',
-                schema: [
-                    'type' => 'object',
-                    'properties' => [
-                        'status' => ['type' => 'string'],
-                        'message' => ['type' => 'string'],
-                    ],
-                    'required' => ['status', 'message'],
-                ],
+                operation: $operation,
+                instructions: $instructions,
+                input: $input,
+                schema: $schema,
             );
         } catch (AiProviderException $e) {
             $log->update([

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ReferenceAnalysisStatus;
 use App\Http\Requests\StoreReferenceProfileRequest;
 use App\Http\Requests\UpdateReferenceProfileRequest;
 use App\Models\ReferenceProfile;
@@ -48,7 +49,15 @@ class ReferenceProfileController extends Controller
 
         $referenceProfile->load('referenceContents');
 
-        return view('references.show', ['profile' => $referenceProfile]);
+        $analyses = $referenceProfile->referenceAnalyses()->latest()->get();
+        $featured = $analyses->firstWhere('status', ReferenceAnalysisStatus::Success) ?? $analyses->first();
+
+        return view('references.show', [
+            'profile' => $referenceProfile,
+            'analyses' => $analyses,
+            'featuredAnalysis' => $featured,
+            'aiConfigured' => (bool) config('ai.google.enabled') && (string) config('ai.google.auth_key') !== '',
+        ]);
     }
 
     public function edit(ReferenceProfile $referenceProfile): View

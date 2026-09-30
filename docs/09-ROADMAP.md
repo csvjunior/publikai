@@ -47,11 +47,18 @@
   scraping, download ou embeddings. Geração assistida documentada como plano.
 - Sidebar Inteligência/Referências ativa; Blueprints segue "Em breve".
 
-## Sprint 5.0 — Fundação Gemini (concluída, teste real pendente de credencial)
+## Sprint 5.0 — Fundação Gemini (concluída; análise real em 5.1)
 
 - `AiTextProvider` + `GoogleGeminiTextProvider` (Interactions API, auth key,
   structured output), `ai_generations` sanitizado, tela admin Sistema → IA
-  com teste real de conexão. Sem análise de negócio; testes com `Http::fake`.
+  com teste real de conexão. Testes com `Http::fake`.
+
+## Sprint 5.1 — AI Reference Analysis (concluída)
+
+- `ReferenceAnalysis` (histórico imutável) via `ReferenceAnalysisService`:
+  só dados cadastrados, schema + instruções versionáveis, execução síncrona,
+  falha sanitizada, retry como nova análise, `latestSuccessful` em destaque.
+- Sem scraping, embeddings, Persona/Avatar gerados ou Blueprint.
 
 ## Validação real (pós-implementação, registrada)
 

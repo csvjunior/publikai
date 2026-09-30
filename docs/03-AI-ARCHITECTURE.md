@@ -35,11 +35,13 @@
 - Testes com `Http::fake()` (sem rede): disabled, credencial ausente, sucesso,
   401, 429 (+retry), timeout, JSON inválido, schema mismatch, logs, rotas.
 
-## Continua sem IA de negócio
+## Continua sem IA de negócio (atualizado na Sprint 5.1)
 
-- Nenhuma análise de referências, proposta de Persona/Avatar, Blueprint,
-  imagem, vídeo, TTS, embeddings ou scraping. Fluxo futuro: References →
-  AI Analysis → propostas → revisão humana → salvar (só plano).
+- Primeira análise real: `ReferenceAnalysis` (histórico imutável) via
+  `ReferenceAnalysisService` — padrões de referências, sem scraping,
+  sem Persona/Avatar gerados, sem Blueprint.
+- Fluxo futuro: propostas de Persona/Avatar a partir de análises → revisão
+  humana → salvar (só plano).
 
 ## Pendências
 
