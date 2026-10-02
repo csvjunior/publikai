@@ -44,7 +44,15 @@ class GoogleGeminiTextProviderTest extends TestCase
     {
         return array_merge([
             'id' => 'interaction-123',
-            'output_text' => '{"status":"ok","message":"conectado"}',
+            'status' => 'completed',
+            'steps' => [
+                [
+                    'type' => 'model_output',
+                    'content' => [
+                        ['type' => 'text', 'text' => '{"status":"ok","message":"conectado"}'],
+                    ],
+                ],
+            ],
             'usage' => ['input_tokens' => 12, 'output_tokens' => 8],
         ], $overrides);
     }
@@ -170,7 +178,9 @@ class GoogleGeminiTextProviderTest extends TestCase
     {
         $this->enable();
         Http::fake(['generativelanguage.googleapis.com/*' => Http::response(
-            ['id' => 'x', 'output_text' => 'não é json {'], 200
+            ['id' => 'x', 'steps' => [
+                ['type' => 'model_output', 'content' => [['type' => 'text', 'text' => 'não é json {']]],
+            ]], 200
         )]);
 
         try {
@@ -185,7 +195,9 @@ class GoogleGeminiTextProviderTest extends TestCase
     {
         $this->enable();
         Http::fake(['generativelanguage.googleapis.com/*' => Http::response(
-            ['id' => 'x', 'output_text' => '{"status":"ok"}'], 200
+            ['id' => 'x', 'steps' => [
+                ['type' => 'model_output', 'content' => [['type' => 'text', 'text' => '{"status":"ok"}']]],
+            ]], 200
         )]);
 
         try {
@@ -193,6 +205,55 @@ class GoogleGeminiTextProviderTest extends TestCase
             $this->fail('Exceção esperada.');
         } catch (AiProviderException $e) {
             $this->assertSame('schema_mismatch', $e->errorCode);
+        }
+    }
+
+    public function test_legacy_output_text_fallback(): void
+    {
+        $this->enable();
+        Http::fake(['generativelanguage.googleapis.com/*' => Http::response(
+            ['id' => 'legacy-1', 'output_text' => '{"status":"ok","message":"legado"}'], 200
+        )]);
+
+        $result = $this->provider()->generateStructured('op', 'inst', 'in', $this->schema());
+
+        $this->assertSame('legado', $result->data['message']);
+    }
+
+    public function test_texto_misturado_ignora_nao_texto(): void
+    {
+        $this->enable();
+        Http::fake(['generativelanguage.googleapis.com/*' => Http::response([
+            'id' => 'mix-1',
+            'steps' => [
+                ['type' => 'thought', 'content' => [['type' => 'text', 'text' => 'IGNORAR']]],
+                ['type' => 'model_output', 'content' => [
+                    ['type' => 'image', 'data' => 'aGk=', 'mime_type' => 'image/png'],
+                    ['type' => 'text', 'text' => '{"status":"ok","message":"misto"}'],
+                ]],
+            ],
+        ], 200)]);
+
+        $result = $this->provider()->generateStructured('op', 'inst', 'in', $this->schema());
+
+        $this->assertSame('misto', $result->data['message']);
+    }
+
+    public function test_sem_bloco_text(): void
+    {
+        $this->enable();
+        Http::fake(['generativelanguage.googleapis.com/*' => Http::response([
+            'id' => 'notext-1',
+            'steps' => [
+                ['type' => 'model_output', 'content' => [['type' => 'image', 'data' => 'aGk=']]],
+            ],
+        ], 200)]);
+
+        try {
+            $this->provider()->generateStructured('op', 'inst', 'in', $this->schema());
+            $this->fail('Exceção esperada.');
+        } catch (AiProviderException $e) {
+            $this->assertSame('invalid_response', $e->errorCode);
         }
     }
 

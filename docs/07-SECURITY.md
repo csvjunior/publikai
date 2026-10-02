@@ -1,6 +1,6 @@
 # 07 — Segurança
 
-**Estado:** atual (Sprint 0.1) · **Atualizado em:** 2026-09-29
+**Estado:** atual (Sprint 5.5.0 async) · **Atualizado em:** 2026-10-02
 
 ## Medidas aplicadas
 
@@ -26,6 +26,19 @@
 - Nenhuma chave, token ou senha no repositório (somente `REGISTRATION_CODE=`
   vazio no `.env.example`).
 - Nenhum log de segredos no código implementado.
+
+## IA e mídia (Sprints 5.x)
+
+- Auth Key só no `.env`; nunca em código, logs, telas, testes ou banco.
+  Mesma chave para texto e imagem (mesma API/família de endpoint).
+- `ai_generations` sanitizado: sem prompts completos, sem bodies, sem base64.
+- `MediaAsset`: sem base64 no banco; path relativo no Storage (sem absoluto);
+  filename UUID (sem prompt, sem input de usuário); extensão pelo MIME
+  detectado, não pelo usuário; `throttle` nas rotas de teste/generation.
+- Prompt persiste **só** em `image_generation_requests` (funcional p/ o Job);
+  nunca em logs nem em `ai_generations`. Fila `database` nativa, sem Redis.
+- Uploads de usuário ainda não existem (quando existirem: validar MIME,
+  extensão e tamanho).
 
 ## Pendências
 

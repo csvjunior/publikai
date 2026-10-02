@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AffiliateLinkController;
+use App\Http\Controllers\AiImageController;
 use App\Http\Controllers\AiSettingsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -55,6 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/ai/test', [AiSettingsController::class, 'test'])
         ->middleware('throttle:5,1')
         ->name('settings.ai.test');
+    Route::get('/settings/ai/images', [AiImageController::class, 'index'])->name('settings.ai.images');
+    Route::post('/settings/ai/images', [AiImageController::class, 'store'])
+        ->middleware('throttle:3,1')
+        ->name('settings.ai.images.store');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');

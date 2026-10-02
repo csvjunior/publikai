@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\AI\Contracts\AiImageProvider;
 use App\AI\Contracts\AiTextProvider;
+use App\AI\Providers\GoogleGeminiImageProvider;
 use App\AI\Providers\GoogleGeminiTextProvider;
 use App\Enums\UserRole;
 use App\Models\User;
@@ -21,6 +23,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AiTextProvider::class, function () {
             return match (config('ai.provider', 'google')) {
                 default => new GoogleGeminiTextProvider,
+            };
+        });
+
+        $this->app->bind(AiImageProvider::class, function () {
+            return match (config('ai.provider', 'google')) {
+                default => new GoogleGeminiImageProvider,
             };
         });
     }

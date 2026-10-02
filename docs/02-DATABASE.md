@@ -31,7 +31,9 @@
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 | `2026_09_29_000013_create_content_blueprints_table` (**nova, Sprint 5.3**) | `content_blueprints` (estruturas reutilizáveis, sem roteiro/mídia) |
 | `2026_09_29_000014_create_content_scripts_table` (**nova, Sprint 5.4**) | `content_scripts` (roteiros manuais/IA, sem mídia/publicação) |
-| `2026_09_30_000015_make_script_content_nullable` (**nova, Sprint 5.4**) | hook/body/cta nullable (roteiros falhados não têm texto; fluxos válidos exigem via validação) |
+| `2026_09_30_000015_make_script_content_nullable` (**nova, Sprint 5.4**) | hook/body/cta nullable p/ falhados |
+| `2026_09_30_000016_create_media_assets_table` (**nova, Sprint 5.5.0**) | `media_assets` genérico (image/video/audio futuros) |
+| `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
 ## Modelagem atual
@@ -80,6 +82,13 @@ em migrations novas com `up`/`down` reversíveis.
   hook/body/cta **nullable no banco** (falhados não têm texto; fluxos válidos
   exigem via validação), `generation_source` manual/ai, provider/model,
   erro sanitizado, approved_at. Sem mídia, sem publicação.
+- `media_assets` (Sprint 5.5.0): entidade genérica (`image`/`video`/`audio`
+  futuros). Arquivo no Storage (`disk`+`path`, sem absoluto, sem base64);
+  dimensões, tamanho, aspect, status, `metadata` segura. Falhas ficam só em
+  `ai_generations` — asset só existe com arquivo válido.
+- `image_generation_requests` (microcorreção async): execução com prompt
+  funcional (necessário ao Job; fora de logs e de `ai_generations`), opções,
+  provider/model, asset associado, erro sanitizado. `tries=1`, sem retry.
 - `content_blueprints`: `id, name, slug (único), description?, content_type?,
   objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
   language/market/niche?, status, source_type (manual|ai_assisted),

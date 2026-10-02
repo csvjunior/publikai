@@ -27,6 +27,18 @@ return [
         // Operações longas deverão migrar para Job/fila.
         'timeout' => (int) env('GOOGLE_AI_TIMEOUT', 10),
         'connect_timeout' => (int) env('GOOGLE_AI_CONNECT_TIMEOUT', 5),
+
+        // Imagem (Sprint 5.5.0): mesma auth key (mesma API/família de endpoint).
+        // Sem retry: 1 tentativa. Orçamento do Job (fora do request web).
+        'image' => [
+            'enabled' => (bool) env('GOOGLE_AI_IMAGE_ENABLED', false),
+            'model' => env('GOOGLE_AI_IMAGE_MODEL', 'gemini-3.1-flash-image'),
+            'timeout' => (int) env('GOOGLE_AI_IMAGE_TIMEOUT', 60),
+            'connect_timeout' => (int) env('GOOGLE_AI_IMAGE_CONNECT_TIMEOUT', 5),
+            'default_mime_type' => env('GOOGLE_AI_IMAGE_MIME_TYPE', 'image/jpeg'),
+            'default_aspect_ratio' => env('GOOGLE_AI_IMAGE_ASPECT_RATIO', '9:16'),
+            'default_size' => env('GOOGLE_AI_IMAGE_SIZE', '1K'),
+        ],
     ],
 
 ];

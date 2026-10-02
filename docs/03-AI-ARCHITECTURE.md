@@ -68,6 +68,27 @@
 - hook/body/cta nullable no banco (falhados sem texto); fluxos válidos exigem
   via validação. Sem vídeo/imagem/voz, sem Campaign/publicação.
 
+## Sprint 5.5.0 — Image Factory foundation (Nano Banana 2)
+
+- `AiImageProvider` + `GoogleGeminiImageProvider` (`gemini-3.1-flash-image`,
+  mesma auth key do texto, `response_format` image, 1K/9:16 configuráveis,
+  sem retry, timeout 20s): text-to-image → binário validado
+  (`getimagesizefromstring`, só jpeg/png) → Storage público → `MediaAsset`.
+- `ImageGenerationService` (valida opções, persiste arquivo seguro
+  `images/YYYY/MM/uuid.ext`, limpa parcial, loga `image_generation` sem
+  prompt/base64). Tela admin `/settings/ai/images` (preview + últimas 10).
+- Modelos futuros documentados: `gemini-3.1-flash-lite-image` (volume),
+  `gemini-3-pro-image` (premium). Sem fallback, sem Avatar reference, sem edição.
+
+## Microcorreção async (geração longa > request web)
+
+- Parser REST corrigido: `steps→model_output→content` (conveniências de SDK
+  não existem no REST bruto). Geração virou **assíncrona**: POST cria
+  `ImageGenerationRequest` + dispatch `GenerateImageJob` (queue `database`,
+  `tries=1`, timeout 90s, lock idempotente) e redireciona; worker executa com
+  timeout HTTP 60s. UI lista gerações (Pendente/Processando/Concluída/Falhou).
+- Produção futura: worker via systemd/Supervisor da Jaguartec (sem config aqui).
+
 ## Pendências
 
 - Confirmar mapeamento de `usage` da Interactions API no teste real

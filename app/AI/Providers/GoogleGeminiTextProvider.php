@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Http;
  * Referência: https://ai.google.dev/gemini-api/docs (docs vigentes em 09/2026).
  * - POST {base_url}/interactions, header x-goog-api-key (auth key do AI Studio).
  * - Structured output via response_format {type, mime_type, schema}.
+ * - Resposta REST: steps[] → model_output → content[type=text].text
+ *   (output_text é conveniência de SDK — suportado só como fallback).
  * - Sem SDK: Laravel HTTP Client é suficiente.
  *
  * Retry conservador: 1 repetição apenas para 429/5xx. Nunca para
@@ -116,6 +118,46 @@ class GoogleGeminiTextProvider implements AiTextProvider
     }
 
     /**
+     * Extrai o texto concatenando blocos type=text de model_output
+     * (steps[] → content[]). Fallback: output_text legado.
+     */
+    protected function extractText(mixed $json): ?string
+    {
+        if (! is_array($json)) {
+            return null;
+        }
+
+        $texts = [];
+
+        foreach ((array) ($json['steps'] ?? []) as $step) {
+            if (! is_array($step) || ($step['type'] ?? null) !== 'model_output') {
+                continue;
+            }
+
+            $content = $step['content'] ?? null;
+            $blocks = is_array($content) && array_is_list($content) ? $content : [$content];
+
+            foreach ($blocks as $block) {
+                if (is_array($block)
+                    && ($block['type'] ?? null) === 'text'
+                    && is_string($block['text'] ?? null)
+                    && trim($block['text']) !== ''
+                ) {
+                    $texts[] = $block['text'];
+                }
+            }
+        }
+
+        if ($texts !== []) {
+            return implode('', $texts);
+        }
+
+        $legacy = $json['output_text'] ?? null;
+
+        return is_string($legacy) && trim($legacy) !== '' ? $legacy : null;
+    }
+
+    /**
      * @param  array<string, mixed>  $schema
      *
      * @throws AiProviderException
@@ -126,9 +168,9 @@ class GoogleGeminiTextProvider implements AiTextProvider
             throw new AiProviderException('invalid_response', 'Resposta inválida do provider de IA.');
         }
 
-        $text = $json['output_text'] ?? null;
+        $text = $this->extractText($json);
 
-        if (! is_string($text) || trim($text) === '') {
+        if ($text === null) {
             throw new AiProviderException('invalid_response', 'Resposta inválida do provider de IA.');
         }
 

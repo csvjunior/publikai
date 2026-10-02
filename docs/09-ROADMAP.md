@@ -81,6 +81,20 @@
   aprovação humanas. CTA textual, sem links/mídia/publicação/Campaign.
 - Sidebar Creative Studio/Roteiros ativa.
 
+## Sprint 5.5.0 — Image Factory foundation (concluída, teste real pendente)
+
+- `AiImageProvider` + `GoogleGeminiImageProvider` (Nano Banana 2,
+  `gemini-3.1-flash-image`, 1K/9:16, sem retry), `MediaAsset` genérico,
+  Storage público, tela admin com preview + últimas 10. Sem Script/Avatar
+  reference, edição, vídeo ou Campaign.
+
+## Microcorreção async 5.5.0 (geração longa fora do request)
+
+- Parser REST corrigido (`steps→model_output→content`; decisão 31).
+- Geração **assíncrona**: `ImageGenerationRequest` + `GenerateImageJob`
+  (queue `database`, `tries=1`, timeout 90s, HTTP 60s, idempotente); POST
+  retorna rápido; UI mostra gerações; worker local `queue:work`.
+
 ## Validação real (pós-implementação, registrada)
 
 - Endpoint/model/auth **confirmados** (HTTP 200 com interaction id).
