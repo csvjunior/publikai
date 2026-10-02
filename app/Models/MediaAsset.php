@@ -8,6 +8,7 @@ use App\Enums\MediaAssetType;
 use Database\Factories\MediaAssetFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -58,5 +59,15 @@ class MediaAsset extends Model
         }
 
         return Storage::disk('public')->url($this->path);
+    }
+
+    /**
+     * @return BelongsToMany<ContentScript>
+     */
+    public function contentScripts(): BelongsToMany
+    {
+        return $this->belongsToMany(ContentScript::class, 'content_script_media_assets')
+            ->withPivot(['purpose', 'is_primary'])
+            ->withTimestamps();
     }
 }

@@ -80,6 +80,16 @@
 - Modelos futuros documentados: `gemini-3.1-flash-lite-image` (volume),
   `gemini-3-pro-image` (premium). Sem fallback, sem Avatar reference, sem edição.
 
+## Sprint 5.5.1 — Image Factory contextual (roteiros)
+
+- `VisualPromptBuilder` (determinístico, sem IA textual): SUBJECT/SCENE/
+  PRODUCT/VISUAL STYLE/COMPOSITION/LIGHTING/AVATAR/CONTENT PURPOSE/
+  COMMUNICATION/CONSTRAINTS ("Do not render text into the image").
+  Persona = comunicação (nunca aparência); Avatar = personagem artificial.
+- Roteiro ready/approved → prompt revisável → request com `content_script_id`
+  → Job reaproveitado vincula asset (primary transacional) → gallery no detail
+  + "Definir como principal". Sem reference image, edição, vídeo ou Campaign.
+
 ## Microcorreção async (geração longa > request web)
 
 - Parser REST corrigido: `steps→model_output→content` (conveniências de SDK

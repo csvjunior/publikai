@@ -8,6 +8,8 @@ use Database\Factories\ContentScriptFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Roteiro textual estruturado (Sprint 5.4): manual ou por IA, revisável e
@@ -102,6 +104,25 @@ class ContentScript extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * @return HasMany<ImageGenerationRequest>
+     */
+    public function imageRequests(): HasMany
+    {
+        return $this->hasMany(ImageGenerationRequest::class, 'content_script_id')->latest();
+    }
+
+    /**
+     * @return BelongsToMany<MediaAsset>
+     */
+    public function mediaAssets(): BelongsToMany
+    {
+        return $this->belongsToMany(MediaAsset::class, 'content_script_media_assets')
+            ->withPivot(['purpose', 'is_primary'])
+            ->withTimestamps()
+            ->orderByDesc('content_script_media_assets.created_at');
     }
 
     public function isReady(): bool

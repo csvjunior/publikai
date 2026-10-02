@@ -5,13 +5,16 @@ namespace App\Services;
 use App\AI\Contracts\AiImageProvider;
 use App\AI\Exceptions\AiProviderException;
 use App\Enums\AiGenerationStatus;
+use App\Enums\ContentScriptAssetPurpose;
 use App\Enums\ImageGenerationRequestStatus;
 use App\Enums\MediaAssetSource;
 use App\Enums\MediaAssetStatus;
 use App\Enums\MediaAssetType;
 use App\Models\AiGeneration;
+use App\Models\ContentScript;
 use App\Models\ImageGenerationRequest;
 use App\Models\MediaAsset;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -43,7 +46,7 @@ class ImageGenerationService
     public function __construct(protected AiImageProvider $provider) {}
 
     /**
-     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string}  $options
+     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, purpose?: ?string, is_primary?: bool}  $options
      *
      * @throws ValidationException
      */
@@ -55,6 +58,9 @@ class ImageGenerationService
             'aspect_ratio' => $options['aspect_ratio'] ?? $config['default_aspect_ratio'],
             'image_size' => $options['image_size'] ?? $config['default_size'],
             'mime_type' => $options['mime_type'] ?? $config['default_mime_type'],
+            'content_script_id' => $options['content_script_id'] ?? null,
+            'purpose' => $options['purpose'] ?? ContentScriptAssetPurpose::Scene->value,
+            'is_primary' => (bool) ($options['is_primary'] ?? false),
         ];
 
         validator(
@@ -64,6 +70,9 @@ class ImageGenerationService
                 'aspect_ratio' => ['required', 'in:'.implode(',', self::RATIOS)],
                 'image_size' => ['required', 'in:'.implode(',', self::SIZES)],
                 'mime_type' => ['required', 'in:'.implode(',', self::MIMES)],
+                'content_script_id' => ['nullable', 'integer', 'exists:content_scripts,id'],
+                'purpose' => ['required', 'in:cover,scene,product,background,other'],
+                'is_primary' => ['boolean'],
             ]
         )->validate();
 
@@ -75,6 +84,9 @@ class ImageGenerationService
             'mime_type' => $options['mime_type'],
             'provider' => config('ai.provider', 'google'),
             'model' => (string) $config['model'],
+            'content_script_id' => $options['content_script_id'],
+            'purpose' => $options['purpose'],
+            'is_primary' => $options['is_primary'],
             'created_by' => $createdBy,
         ]);
     }
@@ -129,6 +141,8 @@ class ImageGenerationService
                 'completed_at' => now(),
             ]);
 
+            $this->attachToScript($request, $asset);
+
             $log->update([
                 'status' => AiGenerationStatus::Success,
                 'duration_ms' => $result->durationMs,
@@ -158,6 +172,25 @@ class ImageGenerationService
         }
     }
 
+    /**
+     * Define o asset como principal do roteiro (transação).
+     */
+    public function markPrimary(ContentScript $script, MediaAsset $asset): void
+    {
+        abort_unless(
+            $script->mediaAssets()->whereKey($asset->id)->exists(),
+            404
+        );
+
+        DB::transaction(function () use ($script, $asset) {
+            DB::table('content_script_media_assets')
+                ->where('content_script_id', $script->id)
+                ->update(['is_primary' => false]);
+
+            $script->mediaAssets()->updateExistingPivot($asset->id, ['is_primary' => true]);
+        });
+    }
+
     protected function store(string $binary, string $mime): string
     {
         $path = 'images/'.now()->format('Y/m').'/'.Str::uuid().($mime === 'image/png' ? '.png' : '.jpg');
@@ -165,6 +198,38 @@ class ImageGenerationService
         Storage::disk('public')->put($path, $binary);
 
         return $path;
+    }
+
+    /**
+     * Vincula o asset ao roteiro (transação; primary desmarca anterior).
+     * Sem request contextual, nada a vincular.
+     */
+    protected function attachToScript(ImageGenerationRequest $request, MediaAsset $asset): void
+    {
+        if (! $request->content_script_id) {
+            return;
+        }
+
+        DB::transaction(function () use ($request, $asset) {
+            if ($request->is_primary) {
+                DB::table('content_script_media_assets')
+                    ->where('content_script_id', $request->content_script_id)
+                    ->update(['is_primary' => false]);
+            }
+
+            DB::table('content_script_media_assets')->updateOrInsert(
+                [
+                    'content_script_id' => $request->content_script_id,
+                    'media_asset_id' => $asset->id,
+                ],
+                [
+                    'purpose' => $request->purpose ?? ContentScriptAssetPurpose::Scene->value,
+                    'is_primary' => (bool) $request->is_primary,
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
+        });
     }
 
     protected function cleanupPartial(?string $path): void

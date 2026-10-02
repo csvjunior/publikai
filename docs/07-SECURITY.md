@@ -40,6 +40,12 @@
 - Uploads de usuário ainda não existem (quando existirem: validar MIME,
   extensão e tamanho).
 
+## Fábrica contextual (Sprint 5.5.1)
+
+- Prompt montado deterministicamente (sem IA textual); edição humana não toca
+  o domínio; request guarda `content_script_id`/`purpose`/`is_primary`.
+- Sem reference image, image-to-image, edição, crop ou delete físico.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

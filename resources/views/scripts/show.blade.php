@@ -158,5 +158,81 @@
             </dl>
         </x-ui.card>
     @endif
+
+    <x-ui.card title="Imagens" description="Assets visuais gerados a partir deste roteiro.">
+        @if ($script->isReady() || $script->isApproved())
+            <div class="mb-4">
+                <x-ui.button :href="route('scripts.images.create', $script)" variant="ai">Gerar imagem</x-ui.button>
+            </div>
+        @else
+            <p class="t-small mb-4">Marque o roteiro como pronto antes de gerar imagens.</p>
+        @endif
+
+        @if ($script->mediaAssets->isEmpty())
+            <x-ui.empty-state
+                title="Nenhuma imagem gerada"
+                description="Gere um asset visual a partir do roteiro, produto e identidade selecionados."
+            />
+        @else
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                @foreach ($script->mediaAssets as $asset)
+                    @php($purposeLabel = \App\Enums\ContentScriptAssetPurpose::tryFrom((string) ($asset->pivot->purpose ?? ''))?->label() ?? $asset->pivot->purpose)
+                    <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+                        <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="block">
+                            <img src="{{ $asset->url() }}" alt="Imagem do roteiro" loading="lazy" class="aspect-[9/16] w-full object-cover">
+                        </a>
+                        <div class="space-y-1 p-2.5">
+                            <div class="flex flex-wrap items-center gap-1">
+                                @if ($asset->pivot->is_primary)
+                                    <x-ui.badge variant="ai">Principal</x-ui.badge>
+                                @endif
+                                <span class="t-small font-medium">{{ $purposeLabel }}</span>
+                            </div>
+                            <p class="t-muted">{{ $asset->width }} × {{ $asset->height }}</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                                <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
+                                @if (! $asset->pivot->is_primary)
+                                    <form method="POST" action="{{ route('scripts.images.primary', [$script, $asset]) }}">
+                                        @csrf
+                                        <button type="submit" class="text-xs font-medium text-ink-secondary hover:text-ink">Definir como principal</button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @php($pending = $imageRequests->filter(fn ($r) => in_array($r->status->value, ['pending', 'processing'], true)))
+        @if ($pending->isNotEmpty())
+            <div class="mt-5">
+                <h4 class="t-section-title">Gerações em andamento</h4>
+                <ul class="mt-2 space-y-1.5">
+                    @foreach ($pending as $item)
+                        <li class="flex flex-wrap items-center gap-2 text-sm">
+                            <x-ui.badge :variant="$item->status->value === 'processing' ? 'info' : 'neutral'">{{ $item->status->value === 'processing' ? 'Processando' : 'Pendente' }}</x-ui.badge>
+                            <span class="t-small">{{ $item->created_at?->display() }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @php($failed = $imageRequests->filter(fn ($r) => $r->status->value === 'failed')->take(3))
+        @if ($failed->isNotEmpty())
+            <div class="mt-5">
+                <h4 class="t-section-title">Falhas recentes</h4>
+                <ul class="t-small mt-2 space-y-1.5">
+                    @foreach ($failed as $item)
+                        <li>
+                            <span class="text-ink-muted">{{ $item->created_at?->display() }}</span>
+                            <span>{{ match ($item->error_code) { 'timeout' => 'A geração excedeu o tempo esperado.', 'rate_limited' => 'O limite temporário do serviço foi atingido.', 'service_unavailable' => 'O serviço está temporariamente indisponível.', 'invalid_image' => 'O provider não retornou uma imagem válida.', default => 'Não foi possível gerar a imagem.' } }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </x-ui.card>
 </div>
 @endsection

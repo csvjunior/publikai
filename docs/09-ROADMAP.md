@@ -88,6 +88,13 @@
   Storage público, tela admin com preview + últimas 10. Sem Script/Avatar
   reference, edição, vídeo ou Campaign.
 
+## Sprint 5.5.1 — Image Factory contextual (concluída)
+
+- Roteiro ready/approved → `VisualPromptBuilder` → prompt revisável →
+  request com contexto → Job reaproveitado vincula asset (primary
+  transacional) → gallery + "Definir como principal" no detalhe.
+- Sem reference image, edição, vídeo, Campaign ou Media Library completa.
+
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 
 - Parser REST corrigido (`steps→model_output→content`; decisão 31).

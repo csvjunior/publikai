@@ -34,6 +34,8 @@
 | `2026_09_30_000015_make_script_content_nullable` (**nova, Sprint 5.4**) | hook/body/cta nullable p/ falhados |
 | `2026_09_30_000016_create_media_assets_table` (**nova, Sprint 5.5.0**) | `media_assets` genérico (image/video/audio futuros) |
 | `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
+| `2026_10_02_000018_create_script_media_links` (**nova, Sprint 5.5.1**) | pivot `content_script_media_assets` + contexto em `image_generation_requests` |
+| `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
 ## Modelagem atual
@@ -86,6 +88,9 @@ em migrations novas com `up`/`down` reversíveis.
   futuros). Arquivo no Storage (`disk`+`path`, sem absoluto, sem base64);
   dimensões, tamanho, aspect, status, `metadata` segura. Falhas ficam só em
   `ai_generations` — asset só existe com arquivo válido.
+- `content_script_media_assets` (Sprint 5.5.1): pivot roteiro↔asset
+  (`purpose`, `is_primary`, unique do par); 1 primary por roteiro (transação).
+  Requests guardam `content_script_id`/`purpose`/`is_primary` p/ o Job.
 - `image_generation_requests` (microcorreção async): execução com prompt
   funcional (necessário ao Job; fora de logs e de `ai_generations`), opções,
   provider/model, asset associado, erro sanitizado. `tries=1`, sem retry.

@@ -81,9 +81,12 @@ class ContentScriptController extends Controller
     {
         $this->authorize('view', $contentScript);
 
-        $contentScript->load(['product', 'blueprint', 'persona', 'avatar']);
+        $contentScript->load(['product', 'blueprint', 'persona', 'avatar', 'mediaAssets']);
 
-        return view('scripts.show', ['script' => $contentScript]);
+        return view('scripts.show', [
+            'script' => $contentScript,
+            'imageRequests' => $contentScript->imageRequests()->limit(10)->get(),
+        ]);
     }
 
     public function edit(ContentScript $contentScript): View

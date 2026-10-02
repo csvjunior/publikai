@@ -26,6 +26,9 @@ class ImageGenerationRequest extends Model
         'mime_type',
         'provider',
         'model',
+        'content_script_id',
+        'purpose',
+        'is_primary',
         'media_asset_id',
         'error_code',
         'error_message',
@@ -41,6 +44,7 @@ class ImageGenerationRequest extends Model
     {
         return [
             'status' => ImageGenerationRequestStatus::class,
+            'is_primary' => 'boolean',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',
         ];

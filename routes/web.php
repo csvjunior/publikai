@@ -17,6 +17,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReferenceAnalysisController;
 use App\Http\Controllers\ReferenceContentController;
 use App\Http\Controllers\ReferenceProfileController;
+use App\Http\Controllers\ScriptImageController;
 use App\Http\Controllers\SocialAccountController;
 use Illuminate\Support\Facades\Route;
 
@@ -107,6 +108,18 @@ Route::middleware('auth')->group(function () {
     Route::match(['put', 'patch'], '/scripts/{contentScript}', [ContentScriptController::class, 'update'])->name('scripts.update');
     Route::post('/scripts/{contentScript}/ready', [ContentScriptController::class, 'ready'])->name('scripts.ready');
     Route::post('/scripts/{contentScript}/approve', [ContentScriptController::class, 'approve'])->name('scripts.approve');
+
+    Route::scopeBindings()->group(function () {
+        Route::get('/scripts/{contentScript}/images/create', [ScriptImageController::class, 'create'])->name('scripts.images.create');
+        Route::post('/scripts/{contentScript}/images', [ScriptImageController::class, 'store'])->name('scripts.images.store');
+        Route::post('/scripts/{contentScript}/images/{mediaAsset}/primary', [ScriptImageController::class, 'markPrimary'])->name('scripts.images.primary');
+    });
+
+    Route::scopeBindings()->group(function () {
+        Route::get('/scripts/{contentScript}/images/create', [ScriptImageController::class, 'create'])->name('scripts.images.create');
+        Route::post('/scripts/{contentScript}/images', [ScriptImageController::class, 'store'])->name('scripts.images.store');
+        Route::post('/scripts/{contentScript}/images/{mediaAsset}/primary', [ScriptImageController::class, 'markPrimary'])->name('scripts.images.primary');
+    });
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');
     Route::get('/references/create', [ReferenceProfileController::class, 'create'])->name('references.create');
