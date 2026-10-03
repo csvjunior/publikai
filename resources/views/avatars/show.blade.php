@@ -89,5 +89,38 @@
             </div>
         </dl>
     </x-ui.card>
+
+    <x-ui.card title="Imagem de referência" description="Auxílio de consistência visual do personagem artificial.">
+        @if ($avatar->referenceImage)
+            <div class="flex flex-col gap-4 sm:flex-row">
+                <a href="{{ $avatar->referenceImage->url() }}" target="_blank" rel="noopener" class="block w-full max-w-44 shrink-0">
+                    <img src="{{ $avatar->referenceImage->url() }}" alt="Referência do avatar" loading="lazy" class="aspect-[3/4] w-full rounded-lg object-cover">
+                </a>
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-1">
+                        <x-ui.badge variant="ai">Ativa</x-ui.badge>
+                    </div>
+                    <p class="t-muted mt-1">{{ $avatar->referenceImage->width }} × {{ $avatar->referenceImage->height }} · {{ $avatar->referenceImage->mime_type }}@if (\App\Support\FileSize::format($avatar->referenceImage->size_bytes)) · {{ \App\Support\FileSize::format($avatar->referenceImage->size_bytes) }}@endif</p>
+                    <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <a href="{{ $avatar->referenceImage->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
+                        <a href="{{ route('avatars.reference.create', $avatar) }}" class="text-xs font-medium text-ink-secondary hover:text-ink">Substituir</a>
+                        <form method="POST" action="{{ route('avatars.reference.destroy', $avatar) }}" onsubmit="return confirm('Remover a imagem de referência?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-xs font-medium text-danger hover:opacity-80">Remover referência</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @else
+            <x-ui.empty-state
+                title="Nenhuma imagem de referência"
+                description="Adicione uma imagem aprovada para ajudar a manter a aparência deste Avatar consistente entre gerações."
+            />
+            <div class="mt-4">
+                <x-ui.button :href="route('avatars.reference.create', $avatar)" variant="outline">Adicionar referência</x-ui.button>
+            </div>
+        @endif
+    </x-ui.card>
 </div>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\AI\Providers;
 
+use App\AI\AiImageReference;
 use App\AI\Contracts\AiImageProvider;
 use App\AI\Exceptions\AiCredentialsMissingException;
 use App\AI\Exceptions\AiProviderDisabledException;
@@ -12,22 +13,27 @@ use Illuminate\Support\Facades\Http;
 
 /**
  * Provider Google de imagem via Interactions API REST (Sprint 5.5.0,
- * Nano Banana 2 — gemini-3.1-flash-image).
+ * Nano Banana 2 — gemini-3.1-flash-image; referência Sprint 5.5.2).
  *
- * Referência: https://ai.google.dev/gemini-api/docs/image-generation
+ * Referências oficiais:
+ * - https://ai.google.dev/gemini-api/docs/image-generation (text-to-image e
+ *   text-and-image-to-image: input como blocos [{type:text},
+ *   {type:image, mime_type, data(base64)}]; gemini-3.1-flash-image aceita até
+ *   4 imagens de personagem para consistência).
  * - POST {base}/interactions, header x-goog-api-key (mesma auth key do texto).
  * - response_format {type: "image", mime_type?, aspect_ratio?, image_size?}.
  * - Resposta REST: steps[] → model_output → content[type=image] {data, mime_type}.
  *   (output_image é conveniência de SDK — suportado só como fallback.)
  *
  * Sem retry: 1 tentativa, sempre abaixo do teto PHP. Sem SDK.
+ * base64 da referência existe só no payload HTTP em memória.
  */
 class GoogleGeminiImageProvider implements AiImageProvider
 {
     /**
      * @param  array{aspect_ratio?: string, image_size?: string, mime_type?: string}  $options
      */
-    public function generate(string $prompt, array $options = []): AiImageGenerationResult
+    public function generate(string $prompt, array $options = [], ?AiImageReference $reference = null): AiImageGenerationResult
     {
         $config = config('ai.google.image');
         $authKey = (string) config('ai.google.auth_key', '');
@@ -49,7 +55,7 @@ class GoogleGeminiImageProvider implements AiImageProvider
                 ->timeout((int) $config['timeout'])
                 ->post(rtrim((string) config('ai.google.base_url'), '/').'/interactions', [
                     'model' => $model,
-                    'input' => $prompt,
+                    'input' => $this->input($prompt, $reference),
                     'response_format' => [
                         'type' => 'image',
                         'mime_type' => $options['mime_type'] ?? $config['default_mime_type'],
@@ -74,6 +80,28 @@ class GoogleGeminiImageProvider implements AiImageProvider
         }
 
         return $this->parseSuccess($response->json(), $model, $started);
+    }
+
+    /**
+     * Sem referência: string simples (payload 5.5.0 inalterado). Com
+     * referência: blocos text+image no formato oficial da documentação.
+     *
+     * @return string|array<int, array<string, string>>
+     */
+    protected function input(string $prompt, ?AiImageReference $reference): string|array
+    {
+        if ($reference === null) {
+            return $prompt;
+        }
+
+        return [
+            ['type' => 'text', 'text' => $prompt],
+            [
+                'type' => 'image',
+                'mime_type' => $reference->mimeType,
+                'data' => base64_encode($reference->binary),
+            ],
+        ];
     }
 
     /**

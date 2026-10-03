@@ -46,6 +46,15 @@
   o domínio; request guarda `content_script_id`/`purpose`/`is_primary`.
 - Sem reference image, image-to-image, edição, crop ou delete físico.
 
+## Referência do Avatar (Sprint 5.5.2)
+
+- Upload validado (MIME real + imagem decodificável + dimensões; JPEG/PNG,
+  ≤10 MB, ≥512×512); filename UUID, path relativo, sem nome original.
+- base64 da referência existe **só** no payload HTTP em memória; nunca em
+  banco, logs ou `ai_generations` (só `reference_used` + id sanitizados).
+- Sem identificação/biometria/inferência de atributos sensíveis; personagem
+  artificial, sem garantia de consistência de identidade.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

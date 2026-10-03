@@ -32,6 +32,9 @@
   estruturado; vídeo/imagem/voz e publicação seguem futuros).
 - Sprint 5.5.1 integrou **roteiros à Image Factory** (prompt montado do contexto,
   gallery e primary no detalhe; referência de imagem e edição seguem futuras).
+- Sprint 5.5.2 adicionou **imagem de referência do Avatar** (upload aprovado,
+  um ativo por Avatar; geração contextual usa snapshot da referência quando
+  existe, fallback textual caso contrário).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

@@ -24,7 +24,7 @@ class ScriptImageController extends Controller
         $this->authorize('update', $contentScript);
         $this->ensureEligible($contentScript);
 
-        $contentScript->load(['product', 'blueprint', 'persona', 'avatar']);
+        $contentScript->load(['product', 'blueprint', 'persona', 'avatar.referenceImage']);
 
         return view('scripts.images.create', [
             'script' => $contentScript,
@@ -58,6 +58,7 @@ class ScriptImageController extends Controller
                 'image_size' => $request->input('image_size'),
                 'mime_type' => $request->input('mime_type'),
                 'content_script_id' => $contentScript->id,
+                'reference_media_asset_id' => $contentScript->avatar?->reference_media_asset_id,
                 'purpose' => $request->input('purpose', 'scene'),
                 'is_primary' => $request->boolean('is_primary'),
             ],

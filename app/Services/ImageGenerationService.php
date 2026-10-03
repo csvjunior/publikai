@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\AI\AiImageReference;
 use App\AI\Contracts\AiImageProvider;
 use App\AI\Exceptions\AiProviderException;
 use App\Enums\AiGenerationStatus;
@@ -46,7 +47,7 @@ class ImageGenerationService
     public function __construct(protected AiImageProvider $provider) {}
 
     /**
-     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, purpose?: ?string, is_primary?: bool}  $options
+     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, reference_media_asset_id?: ?int, purpose?: ?string, is_primary?: bool}  $options
      *
      * @throws ValidationException
      */
@@ -59,6 +60,7 @@ class ImageGenerationService
             'image_size' => $options['image_size'] ?? $config['default_size'],
             'mime_type' => $options['mime_type'] ?? $config['default_mime_type'],
             'content_script_id' => $options['content_script_id'] ?? null,
+            'reference_media_asset_id' => $options['reference_media_asset_id'] ?? null,
             'purpose' => $options['purpose'] ?? ContentScriptAssetPurpose::Scene->value,
             'is_primary' => (bool) ($options['is_primary'] ?? false),
         ];
@@ -71,6 +73,7 @@ class ImageGenerationService
                 'image_size' => ['required', 'in:'.implode(',', self::SIZES)],
                 'mime_type' => ['required', 'in:'.implode(',', self::MIMES)],
                 'content_script_id' => ['nullable', 'integer', 'exists:content_scripts,id'],
+                'reference_media_asset_id' => ['nullable', 'integer', 'exists:media_assets,id'],
                 'purpose' => ['required', 'in:cover,scene,product,background,other'],
                 'is_primary' => ['boolean'],
             ]
@@ -85,6 +88,7 @@ class ImageGenerationService
             'provider' => config('ai.provider', 'google'),
             'model' => (string) $config['model'],
             'content_script_id' => $options['content_script_id'],
+            'reference_media_asset_id' => $options['reference_media_asset_id'],
             'purpose' => $options['purpose'],
             'is_primary' => $options['is_primary'],
             'created_by' => $createdBy,
@@ -106,11 +110,13 @@ class ImageGenerationService
         $path = null;
 
         try {
+            $reference = $this->resolveReference($request);
+
             $result = $this->provider->generate($request->prompt, [
                 'aspect_ratio' => $request->aspect_ratio,
                 'image_size' => $request->image_size,
                 'mime_type' => $request->mime_type,
-            ]);
+            ], $reference);
 
             $path = $this->store($result->imageData, $result->mimeType);
 
@@ -151,6 +157,8 @@ class ImageGenerationService
                     'mime_type' => $result->mimeType,
                     'aspect_ratio' => $request->aspect_ratio,
                     'image_size' => $request->image_size,
+                    'reference_used' => $request->reference_media_asset_id !== null,
+                    'reference_media_asset_id' => $request->reference_media_asset_id,
                 ],
             ]);
         } catch (AiProviderException $e) {
@@ -189,6 +197,48 @@ class ImageGenerationService
 
             $script->mediaAssets()->updateExistingPivot($asset->id, ['is_primary' => true]);
         });
+    }
+
+    /**
+     * Resolve a referência do snapshot do request (Sprint 5.5.2).
+     * Sem snapshot: fluxo textual atual. Arquivo ausente → reference_missing;
+     * binário inválido → reference_invalid (sem provider call, sem custo).
+     *
+     * @throws AiProviderException
+     */
+    protected function resolveReference(ImageGenerationRequest $request): ?AiImageReference
+    {
+        if ($request->reference_media_asset_id === null) {
+            return null;
+        }
+
+        $asset = MediaAsset::find($request->reference_media_asset_id);
+
+        if (! $asset || ! Storage::disk($asset->disk)->exists($asset->path)) {
+            throw new AiProviderException(
+                'reference_missing',
+                'A imagem de referência não está mais disponível.'
+            );
+        }
+
+        $binary = Storage::disk($asset->disk)->get($asset->path);
+        $info = is_string($binary) ? @getimagesizefromstring($binary) : false;
+
+        if ($binary === false || $info === false
+            || ! in_array($info['mime'] ?? null, ['image/jpeg', 'image/png'], true)
+        ) {
+            throw new AiProviderException(
+                'reference_invalid',
+                'A imagem de referência não é mais válida.'
+            );
+        }
+
+        return new AiImageReference(
+            binary: $binary,
+            mimeType: $info['mime'],
+            width: $info[0] ?: null,
+            height: $info[1] ?: null,
+        );
     }
 
     protected function store(string $binary, string $mime): string

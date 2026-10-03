@@ -77,6 +77,9 @@ class VisualPromptBuilder
                 'No visible platform UI, no watermarks, no logos unless explicitly provided.',
                 'Do not render text into the image.',
                 'Preserve the requested aspect ratio.',
+                ...($avatar->reference_media_asset_id !== null
+                    ? ['Use the provided reference image to preserve the Avatar\'s visual identity and overall appearance.']
+                    : []),
             ],
         ];
 

@@ -27,6 +27,7 @@ class ImageGenerationRequest extends Model
         'provider',
         'model',
         'content_script_id',
+        'reference_media_asset_id',
         'purpose',
         'is_primary',
         'media_asset_id',
@@ -56,6 +57,17 @@ class ImageGenerationRequest extends Model
     public function mediaAsset(): BelongsTo
     {
         return $this->belongsTo(MediaAsset::class);
+    }
+
+    /**
+     * Snapshot da referência usada nesta geração (Sprint 5.5.2): copiado do
+     * Avatar no create; trocar a referência depois não altera o request.
+     *
+     * @return BelongsTo<MediaAsset, $this>
+     */
+    public function referenceImage(): BelongsTo
+    {
+        return $this->belongsTo(MediaAsset::class, 'reference_media_asset_id');
     }
 
     public function isTerminal(): bool

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\AvatarReferenceController;
 use App\Http\Controllers\ContentBlueprintController;
 use App\Http\Controllers\ContentScriptController;
 use App\Http\Controllers\DashboardController;
@@ -89,6 +90,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/avatars/{avatar}', [AvatarController::class, 'show'])->name('avatars.show');
     Route::get('/avatars/{avatar}/edit', [AvatarController::class, 'edit'])->name('avatars.edit');
     Route::match(['put', 'patch'], '/avatars/{avatar}', [AvatarController::class, 'update'])->name('avatars.update');
+
+    Route::get('/avatars/{avatar}/reference', [AvatarReferenceController::class, 'create'])->name('avatars.reference.create');
+    Route::post('/avatars/{avatar}/reference', [AvatarReferenceController::class, 'store'])->name('avatars.reference.store');
+    Route::delete('/avatars/{avatar}/reference', [AvatarReferenceController::class, 'destroy'])->name('avatars.reference.destroy');
 
     Route::get('/blueprints', [ContentBlueprintController::class, 'index'])->name('blueprints.index');
     Route::get('/blueprints/create', [ContentBlueprintController::class, 'create'])->name('blueprints.create');

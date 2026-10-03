@@ -40,7 +40,25 @@
                 <dt class="t-small font-medium uppercase tracking-wide">Avatar</dt>
                 <dd class="t-body mt-0.5">{{ $script->avatar->name ?? '—' }}</dd>
             </div>
+            <div>
+                <dt class="t-small font-medium uppercase tracking-wide">Imagem de referência</dt>
+                <dd class="t-body mt-0.5">
+                    @if ($script->avatar?->referenceImage)
+                        <span class="inline-flex items-center gap-2">
+                            <img src="{{ $script->avatar->referenceImage->url() }}" alt="Referência do avatar" class="h-10 w-8 rounded object-cover">
+                            Sim
+                        </span>
+                    @else
+                        Não
+                    @endif
+                </dd>
+            </div>
         </dl>
+        @if ($script->avatar?->referenceImage)
+            <p class="t-small mt-3">Imagem de referência será usada para ajudar na consistência visual.</p>
+        @else
+            <p class="t-small mt-3">Este Avatar ainda não possui imagem de referência; a geração usará apenas o Visual DNA.</p>
+        @endif
     </x-ui.card>
 
     <x-ui.card title="Prompt visual" description="Montado automaticamente. Revise e edite antes de gerar — a edição não altera o roteiro.">

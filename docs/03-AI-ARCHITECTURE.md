@@ -90,6 +90,19 @@
   → Job reaproveitado vincula asset (primary transacional) → gallery no detail
   + "Definir como principal". Sem reference image, edição, vídeo ou Campaign.
 
+## Sprint 5.5.2 — Avatar reference image foundation
+
+- `Avatar.reference_media_asset_id` (um ativo por Avatar, `MediaAsset`
+  `uploaded` em `avatars/references/`): upload manual aprovado (JPEG/PNG,
+  ≤10 MB, ≥512×512), preview, substituição e remoção com limpeza exclusiva
+  segura. Personagem artificial — sem identificação, biometria ou inferência
+  de atributos sensíveis; "visual consistency aid", sem garantia de identidade.
+- Geração contextual usa a referência quando existe: snapshot no request →
+  Job monta `AiImageReference` (binário só em memória) → provider envia
+  `input` text+image no formato oficial; sem referência, payload textual
+  inalterado. Falhas `reference_missing`/`reference_invalid` sem provider call.
+  Sem edição, vídeo, product/reference image.
+
 ## Microcorreção async (geração longa > request web)
 
 - Parser REST corrigido: `steps→model_output→content` (conveniências de SDK
