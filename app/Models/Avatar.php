@@ -6,14 +6,14 @@ use App\Enums\AvatarStatus;
 use Database\Factories\AvatarFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Avatar: identidade visual reutilizável (Sprint 3).
  * Características físicas, vestuário, cenário, voz futura — tudo entrada
  * manual da equipe, sem inferência ou geração.
- * Imagem de referência ativa opcional (Sprint 5.5.2): um MediaAsset
- * `uploaded` tratado só como auxílio de consistência visual do personagem
+ * Referências visuais aprovadas (Sprints 5.5.2/5.5.3): MediaAssets
+ * `uploaded` tratados só como auxílio de consistência visual do personagem
  * artificial — nunca identidade verificada de pessoa real.
  */
 class Avatar extends Model
@@ -38,7 +38,6 @@ class Avatar extends Model
         'market',
         'reference_notes',
         'status',
-        'reference_media_asset_id',
         'notes',
     ];
 
@@ -58,15 +57,25 @@ class Avatar extends Model
     }
 
     /**
-     * @return BelongsTo<MediaAsset, $this>
+     * Referências visuais aprovadas (Sprint 5.5.3), ordenação estável.
+     *
+     * @return BelongsToMany<MediaAsset, $this>
      */
-    public function referenceImage(): BelongsTo
+    public function referenceImages(): BelongsToMany
     {
-        return $this->belongsTo(MediaAsset::class, 'reference_media_asset_id');
+        return $this->belongsToMany(MediaAsset::class, 'avatar_reference_media_assets')
+            ->withPivot(['is_primary', 'position'])
+            ->withTimestamps()
+            ->orderByPivot('position');
     }
 
-    public function hasReferenceImage(): bool
+    public function primaryReferenceImage(): ?MediaAsset
     {
-        return $this->reference_media_asset_id !== null;
+        return $this->referenceImages()->wherePivot('is_primary', true)->first();
+    }
+
+    public function referencesCount(): int
+    {
+        return $this->referenceImages()->count();
     }
 }

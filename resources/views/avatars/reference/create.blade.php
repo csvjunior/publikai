@@ -4,9 +4,9 @@
 @section('header', 'Avatares')
 @section('content')
 <x-ui.page-header
-    :title="($avatar->reference_media_asset_id ? 'Substituir referência: ' : 'Adicionar referência: ').$avatar->name"
+    :title="'Adicionar referência: '.$avatar->name"
     description="Imagem aprovada para ajudar na consistência visual do personagem artificial."
-    :breadcrumbs="[['label' => 'Avatares', 'url' => route('avatars.index')], ['label' => $avatar->name, 'url' => route('avatars.show', $avatar)], ['label' => 'Referência']]"
+    :breadcrumbs="[['label' => 'Avatares', 'url' => route('avatars.index')], ['label' => $avatar->name, 'url' => route('avatars.show', $avatar)], ['label' => 'Adicionar referência']]"
 />
 
 <div class="space-y-6">
@@ -24,16 +24,17 @@
                 <dt class="t-small font-medium uppercase tracking-wide">Visual DNA</dt>
                 <dd class="t-body mt-0.5">{{ trim(implode(' · ', array_filter([$avatar->hair, $avatar->eyes, $avatar->skin, $avatar->default_clothing]))) ?: '—' }}</dd>
             </div>
-        </dl>
-        @if ($avatar->referenceImage)
-            <div class="mt-4 flex items-center gap-3">
-                <img src="{{ $avatar->referenceImage->url() }}" alt="Referência atual" class="h-20 w-16 rounded-lg object-cover">
-                <p class="t-small">Referência atual será substituída ao salvar.</p>
+            <div>
+                <dt class="t-small font-medium uppercase tracking-wide">Referências</dt>
+                <dd class="t-body mt-0.5">{{ $avatar->referenceImages->count() }} de {{ $maxReferences }}</dd>
             </div>
-        @endif
+        </dl>
     </x-ui.card>
 
     <x-ui.card title="Imagem" description="JPEG ou PNG, até 10 MB, mínimo 512×512.">
+        @if ($atLimit)
+            <p class="t-small">Limite de referências atingido.</p>
+        @else
         <form method="POST" action="{{ route('avatars.reference.store', $avatar) }}" enctype="multipart/form-data" data-once novalidate>
             @csrf
             <div class="space-y-4">
@@ -57,10 +58,11 @@
                     <img id="reference-preview-img" src="#" alt="Pré-visualização" class="h-40 w-32 rounded-lg object-cover">
                 </div>
                 <div>
-                    <x-ui.button variant="ai" type="submit">Salvar referência</x-ui.button>
+                    <x-ui.button variant="ai" type="submit">Adicionar referência</x-ui.button>
                 </div>
             </div>
         </form>
+        @endif
     </x-ui.card>
 </div>
 

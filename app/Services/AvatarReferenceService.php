@@ -11,14 +11,16 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 /**
- * Imagem de referência do Avatar (Sprint 5.5.2).
- * Upload manual → MediaAsset `uploaded` → vínculo ativo único no Avatar.
- * A imagem é só auxílio de consistência visual do personagem artificial:
- * sem identificação, biometria ou inferência de atributos sensíveis.
- * Asset anterior exclusivamente-referência é removido com segurança;
- * compartilhado com outro vínculo nunca é apagado automaticamente.
+ * Referências visuais do Avatar (Sprints 5.5.2/5.5.3).
+ * Upload manual → MediaAssets `uploaded` → pivot com primary única e
+ * position estável. As imagens são só auxílio de consistência visual do
+ * personagem artificial: sem identificação, biometria ou inferência de
+ * atributos sensíveis. Asset exclusivamente-referência é removido com
+ * segurança; compartilhado com outro vínculo nunca é apagado
+ * automaticamente.
  */
 class AvatarReferenceService
 {
@@ -27,42 +29,84 @@ class AvatarReferenceService
      */
     private const ALLOWED_MIMES = ['image/jpeg', 'image/png'];
 
-    /**
-     * Anexa (ou substitui) a referência ativa do Avatar.
-     */
-    public function attach(Avatar $avatar, UploadedFile $file, ?int $userId = null): MediaAsset
+    public function maxReferences(): int
     {
-        $previousId = $avatar->reference_media_asset_id;
-
-        $asset = DB::transaction(function () use ($avatar, $file, $userId) {
-            $asset = $this->store($file, $userId);
-
-            $avatar->update(['reference_media_asset_id' => $asset->id]);
-
-            return $asset;
-        });
-
-        if ($previousId && $previousId !== $asset->id) {
-            $this->deleteIfExclusive($previousId);
-        }
-
-        return $asset;
+        return max(1, (int) config('ai.google.image.max_references', 4));
     }
 
     /**
-     * Remove a referência ativa, preservando o Avatar.
+     * Adiciona uma referência (primeira vira primary automaticamente).
+     *
+     * @throws ValidationException
      */
-    public function detach(Avatar $avatar): void
+    public function attach(Avatar $avatar, UploadedFile $file, ?int $userId = null): MediaAsset
     {
-        $previousId = $avatar->reference_media_asset_id;
-
-        if (! $previousId) {
-            return;
+        if ($avatar->referenceImages()->count() >= $this->maxReferences()) {
+            throw ValidationException::withMessages([
+                'image' => 'Limite de referências atingido.',
+            ]);
         }
 
-        $avatar->update(['reference_media_asset_id' => null]);
+        return DB::transaction(function () use ($avatar, $file, $userId) {
+            $asset = $this->store($file, $userId);
 
-        $this->deleteIfExclusive($previousId);
+            $isFirst = ! $avatar->referenceImages()->exists();
+            $position = ((int) $avatar->referenceImages()->max('avatar_reference_media_assets.position')) + 1;
+
+            $avatar->referenceImages()->attach($asset->id, [
+                'is_primary' => $isFirst,
+                'position' => $position,
+            ]);
+
+            return $asset;
+        });
+    }
+
+    /**
+     * Remove uma referência do Avatar, preservando o Avatar.
+     * Se era primary e restam outras, promove a primeira por position.
+     */
+    public function remove(Avatar $avatar, MediaAsset $asset): void
+    {
+        abort_unless(
+            $avatar->referenceImages()->whereKey($asset->id)->exists(),
+            404
+        );
+
+        $wasPrimary = (bool) $avatar->referenceImages()->whereKey($asset->id)->first()?->pivot->is_primary;
+
+        DB::transaction(function () use ($avatar, $asset, $wasPrimary) {
+            $avatar->referenceImages()->detach($asset->id);
+
+            if ($wasPrimary) {
+                $next = $avatar->referenceImages()->first();
+
+                if ($next) {
+                    $avatar->referenceImages()->updateExistingPivot($next->id, ['is_primary' => true]);
+                }
+            }
+        });
+
+        $this->deleteIfExclusive($asset->id);
+    }
+
+    /**
+     * Define a primary do Avatar (transação; anterior desmarcada).
+     */
+    public function markPrimary(Avatar $avatar, MediaAsset $asset): void
+    {
+        abort_unless(
+            $avatar->referenceImages()->whereKey($asset->id)->exists(),
+            404
+        );
+
+        DB::transaction(function () use ($avatar, $asset) {
+            DB::table('avatar_reference_media_assets')
+                ->where('avatar_id', $avatar->id)
+                ->update(['is_primary' => false]);
+
+            $avatar->referenceImages()->updateExistingPivot($asset->id, ['is_primary' => true]);
+        });
     }
 
     /**
@@ -105,14 +149,18 @@ class AvatarReferenceService
 
     /**
      * Apaga arquivo + linha só quando nenhum outro vínculo usa o asset:
-     * outro Avatar, snapshot de request ou saída/vínculo de roteiro.
+     * outro Avatar, snapshot de request, saída ou vínculo de roteiro.
      */
     protected function deleteIfExclusive(int $mediaAssetId): void
     {
-        $shared = Avatar::where('reference_media_asset_id', $mediaAssetId)->exists()
+        $shared = DB::table('avatar_reference_media_assets')
+            ->where('media_asset_id', $mediaAssetId)
+            ->exists()
+            || DB::table('image_generation_request_references')
+                ->where('media_asset_id', $mediaAssetId)
+                ->exists()
             || DB::table('image_generation_requests')
-                ->where('reference_media_asset_id', $mediaAssetId)
-                ->orWhere('media_asset_id', $mediaAssetId)
+                ->where('media_asset_id', $mediaAssetId)
                 ->exists()
             || DB::table('content_script_media_assets')
                 ->where('media_asset_id', $mediaAssetId)

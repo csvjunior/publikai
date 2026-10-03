@@ -7,6 +7,7 @@ use App\Http\Requests\ScriptImageGenerationRequest;
 use App\Jobs\GenerateImageJob;
 use App\Models\ContentScript;
 use App\Models\MediaAsset;
+use App\Services\AvatarReferenceService;
 use App\Services\ImageGenerationService;
 use App\Services\VisualPromptBuilder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -20,11 +21,14 @@ class ScriptImageController extends Controller
     public function create(
         ContentScript $contentScript,
         VisualPromptBuilder $builder,
+        AvatarReferenceService $referenceService,
     ): View {
         $this->authorize('update', $contentScript);
         $this->ensureEligible($contentScript);
 
-        $contentScript->load(['product', 'blueprint', 'persona', 'avatar.referenceImage']);
+        $contentScript->load(['product', 'blueprint', 'persona', 'avatar.referenceImages']);
+
+        $references = $contentScript->avatar?->referenceImages ?? collect();
 
         return view('scripts.images.create', [
             'script' => $contentScript,
@@ -34,8 +38,11 @@ class ScriptImageController extends Controller
                 $contentScript->blueprint,
                 $contentScript->persona,
                 $contentScript->avatar,
+                $references->count(),
             )),
             'aiConfigured' => $this->aiConfigured(),
+            'references' => $references,
+            'maxReferences' => $referenceService->maxReferences(),
         ]);
     }
 
@@ -58,7 +65,7 @@ class ScriptImageController extends Controller
                 'image_size' => $request->input('image_size'),
                 'mime_type' => $request->input('mime_type'),
                 'content_script_id' => $contentScript->id,
-                'reference_media_asset_id' => $contentScript->avatar?->reference_media_asset_id,
+                'reference_media_asset_ids' => $this->resolveReferenceIds($request, $contentScript),
                 'purpose' => $request->input('purpose', 'scene'),
                 'is_primary' => $request->boolean('is_primary'),
             ],
@@ -71,6 +78,41 @@ class ScriptImageController extends Controller
             'status',
             'Geração de imagem iniciada. Atualize a página para acompanhar.'
         );
+    }
+
+    /**
+     * Snapshot das referências (Sprint 5.5.3): default = todas do Avatar
+     * (primary primeiro); seleção humana explícita; Visual DNA only = [].
+     * IDs fora do Avatar são rejeitados (422).
+     *
+     * @return int[]
+     */
+    protected function resolveReferenceIds(ScriptImageGenerationRequest $request, ContentScript $contentScript): array
+    {
+        $available = $contentScript->avatar
+            ? $contentScript->avatar->referenceImages()->pluck('media_assets.id')->all()
+            : [];
+
+        if ($request->boolean('visual_dna_only')) {
+            return [];
+        }
+
+        $selected = $request->input('reference_ids');
+
+        if ($selected === null) {
+            return $available;
+        }
+
+        $selected = array_values(array_unique(array_map('intval', (array) $selected)));
+
+        abort_if(
+            array_diff($selected, array_map('intval', $available)) !== []
+                || ($selected !== [] && $available === []),
+            422,
+            'Referência visual inválida para este Avatar.'
+        );
+
+        return $selected;
     }
 
     public function markPrimary(

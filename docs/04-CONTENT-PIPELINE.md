@@ -35,6 +35,9 @@
 - Sprint 5.5.2 adicionou **imagem de referência do Avatar** (upload aprovado,
   um ativo por Avatar; geração contextual usa snapshot da referência quando
   existe, fallback textual caso contrário).
+- Sprint 5.5.3 evoluiu para **múltiplas referências** (primary + auxiliares,
+  limite 4; seleção humana na geração com opção Visual DNA only; snapshot
+  múltiplo imutável).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

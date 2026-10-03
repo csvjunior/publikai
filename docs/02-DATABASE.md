@@ -36,6 +36,8 @@
 | `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_10_02_000018_create_script_media_links` (**nova, Sprint 5.5.1**) | pivot `content_script_media_assets` + contexto em `image_generation_requests` |
 | `2026_10_02_000019_add_avatar_reference_images` (**nova, Sprint 5.5.2**) | `avatars.reference_media_asset_id` + snapshot `image_generation_requests.reference_media_asset_id` (FKs nullable, `nullOnDelete`) |
+| `2026_10_03_000020_create_avatar_reference_media_assets` (**nova, Sprint 5.5.3**) | pivot Avatar↔assets (`is_primary`, `position`); migra referência singular (primary/1) e remove coluna |
+| `2026_10_03_000021_create_image_generation_request_references` (**nova, Sprint 5.5.3**) | snapshot múltiplo por request; migra snapshot singular e remove coluna |
 | `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
@@ -95,12 +97,14 @@ em migrations novas com `up`/`down` reversíveis.
 - `image_generation_requests` (microcorreção async): execução com prompt
   funcional (necessário ao Job; fora de logs e de `ai_generations`), opções,
   provider/model, asset associado, erro sanitizado. `tries=1`, sem retry.
-- `avatars.reference_media_asset_id` (Sprint 5.5.2): referência ativa única
-  (FK nullable → `media_assets`, `nullOnDelete`); snapshot por request em
-  `image_generation_requests.reference_media_asset_id` (trocar a referência
-  não altera gerações enfileiradas). Referência = asset `uploaded`
-  (`avatars/references/YYYY/MM/uuid.ext`); anterior exclusivo removido com
-  segurança, compartilhado preservado.
+- `avatars.reference_media_asset_id` (Sprint 5.5.2, **removida na 5.5.3**):
+  referência ativa única; snapshot por request em
+  `image_generation_requests.reference_media_asset_id` (idem).
+- `avatar_reference_media_assets` (Sprint 5.5.3): múltiplas referências por
+  Avatar (`is_primary` única via transação, `position` estável, limite 4 via
+  config); primeira vira primary; remover primary promove a próxima;
+  asset compartilhado preservado. Snapshot múltiplo em
+  `image_generation_request_references` (primary primeiro).
 - `content_blueprints`: `id, name, slug (único), description?, content_type?,
   objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
   language/market/niche?, status, source_type (manual|ai_assisted),

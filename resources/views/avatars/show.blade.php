@@ -90,35 +90,54 @@
         </dl>
     </x-ui.card>
 
-    <x-ui.card title="Imagem de referência" description="Auxílio de consistência visual do personagem artificial.">
-        @if ($avatar->referenceImage)
-            <div class="flex flex-col gap-4 sm:flex-row">
-                <a href="{{ $avatar->referenceImage->url() }}" target="_blank" rel="noopener" class="block w-full max-w-44 shrink-0">
-                    <img src="{{ $avatar->referenceImage->url() }}" alt="Referência do avatar" loading="lazy" class="aspect-[3/4] w-full rounded-lg object-cover">
-                </a>
-                <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-1">
-                        <x-ui.badge variant="ai">Ativa</x-ui.badge>
-                    </div>
-                    <p class="t-muted mt-1">{{ $avatar->referenceImage->width }} × {{ $avatar->referenceImage->height }} · {{ $avatar->referenceImage->mime_type }}@if (\App\Support\FileSize::format($avatar->referenceImage->size_bytes)) · {{ \App\Support\FileSize::format($avatar->referenceImage->size_bytes) }}@endif</p>
-                    <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                        <a href="{{ $avatar->referenceImage->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
-                        <a href="{{ route('avatars.reference.create', $avatar) }}" class="text-xs font-medium text-ink-secondary hover:text-ink">Substituir</a>
-                        <form method="POST" action="{{ route('avatars.reference.destroy', $avatar) }}" onsubmit="return confirm('Remover a imagem de referência?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-xs font-medium text-danger hover:opacity-80">Remover referência</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @else
+    <x-ui.card title="Referências visuais" description="Auxílio de consistência visual do personagem artificial. {{ $avatar->referenceImages->count() }} de {{ $maxReferences }} referências.">
+        @if ($avatar->referenceImages->isEmpty())
             <x-ui.empty-state
-                title="Nenhuma imagem de referência"
-                description="Adicione uma imagem aprovada para ajudar a manter a aparência deste Avatar consistente entre gerações."
+                title="Nenhuma referência visual"
+                description="Adicione imagens aprovadas para ajudar a manter a aparência deste Avatar consistente entre gerações."
             />
             <div class="mt-4">
                 <x-ui.button :href="route('avatars.reference.create', $avatar)" variant="outline">Adicionar referência</x-ui.button>
+            </div>
+        @else
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                @foreach ($avatar->referenceImages as $reference)
+                    <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+                        <a href="{{ $reference->url() }}" target="_blank" rel="noopener" class="block">
+                            <img src="{{ $reference->url() }}" alt="Referência do avatar" loading="lazy" class="aspect-[3/4] w-full object-cover">
+                        </a>
+                        <div class="space-y-1 p-2.5">
+                            @if ($reference->pivot->is_primary)
+                                <div class="flex flex-wrap items-center gap-1">
+                                    <x-ui.badge variant="ai">Principal</x-ui.badge>
+                                </div>
+                            @endif
+                            <p class="t-muted">{{ $reference->width }} × {{ $reference->height }} · {{ $reference->mime_type }}@if (\App\Support\FileSize::format($reference->size_bytes)) · {{ \App\Support\FileSize::format($reference->size_bytes) }}@endif</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                                <a href="{{ $reference->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
+                                @if (! $reference->pivot->is_primary)
+                                    <form method="POST" action="{{ route('avatars.references.primary', [$avatar, $reference]) }}">
+                                        @csrf
+                                        <button type="submit" class="text-xs font-medium text-ink-secondary hover:text-ink">Definir como principal</button>
+                                    </form>
+                                @endif
+                                <form method="POST" action="{{ route('avatars.references.destroy', [$avatar, $reference]) }}" onsubmit="return confirm('Remover esta referência?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs font-medium text-danger hover:opacity-80">Remover</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="mt-4">
+                @if ($avatar->referenceImages->count() < $maxReferences)
+                    <x-ui.button :href="route('avatars.reference.create', $avatar)" variant="outline">Adicionar referência</x-ui.button>
+                @else
+                    <x-ui.button variant="outline" type="button" disabled>Adicionar referência</x-ui.button>
+                    <p class="t-small mt-2">Limite de referências atingido.</p>
+                @endif
             </div>
         @endif
     </x-ui.card>

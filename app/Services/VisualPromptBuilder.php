@@ -22,6 +22,7 @@ class VisualPromptBuilder
         ContentBlueprint $blueprint,
         Persona $persona,
         Avatar $avatar,
+        int $referenceCount = 0,
     ): string {
         $sections = [
             'SUBJECT' => $this->lines([
@@ -77,9 +78,11 @@ class VisualPromptBuilder
                 'No visible platform UI, no watermarks, no logos unless explicitly provided.',
                 'Do not render text into the image.',
                 'Preserve the requested aspect ratio.',
-                ...($avatar->reference_media_asset_id !== null
-                    ? ['Use the provided reference image to preserve the Avatar\'s visual identity and overall appearance.']
-                    : []),
+                ...($referenceCount > 1
+                    ? ['Use the provided reference images together to preserve the Avatar\'s consistent visual identity and overall appearance.']
+                    : ($referenceCount === 1
+                        ? ['Use the provided reference image to preserve the Avatar\'s visual identity and overall appearance.']
+                        : [])),
             ],
         ];
 

@@ -95,12 +95,18 @@
   transacional) → gallery + "Definir como principal" no detalhe.
 - Sem reference image, edição, vídeo, Campaign ou Media Library completa.
 
-## Sprint 5.5.2 — Avatar reference image foundation (implementada, QA real pendente)
+## Sprint 5.5.2 — Avatar reference image foundation (concluída, QA real success)
 
 - Avatar com uma referência ativa (`MediaAsset` uploaded): upload/preview/
   substituir/remover; geração contextual envia text+image ao provider quando
   há referência (snapshot no request), fallback textual sem ela.
 - Sem edição, vídeo, product/reference image, biometria ou garantia de identidade.
+
+## Sprint 5.5.3 — Multi-reference Avatar consistency (implementada, QA real pendente)
+
+- Até 4 referências por Avatar (primary + auxiliares, seleção humana,
+  Visual DNA only); snapshot múltiplo; provider text+N images; QA real com
+  2–3 refs pendente do responsável.
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

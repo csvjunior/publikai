@@ -7,6 +7,7 @@ use Database\Factories\ImageGenerationRequestFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Solicitação de geração de imagem (Sprint 5.5.0 async).
@@ -27,7 +28,6 @@ class ImageGenerationRequest extends Model
         'provider',
         'model',
         'content_script_id',
-        'reference_media_asset_id',
         'purpose',
         'is_primary',
         'media_asset_id',
@@ -60,14 +60,16 @@ class ImageGenerationRequest extends Model
     }
 
     /**
-     * Snapshot da referência usada nesta geração (Sprint 5.5.2): copiado do
-     * Avatar no create; trocar a referência depois não altera o request.
+     * Snapshot das referências usadas nesta geração (Sprint 5.5.3): copiado
+     * do Avatar no create; trocas posteriores não alteram o request.
      *
-     * @return BelongsTo<MediaAsset, $this>
+     * @return BelongsToMany<MediaAsset, $this>
      */
-    public function referenceImage(): BelongsTo
+    public function referenceImages(): BelongsToMany
     {
-        return $this->belongsTo(MediaAsset::class, 'reference_media_asset_id');
+        return $this->belongsToMany(MediaAsset::class, 'image_generation_request_references')
+            ->withPivot(['position'])
+            ->orderByPivot('position');
     }
 
     public function isTerminal(): bool

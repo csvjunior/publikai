@@ -47,7 +47,7 @@ class ImageGenerationService
     public function __construct(protected AiImageProvider $provider) {}
 
     /**
-     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, reference_media_asset_id?: ?int, purpose?: ?string, is_primary?: bool}  $options
+     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, reference_media_asset_ids?: ?int[], purpose?: ?string, is_primary?: bool}  $options
      *
      * @throws ValidationException
      */
@@ -60,7 +60,10 @@ class ImageGenerationService
             'image_size' => $options['image_size'] ?? $config['default_size'],
             'mime_type' => $options['mime_type'] ?? $config['default_mime_type'],
             'content_script_id' => $options['content_script_id'] ?? null,
-            'reference_media_asset_id' => $options['reference_media_asset_id'] ?? null,
+            'reference_media_asset_ids' => array_values(array_unique(array_map(
+                'intval',
+                (array) ($options['reference_media_asset_ids'] ?? [])
+            ))),
             'purpose' => $options['purpose'] ?? ContentScriptAssetPurpose::Scene->value,
             'is_primary' => (bool) ($options['is_primary'] ?? false),
         ];
@@ -73,26 +76,39 @@ class ImageGenerationService
                 'image_size' => ['required', 'in:'.implode(',', self::SIZES)],
                 'mime_type' => ['required', 'in:'.implode(',', self::MIMES)],
                 'content_script_id' => ['nullable', 'integer', 'exists:content_scripts,id'],
-                'reference_media_asset_id' => ['nullable', 'integer', 'exists:media_assets,id'],
+                'reference_media_asset_ids' => ['nullable', 'array', 'max:'.$this->maxReferences()],
+                'reference_media_asset_ids.*' => ['integer', 'exists:media_assets,id'],
                 'purpose' => ['required', 'in:cover,scene,product,background,other'],
                 'is_primary' => ['boolean'],
             ]
         )->validate();
 
-        return ImageGenerationRequest::create([
-            'status' => ImageGenerationRequestStatus::Pending,
-            'prompt' => $prompt,
-            'aspect_ratio' => $options['aspect_ratio'],
-            'image_size' => $options['image_size'],
-            'mime_type' => $options['mime_type'],
-            'provider' => config('ai.provider', 'google'),
-            'model' => (string) $config['model'],
-            'content_script_id' => $options['content_script_id'],
-            'reference_media_asset_id' => $options['reference_media_asset_id'],
-            'purpose' => $options['purpose'],
-            'is_primary' => $options['is_primary'],
-            'created_by' => $createdBy,
-        ]);
+        return DB::transaction(function () use ($options, $prompt, $config, $createdBy) {
+            $request = ImageGenerationRequest::create([
+                'status' => ImageGenerationRequestStatus::Pending,
+                'prompt' => $prompt,
+                'aspect_ratio' => $options['aspect_ratio'],
+                'image_size' => $options['image_size'],
+                'mime_type' => $options['mime_type'],
+                'provider' => config('ai.provider', 'google'),
+                'model' => (string) $config['model'],
+                'content_script_id' => $options['content_script_id'],
+                'purpose' => $options['purpose'],
+                'is_primary' => $options['is_primary'],
+                'created_by' => $createdBy,
+            ]);
+
+            foreach ($options['reference_media_asset_ids'] as $position => $mediaAssetId) {
+                $request->referenceImages()->attach($mediaAssetId, ['position' => $position + 1]);
+            }
+
+            return $request;
+        });
+    }
+
+    public function maxReferences(): int
+    {
+        return max(1, (int) config('ai.google.image.max_references', 4));
     }
 
     public function process(ImageGenerationRequest $request): void
@@ -110,13 +126,13 @@ class ImageGenerationService
         $path = null;
 
         try {
-            $reference = $this->resolveReference($request);
+            $references = $this->resolveReferences($request);
 
             $result = $this->provider->generate($request->prompt, [
                 'aspect_ratio' => $request->aspect_ratio,
                 'image_size' => $request->image_size,
                 'mime_type' => $request->mime_type,
-            ], $reference);
+            ], $references);
 
             $path = $this->store($result->imageData, $result->mimeType);
 
@@ -157,8 +173,9 @@ class ImageGenerationService
                     'mime_type' => $result->mimeType,
                     'aspect_ratio' => $request->aspect_ratio,
                     'image_size' => $request->image_size,
-                    'reference_used' => $request->reference_media_asset_id !== null,
-                    'reference_media_asset_id' => $request->reference_media_asset_id,
+                    'reference_used' => $request->referenceImages()->exists(),
+                    'reference_count' => $request->referenceImages()->count(),
+                    'reference_media_asset_ids' => $request->referenceImages()->pluck('media_assets.id')->all(),
                 ],
             ]);
         } catch (AiProviderException $e) {
@@ -200,45 +217,48 @@ class ImageGenerationService
     }
 
     /**
-     * Resolve a referência do snapshot do request (Sprint 5.5.2).
-     * Sem snapshot: fluxo textual atual. Arquivo ausente → reference_missing;
-     * binário inválido → reference_invalid (sem provider call, sem custo).
+     * Resolve as referências do snapshot do request (Sprint 5.5.3).
+     * Sem snapshot: fluxo textual atual. Qualquer arquivo ausente →
+     * reference_missing; qualquer binário inválido → reference_invalid
+     * (sem provider call, sem custo).
+     *
+     * @return AiImageReference[]
      *
      * @throws AiProviderException
      */
-    protected function resolveReference(ImageGenerationRequest $request): ?AiImageReference
+    protected function resolveReferences(ImageGenerationRequest $request): array
     {
-        if ($request->reference_media_asset_id === null) {
-            return null;
-        }
+        $references = [];
 
-        $asset = MediaAsset::find($request->reference_media_asset_id);
+        foreach ($request->referenceImages()->get() as $asset) {
+            if (! Storage::disk($asset->disk)->exists($asset->path)) {
+                throw new AiProviderException(
+                    'reference_missing',
+                    'Uma das imagens de referência não está mais disponível.'
+                );
+            }
 
-        if (! $asset || ! Storage::disk($asset->disk)->exists($asset->path)) {
-            throw new AiProviderException(
-                'reference_missing',
-                'A imagem de referência não está mais disponível.'
+            $binary = Storage::disk($asset->disk)->get($asset->path);
+            $info = is_string($binary) ? @getimagesizefromstring($binary) : false;
+
+            if ($binary === false || $info === false
+                || ! in_array($info['mime'] ?? null, ['image/jpeg', 'image/png'], true)
+            ) {
+                throw new AiProviderException(
+                    'reference_invalid',
+                    'Uma das imagens de referência não é mais válida.'
+                );
+            }
+
+            $references[] = new AiImageReference(
+                binary: $binary,
+                mimeType: $info['mime'],
+                width: $info[0] ?: null,
+                height: $info[1] ?: null,
             );
         }
 
-        $binary = Storage::disk($asset->disk)->get($asset->path);
-        $info = is_string($binary) ? @getimagesizefromstring($binary) : false;
-
-        if ($binary === false || $info === false
-            || ! in_array($info['mime'] ?? null, ['image/jpeg', 'image/png'], true)
-        ) {
-            throw new AiProviderException(
-                'reference_invalid',
-                'A imagem de referência não é mais válida.'
-            );
-        }
-
-        return new AiImageReference(
-            binary: $binary,
-            mimeType: $info['mime'],
-            width: $info[0] ?: null,
-            height: $info[1] ?: null,
-        );
+        return $references;
     }
 
     protected function store(string $binary, string $mime): string

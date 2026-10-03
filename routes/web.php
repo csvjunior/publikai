@@ -93,7 +93,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/avatars/{avatar}/reference', [AvatarReferenceController::class, 'create'])->name('avatars.reference.create');
     Route::post('/avatars/{avatar}/reference', [AvatarReferenceController::class, 'store'])->name('avatars.reference.store');
-    Route::delete('/avatars/{avatar}/reference', [AvatarReferenceController::class, 'destroy'])->name('avatars.reference.destroy');
+    Route::delete('/avatars/{avatar}/references/{mediaAsset}', [AvatarReferenceController::class, 'destroy'])->name('avatars.references.destroy');
+    Route::post('/avatars/{avatar}/references/{mediaAsset}/primary', [AvatarReferenceController::class, 'markPrimary'])->name('avatars.references.primary');
 
     Route::get('/blueprints', [ContentBlueprintController::class, 'index'])->name('blueprints.index');
     Route::get('/blueprints/create', [ContentBlueprintController::class, 'create'])->name('blueprints.create');

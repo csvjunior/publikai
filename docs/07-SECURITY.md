@@ -55,6 +55,13 @@
 - Sem identificação/biometria/inferência de atributos sensíveis; personagem
   artificial, sem garantia de consistência de identidade.
 
+## Multi-reference (Sprint 5.5.3)
+
+- Limite 4 via config (sem número mágico); seleção validada contra o Avatar
+  (422 em ID estranho); snapshot em relation table (IDs em metadata: só ids,
+  sem path/base64); `reference_missing`/`reference_invalid` em qualquer item
+  abortam antes do provider.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

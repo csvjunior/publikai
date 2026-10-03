@@ -103,6 +103,18 @@
   inalterado. Falhas `reference_missing`/`reference_invalid` sem provider call.
   Sem edição, vídeo, product/reference image.
 
+## Sprint 5.5.3 — Multi-reference Avatar (N refs, seleção humana)
+
+- Até 4 referências aprovadas por Avatar (`GOOGLE_AI_IMAGE_MAX_REFERENCES`,
+  teto do `gemini-3.1-flash-image` p/ personagem nos docs oficiais): pivot
+  com primary única + position; upload validado reutilizado; remoção com
+  promoção e limpeza exclusiva segura.
+- Geração contextual: default todas (primary primeiro), checklist com
+  desmarque de auxiliares (primary não obrigatória), "Gerar somente com
+  Visual DNA"; snapshot múltiplo antes do dispatch; Job envia text+N images;
+  `ai_generations` com `reference_count` + ids. Sem biometria/similaridade,
+  sem edição, sem vídeo.
+
 ## Microcorreção async (geração longa > request web)
 
 - Parser REST corrigido: `steps→model_output→content` (conveniências de SDK

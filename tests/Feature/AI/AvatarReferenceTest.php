@@ -11,7 +11,6 @@ use App\Models\AiGeneration;
 use App\Models\Avatar;
 use App\Models\ContentBlueprint;
 use App\Models\ContentScript;
-use App\Models\ImageGenerationRequest;
 use App\Models\MediaAsset;
 use App\Models\Persona;
 use App\Models\Product;
@@ -21,10 +20,16 @@ use App\Services\ImageGenerationService;
 use App\Services\VisualPromptBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
+/**
+ * Fundação de referência do Avatar (Sprint 5.5.2), agora sobre a pivot
+ * multi-reference da 5.5.3: upload validado, segurança, snapshot via pivot,
+ * Job multi, prompt e UI. Multi-ref avançado em AvatarMultiReferenceTest.
+ */
 class AvatarReferenceTest extends TestCase
 {
     use RefreshDatabase;
@@ -102,10 +107,11 @@ class AvatarReferenceTest extends TestCase
     public function test_guest_bloqueado(): void
     {
         $avatar = $this->avatar();
+        $asset = MediaAsset::factory()->create();
 
         $this->get(route('avatars.reference.create', $avatar))->assertRedirect('/login');
         $this->post(route('avatars.reference.store', $avatar))->assertRedirect('/login');
-        $this->delete(route('avatars.reference.destroy', $avatar))->assertRedirect('/login');
+        $this->delete(route('avatars.references.destroy', [$avatar, $asset]))->assertRedirect('/login');
     }
 
     public function test_operator_pode_enviar(): void
@@ -120,7 +126,7 @@ class AvatarReferenceTest extends TestCase
             ])
             ->assertRedirect(route('avatars.show', $avatar));
 
-        $this->assertNotNull($avatar->fresh()->reference_media_asset_id);
+        $this->assertSame(1, $avatar->fresh()->referenceImages()->count());
     }
 
     public function test_upload_png_valido(): void
@@ -138,7 +144,7 @@ class AvatarReferenceTest extends TestCase
         $this->assertSame('image/png', $asset->mime_type);
         $this->assertSame(600, $asset->width);
         $this->assertSame(600, $asset->height);
-        $this->assertSame($asset->id, $avatar->fresh()->reference_media_asset_id);
+        $this->assertTrue($avatar->fresh()->referenceImages()->whereKey($asset->id)->exists());
         $this->assertStringStartsWith('avatars/references/', $asset->path);
         $this->assertMatchesRegularExpression('#/[\w-]{36}\.png$#', $asset->path);
         $this->assertStringNotContainsString('foto', $asset->path);
@@ -171,7 +177,7 @@ class AvatarReferenceTest extends TestCase
         ])->assertSessionHasErrors('image');
 
         $this->assertDatabaseCount('media_assets', 0);
-        $this->assertNull($avatar->fresh()->reference_media_asset_id);
+        $this->assertSame(0, $avatar->fresh()->referenceImages()->count());
     }
 
     public function test_extensao_falsa_rejeitada(): void
@@ -234,42 +240,7 @@ class AvatarReferenceTest extends TestCase
         $this->assertStringNotContainsString('foto.png', (string) $dump);
     }
 
-    // ---- replace / remove ----
-
-    public function test_substituir_remove_anterior_exclusivo(): void
-    {
-        Storage::fake('public');
-        $user = User::factory()->create();
-        $avatar = $this->avatar();
-        $service = app(AvatarReferenceService::class);
-
-        $old = $service->attach($avatar, $this->upload($this->png600()), $user->id);
-        $oldPath = $old->path;
-
-        $new = $service->attach($avatar, $this->upload($this->jpg600(), 'nova.jpg'), $user->id);
-
-        $this->assertSame($new->id, $avatar->fresh()->reference_media_asset_id);
-        $this->assertDatabaseMissing('media_assets', ['id' => $old->id]);
-        Storage::disk('public')->assertMissing($oldPath);
-        Storage::disk('public')->assertExists($new->path);
-    }
-
-    public function test_substituir_preserva_anterior_compartilhado(): void
-    {
-        Storage::fake('public');
-        $user = User::factory()->create();
-        $avatar = $this->avatar();
-        $service = app(AvatarReferenceService::class);
-
-        $old = $service->attach($avatar, $this->upload($this->png600()), $user->id);
-        ImageGenerationRequest::factory()->create(['reference_media_asset_id' => $old->id]);
-
-        $new = $service->attach($avatar, $this->upload($this->jpg600(), 'nova.jpg'), $user->id);
-
-        $this->assertSame($new->id, $avatar->fresh()->reference_media_asset_id);
-        $this->assertDatabaseHas('media_assets', ['id' => $old->id]);
-        Storage::disk('public')->assertExists($old->path);
-    }
+    // ---- remove ----
 
     public function test_remover_referencia(): void
     {
@@ -280,47 +251,43 @@ class AvatarReferenceTest extends TestCase
 
         $asset = $service->attach($avatar, $this->upload($this->png600()), $user->id);
 
-        $this->actingAs($user)->delete(route('avatars.reference.destroy', $avatar))
+        $this->actingAs($user)
+            ->delete(route('avatars.references.destroy', [$avatar, $asset]))
             ->assertRedirect(route('avatars.show', $avatar));
 
-        $this->assertNull($avatar->fresh()->reference_media_asset_id);
+        $this->assertSame(0, $avatar->fresh()->referenceImages()->count());
         $this->assertDatabaseMissing('media_assets', ['id' => $asset->id]);
         Storage::disk('public')->assertMissing($asset->path);
         $this->assertDatabaseHas('avatars', ['id' => $avatar->id]);
     }
 
-    public function test_remover_preserva_compartilhado(): void
+    public function test_remover_asset_de_outro_avatar_rejeitado(): void
     {
         Storage::fake('public');
         $user = User::factory()->create();
-        $avatar = $this->avatar();
-        $service = app(AvatarReferenceService::class);
+        $other = $this->avatar();
+        $asset = app(AvatarReferenceService::class)->attach($other, $this->upload($this->png600()), $user->id);
 
-        $asset = $service->attach($avatar, $this->upload($this->png600()), $user->id);
-        ImageGenerationRequest::factory()->create(['reference_media_asset_id' => $asset->id]);
+        $this->actingAs($user)
+            ->delete(route('avatars.references.destroy', [$this->avatar(), $asset]))
+            ->assertNotFound();
 
-        $service->detach($avatar);
-
-        $this->assertNull($avatar->fresh()->reference_media_asset_id);
         $this->assertDatabaseHas('media_assets', ['id' => $asset->id]);
     }
 
     // ---- snapshot da geração ----
 
-    public function test_request_sem_referencia_tem_snapshot_null(): void
+    public function test_request_sem_referencia_tem_snapshot_vazio(): void
     {
         $script = $this->context();
 
         $request = app(ImageGenerationService::class)->createRequest(
             'Vertical photorealistic UGC scene with neutral daylight.',
-            [
-                'content_script_id' => $script->id,
-                'reference_media_asset_id' => $script->avatar->reference_media_asset_id,
-            ],
+            ['content_script_id' => $script->id],
             null,
         );
 
-        $this->assertNull($request->reference_media_asset_id);
+        $this->assertSame(0, $request->referenceImages()->count());
     }
 
     public function test_request_com_referencia_tem_snapshot(): void
@@ -334,17 +301,16 @@ class AvatarReferenceTest extends TestCase
             'Vertical photorealistic UGC scene with neutral daylight.',
             [
                 'content_script_id' => $script->id,
-                'reference_media_asset_id' => $script->avatar->reference_media_asset_id,
+                'reference_media_asset_ids' => $script->avatar->referenceImages()->pluck('media_assets.id')->all(),
             ],
             null,
         );
 
-        $this->assertSame($ref->id, $request->reference_media_asset_id);
+        $this->assertSame([$ref->id], $request->referenceImages()->pluck('media_assets.id')->all());
 
-        // Trocar a referência depois não altera o snapshot.
-        $new = app(AvatarReferenceService::class)->attach($avatar, $this->upload($this->jpg600(), 'n.jpg'));
-        $this->assertSame($ref->id, $request->fresh()->reference_media_asset_id);
-        $this->assertSame($new->id, $avatar->fresh()->reference_media_asset_id);
+        // Remover do Avatar depois não altera o snapshot.
+        app(AvatarReferenceService::class)->remove($avatar, $ref);
+        $this->assertSame([$ref->id], $request->fresh()->referenceImages()->pluck('media_assets.id')->all());
     }
 
     public function test_job_usa_referencia_do_request(): void
@@ -359,7 +325,7 @@ class AvatarReferenceTest extends TestCase
 
         $request = app(ImageGenerationService::class)->createRequest(
             'Vertical photorealistic UGC scene with neutral daylight.',
-            ['content_script_id' => $script->id, 'reference_media_asset_id' => $ref->id],
+            ['content_script_id' => $script->id, 'reference_media_asset_ids' => [$ref->id]],
             null,
         );
 
@@ -379,7 +345,8 @@ class AvatarReferenceTest extends TestCase
 
         $log = AiGeneration::firstWhere('operation', 'image_generation');
         $this->assertTrue((bool) $log->metadata['reference_used']);
-        $this->assertSame($ref->id, $log->metadata['reference_media_asset_id']);
+        $this->assertSame(1, $log->metadata['reference_count']);
+        $this->assertSame([$ref->id], $log->metadata['reference_media_asset_ids']);
         $dump = json_encode([$log->metadata, $log->error_code]);
         $this->assertStringNotContainsString(base64_encode($binary), (string) $dump);
     }
@@ -419,7 +386,7 @@ class AvatarReferenceTest extends TestCase
 
         $request = app(ImageGenerationService::class)->createRequest(
             'Vertical photorealistic UGC scene with neutral daylight.',
-            ['content_script_id' => $script->id, 'reference_media_asset_id' => $ref->id],
+            ['content_script_id' => $script->id, 'reference_media_asset_ids' => [$ref->id]],
             null,
         );
 
@@ -446,7 +413,7 @@ class AvatarReferenceTest extends TestCase
 
         $request = app(ImageGenerationService::class)->createRequest(
             'Vertical photorealistic UGC scene with neutral daylight.',
-            ['content_script_id' => $script->id, 'reference_media_asset_id' => $ref->id],
+            ['content_script_id' => $script->id, 'reference_media_asset_ids' => [$ref->id]],
             null,
         );
 
@@ -468,7 +435,7 @@ class AvatarReferenceTest extends TestCase
         $script = $this->context($avatar->fresh());
 
         $prompt = app(VisualPromptBuilder::class)->build(
-            $script, $script->product, $script->blueprint, $script->persona, $script->avatar,
+            $script, $script->product, $script->blueprint, $script->persona, $script->avatar, 1,
         );
 
         $this->assertStringContainsString(
@@ -496,7 +463,7 @@ class AvatarReferenceTest extends TestCase
 
         $this->withoutVite()->actingAs($user)->get(route('avatars.show', $this->avatar()))
             ->assertOk()
-            ->assertSee('Nenhuma imagem de referência', false)
+            ->assertSee('Nenhuma referência visual', false)
             ->assertSee('Adicionar referência', false);
     }
 
@@ -507,12 +474,13 @@ class AvatarReferenceTest extends TestCase
         $avatar = $this->avatar();
         $asset = app(AvatarReferenceService::class)->attach($avatar, $this->upload($this->png600()));
         $asset->update(['size_bytes' => 809158]);
+        app(AvatarReferenceService::class)->attach($avatar, $this->upload($this->jpg600(), 'b.jpg'));
 
         $this->withoutVite()->actingAs($user)->get(route('avatars.show', $avatar->fresh()))
             ->assertOk()
             ->assertSee('Abrir imagem', false)
-            ->assertSee('Substituir', false)
-            ->assertSee('Remover referência', false)
+            ->assertSee('Definir como principal', false)
+            ->assertSee('Remover', false)
             ->assertSee('790.2 KB', false)
             ->assertDontSee('809158', false);
     }
@@ -541,10 +509,28 @@ class AvatarReferenceTest extends TestCase
 
         $this->withoutVite()->actingAs($user)->get(route('scripts.images.create', $withRef->fresh()))
             ->assertOk()
-            ->assertSee('Imagem de referência será usada', false);
+            ->assertSee('Referências visuais', false);
 
         $this->withoutVite()->actingAs($user)->get(route('scripts.images.create', $withoutRef))
             ->assertOk()
             ->assertSee('usará apenas o Visual DNA', false);
+    }
+
+    public function test_pivot_multi_reference(): void
+    {
+        Storage::fake('public');
+        $avatar = $this->avatar();
+        $service = app(AvatarReferenceService::class);
+
+        $first = $service->attach($avatar, $this->upload($this->png600()));
+        $second = $service->attach($avatar, $this->upload($this->jpg600(), 'b.jpg'));
+
+        $this->assertSame(1, (int) DB::table('avatar_reference_media_assets')
+            ->where('avatar_id', $avatar->id)->where('is_primary', true)->count());
+        $this->assertSame($first->id, $avatar->primaryReferenceImage()->id);
+        $this->assertSame(
+            [$first->id, $second->id],
+            $avatar->fresh()->referenceImages()->pluck('media_assets.id')->all()
+        );
     }
 }

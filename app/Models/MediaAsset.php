@@ -70,4 +70,16 @@ class MediaAsset extends Model
             ->withPivot(['purpose', 'is_primary'])
             ->withTimestamps();
     }
+
+    /**
+     * Avatares que usam este asset como referência (Sprint 5.5.3).
+     *
+     * @return BelongsToMany<Avatar>
+     */
+    public function referencedByAvatars(): BelongsToMany
+    {
+        return $this->belongsToMany(Avatar::class, 'avatar_reference_media_assets')
+            ->withPivot(['is_primary', 'position'])
+            ->withTimestamps();
+    }
 }

@@ -38,6 +38,9 @@ return [
             'default_mime_type' => env('GOOGLE_AI_IMAGE_MIME_TYPE', 'image/jpeg'),
             'default_aspect_ratio' => env('GOOGLE_AI_IMAGE_ASPECT_RATIO', '9:16'),
             'default_size' => env('GOOGLE_AI_IMAGE_SIZE', '1K'),
+            // Referências de personagem (Sprint 5.5.3): gemini-3.1-flash-image
+            // aceita até 4 imagens de personagem (docs oficiais); sem segredo.
+            'max_references' => (int) env('GOOGLE_AI_IMAGE_MAX_REFERENCES', 4),
         ],
     ],
 

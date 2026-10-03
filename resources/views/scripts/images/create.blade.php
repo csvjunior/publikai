@@ -41,28 +41,38 @@
                 <dd class="t-body mt-0.5">{{ $script->avatar->name ?? '—' }}</dd>
             </div>
             <div>
-                <dt class="t-small font-medium uppercase tracking-wide">Imagem de referência</dt>
-                <dd class="t-body mt-0.5">
-                    @if ($script->avatar?->referenceImage)
-                        <span class="inline-flex items-center gap-2">
-                            <img src="{{ $script->avatar->referenceImage->url() }}" alt="Referência do avatar" class="h-10 w-8 rounded object-cover">
-                            Sim
-                        </span>
-                    @else
-                        Não
-                    @endif
-                </dd>
+                <dt class="t-small font-medium uppercase tracking-wide">Referências visuais</dt>
+                <dd class="t-body mt-0.5">{{ $references->count() }} de {{ $maxReferences }}</dd>
             </div>
         </dl>
-        @if ($script->avatar?->referenceImage)
-            <p class="t-small mt-3">Imagem de referência será usada para ajudar na consistência visual.</p>
-        @else
-            <p class="t-small mt-3">Este Avatar ainda não possui imagem de referência; a geração usará apenas o Visual DNA.</p>
+        @if ($references->isEmpty())
+            <p class="t-small mt-3">Este Avatar ainda não possui referências visuais; a geração usará apenas o Visual DNA.</p>
         @endif
     </x-ui.card>
 
+    @if ($references->isNotEmpty())
+        <x-ui.card title="Referências visuais usadas" description="Todas selecionadas por padrão. Desmarque auxiliares para não usá-las, ou gere somente com Visual DNA.">
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                @foreach ($references as $reference)
+                    <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-2" data-reference-card>
+                        <input type="checkbox" name="reference_ids[]" value="{{ $reference->id }}" @checked(in_array($reference->id, old('reference_ids', $references->pluck('id')->all()))) class="h-4 w-4 shrink-0 rounded border-border accent-primary" form="script-image-form" data-reference-checkbox>
+                        <img src="{{ $reference->url() }}" alt="Referência do avatar" class="h-12 w-10 rounded object-cover">
+                        @if ($reference->pivot->is_primary)
+                            <span class="t-small font-medium">Principal</span>
+                        @endif
+                    </label>
+                @endforeach
+            </div>
+            <label class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-ink">
+                <input type="checkbox" name="visual_dna_only" value="1" @checked(old('visual_dna_only')) class="h-4 w-4 rounded border-border accent-primary" form="script-image-form" id="visual-dna-only">
+                Gerar somente com Visual DNA
+            </label>
+            <p class="t-small mt-1 hidden" id="visual-dna-only-helper">As referências visuais não serão usadas nesta geração.</p>
+        </x-ui.card>
+    @endif
+
     <x-ui.card title="Prompt visual" description="Montado automaticamente. Revise e edite antes de gerar — a edição não altera o roteiro.">
-        <form method="POST" action="{{ route('scripts.images.store', $script) }}" data-once novalidate>
+        <form method="POST" action="{{ route('scripts.images.store', $script) }}" id="script-image-form" data-once novalidate>
             @csrf
             <div class="space-y-4">
                 <x-ui.textarea label="Prompt" name="prompt" :rows="12" required :value="old('prompt', $prompt)" />
@@ -86,4 +96,32 @@
         </form>
     </x-ui.card>
 </div>
+
+<script>
+(function () {
+    var toggle = document.getElementById('visual-dna-only');
+    if (! toggle) {
+        return;
+    }
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('[data-reference-checkbox]'));
+    var helper = document.getElementById('visual-dna-only-helper');
+
+    function sync() {
+        var dnaOnly = toggle.checked;
+        boxes.forEach(function (box) {
+            box.disabled = dnaOnly;
+            var card = box.closest('[data-reference-card]');
+            if (card) {
+                card.classList.toggle('opacity-50', dnaOnly);
+            }
+        });
+        if (helper) {
+            helper.classList.toggle('hidden', ! dnaOnly);
+        }
+    }
+
+    toggle.addEventListener('change', sync);
+    sync();
+})();
+</script>
 @endsection

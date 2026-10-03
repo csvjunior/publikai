@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAvatarRequest;
 use App\Http\Requests\UpdateAvatarRequest;
 use App\Models\Avatar;
+use App\Services\AvatarReferenceService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -42,11 +43,16 @@ class AvatarController extends Controller
         return redirect()->route('avatars.show', $avatar)->with('status', 'Avatar cadastrado.');
     }
 
-    public function show(Avatar $avatar): View
+    public function show(Avatar $avatar, AvatarReferenceService $referenceService): View
     {
         $this->authorize('view', $avatar);
 
-        return view('avatars.show', compact('avatar'));
+        $avatar->load('referenceImages');
+
+        return view('avatars.show', [
+            'avatar' => $avatar,
+            'maxReferences' => $referenceService->maxReferences(),
+        ]);
     }
 
     public function edit(Avatar $avatar): View

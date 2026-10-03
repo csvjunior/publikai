@@ -32,8 +32,9 @@ class GoogleGeminiImageProvider implements AiImageProvider
 {
     /**
      * @param  array{aspect_ratio?: string, image_size?: string, mime_type?: string}  $options
+     * @param  list<AiImageReference>  $references
      */
-    public function generate(string $prompt, array $options = [], ?AiImageReference $reference = null): AiImageGenerationResult
+    public function generate(string $prompt, array $options = [], array $references = []): AiImageGenerationResult
     {
         $config = config('ai.google.image');
         $authKey = (string) config('ai.google.auth_key', '');
@@ -55,7 +56,7 @@ class GoogleGeminiImageProvider implements AiImageProvider
                 ->timeout((int) $config['timeout'])
                 ->post(rtrim((string) config('ai.google.base_url'), '/').'/interactions', [
                     'model' => $model,
-                    'input' => $this->input($prompt, $reference),
+                    'input' => $this->input($prompt, $references),
                     'response_format' => [
                         'type' => 'image',
                         'mime_type' => $options['mime_type'] ?? $config['default_mime_type'],
@@ -83,25 +84,30 @@ class GoogleGeminiImageProvider implements AiImageProvider
     }
 
     /**
-     * Sem referência: string simples (payload 5.5.0 inalterado). Com
-     * referência: blocos text+image no formato oficial da documentação.
+     * Sem referências: string simples (payload 5.5.0 inalterado). Com
+     * referências: text + N image blocks no formato oficial (primary
+     * primeiro — ordenação definida pelo chamador).
      *
+     * @param  list<AiImageReference>  $references
      * @return string|array<int, array<string, string>>
      */
-    protected function input(string $prompt, ?AiImageReference $reference): string|array
+    protected function input(string $prompt, array $references): string|array
     {
-        if ($reference === null) {
+        if ($references === []) {
             return $prompt;
         }
 
-        return [
-            ['type' => 'text', 'text' => $prompt],
-            [
+        $blocks = [['type' => 'text', 'text' => $prompt]];
+
+        foreach ($references as $reference) {
+            $blocks[] = [
                 'type' => 'image',
                 'mime_type' => $reference->mimeType,
                 'data' => base64_encode($reference->binary),
-            ],
-        ];
+            ];
+        }
+
+        return $blocks;
     }
 
     /**
