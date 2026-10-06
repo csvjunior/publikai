@@ -125,6 +125,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/scripts/{contentScript}/images/create', [ScriptImageController::class, 'create'])->name('scripts.images.create');
         Route::post('/scripts/{contentScript}/images', [ScriptImageController::class, 'store'])->name('scripts.images.store');
         Route::post('/scripts/{contentScript}/images/{mediaAsset}/primary', [ScriptImageController::class, 'markPrimary'])->name('scripts.images.primary');
+        Route::get('/scripts/{contentScript}/images/{mediaAsset}/edit', [ScriptImageController::class, 'createVariation'])->name('scripts.images.edit');
+        Route::post('/scripts/{contentScript}/images/{mediaAsset}/edit', [ScriptImageController::class, 'storeVariation'])->name('scripts.images.edit.store');
     });
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');

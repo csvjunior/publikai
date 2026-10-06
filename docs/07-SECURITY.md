@@ -62,6 +62,12 @@
   sem path/base64); `reference_missing`/`reference_invalid` em qualquer item
   abortam antes do provider.
 
+## Edição controlada (Sprint 5.5.4)
+
+- Source validada (pertence ao Script, image pronta; 404/422); snapshot no
+  request; base64 de source/refs só no HTTP em memória; original nunca
+  sobrescrito (novo path UUID); `source_missing`/`source_invalid` sem custo.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

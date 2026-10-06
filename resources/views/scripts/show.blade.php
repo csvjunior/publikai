@@ -186,11 +186,15 @@
                                 @if ($asset->pivot->is_primary)
                                     <x-ui.badge variant="ai">Principal</x-ui.badge>
                                 @endif
+                                @if ($asset->parent_media_asset_id)
+                                    <x-ui.badge variant="neutral">Variação</x-ui.badge>
+                                @endif
                                 <span class="t-small font-medium">{{ $purposeLabel }}</span>
                             </div>
                             <p class="t-muted">{{ $asset->width }} × {{ $asset->height }}</p>
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
                                 <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
+                                <a href="{{ route('scripts.images.edit', [$script, $asset]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar variação</a>
                                 @if (! $asset->pivot->is_primary)
                                     <form method="POST" action="{{ route('scripts.images.primary', [$script, $asset]) }}">
                                         @csrf
@@ -227,7 +231,7 @@
                     @foreach ($failed as $item)
                         <li>
                             <span class="text-ink-muted">{{ $item->created_at?->display() }}</span>
-                            <span>{{ match ($item->error_code) { 'timeout' => 'A geração excedeu o tempo esperado.', 'rate_limited' => 'O limite temporário do serviço foi atingido.', 'service_unavailable' => 'O serviço está temporariamente indisponível.', 'invalid_image' => 'O provider não retornou uma imagem válida.', default => 'Não foi possível gerar a imagem.' } }}</span>
+                            <span>{{ match ($item->error_code) { 'timeout' => 'A geração excedeu o tempo esperado.', 'rate_limited' => 'O limite temporário do serviço foi atingido.', 'service_unavailable' => 'O serviço está temporariamente indisponível.', 'invalid_image' => 'O provider não retornou uma imagem válida.', 'source_missing' => 'A imagem base não está mais disponível.', 'source_invalid' => 'A imagem base não é mais válida.', 'reference_missing' => 'Uma das imagens de referência não está mais disponível.', 'reference_invalid' => 'Uma das imagens de referência não é mais válida.', default => 'Não foi possível gerar a imagem.' } }}</span>
                         </li>
                     @endforeach
                 </ul>

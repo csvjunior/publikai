@@ -28,6 +28,7 @@ class ImageGenerationRequest extends Model
         'provider',
         'model',
         'content_script_id',
+        'source_media_asset_id',
         'purpose',
         'is_primary',
         'media_asset_id',
@@ -57,6 +58,17 @@ class ImageGenerationRequest extends Model
     public function mediaAsset(): BelongsTo
     {
         return $this->belongsTo(MediaAsset::class);
+    }
+
+    /**
+     * Imagem base da edição/variação (Sprint 5.5.4): snapshot no POST.
+     * Distinta das reference images (consistência do Avatar).
+     *
+     * @return BelongsTo<MediaAsset, $this>
+     */
+    public function sourceImage(): BelongsTo
+    {
+        return $this->belongsTo(MediaAsset::class, 'source_media_asset_id');
     }
 
     /**

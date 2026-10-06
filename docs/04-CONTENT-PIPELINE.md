@@ -38,6 +38,9 @@
 - Sprint 5.5.3 evoluiu para **múltiplas referências** (primary + auxiliares,
   limite 4; seleção humana na geração com opção Visual DNA only; snapshot
   múltiplo imutável).
+- Sprint 5.5.4 adicionou **variação controlada** ("Criar variação" na
+  gallery: imagem base + mudança desejada → novo asset derivado, original
+  intacto).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

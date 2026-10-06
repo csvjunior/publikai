@@ -115,6 +115,17 @@
   `ai_generations` com `reference_count` + ids. Sem biometria/similaridade,
   sem edição, sem vídeo.
 
+## Sprint 5.5.4 — Controlled image editing (variação de asset)
+
+- Imagem base imutável → NOVO asset (`parent_media_asset_id`); request com
+  `source_media_asset_id` + refs opcionais; `ImageEditPromptBuilder`
+  determinístico (pedido + contexto + source-vs-refs explícito).
+- Provider: `generate(prompt, options, refs, ?source)` → REST
+  text+source+refs (source(1)+refs(≤4) dentro do teto); operation
+  `image_edit`; mesmo Job; `source_missing`/`source_invalid` sem custo.
+  Gallery com "Criar variação" + badge "Variação". Sem canvas/máscara/
+  inpainting UI, biometria ou vídeo.
+
 ## Microcorreção async (geração longa > request web)
 
 - Parser REST corrigido: `steps→model_output→content` (conveniências de SDK

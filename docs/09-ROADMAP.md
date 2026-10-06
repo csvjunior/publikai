@@ -102,11 +102,17 @@
   há referência (snapshot no request), fallback textual sem ela.
 - Sem edição, vídeo, product/reference image, biometria ou garantia de identidade.
 
-## Sprint 5.5.3 — Multi-reference Avatar consistency (implementada, QA real pendente)
+## Sprint 5.5.3 — Multi-reference Avatar consistency (concluída, QA real success)
 
 - Até 4 referências por Avatar (primary + auxiliares, seleção humana,
-  Visual DNA only); snapshot múltiplo; provider text+N images; QA real com
-  2–3 refs pendente do responsável.
+  Visual DNA only); snapshot múltiplo; provider text+N images; consistência
+  visual do personagem validada em QA real.
+
+## Sprint 5.5.4 — Controlled image editing (implementada, QA real pendente)
+
+- "Criar variação" por asset: source snapshot + mudança desejada (+ refs
+  opcionais) → `image_edit` → novo asset derivado; QA real posterior
+  (responsável, UMA edição).
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

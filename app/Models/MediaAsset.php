@@ -8,7 +8,9 @@ use App\Enums\MediaAssetType;
 use Database\Factories\MediaAssetFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -35,6 +37,7 @@ class MediaAsset extends Model
         'size_bytes',
         'aspect_ratio',
         'status',
+        'parent_media_asset_id',
         'created_by',
         'metadata',
     ];
@@ -81,5 +84,30 @@ class MediaAsset extends Model
         return $this->belongsToMany(Avatar::class, 'avatar_reference_media_assets')
             ->withPivot(['is_primary', 'position'])
             ->withTimestamps();
+    }
+
+    /**
+     * Asset de origem desta variação (Sprint 5.5.4). Original imutável.
+     *
+     * @return BelongsTo<MediaAsset, $this>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(MediaAsset::class, 'parent_media_asset_id');
+    }
+
+    /**
+     * Variações derivadas deste asset (Sprint 5.5.4).
+     *
+     * @return HasMany<MediaAsset>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(MediaAsset::class, 'parent_media_asset_id');
+    }
+
+    public function isVariation(): bool
+    {
+        return $this->parent_media_asset_id !== null;
     }
 }
