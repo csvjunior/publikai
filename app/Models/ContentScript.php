@@ -115,6 +115,14 @@ class ContentScript extends Model
     }
 
     /**
+     * @return HasMany<VideoGenerationRequest>
+     */
+    public function videoRequests(): HasMany
+    {
+        return $this->hasMany(VideoGenerationRequest::class, 'content_script_id')->latest();
+    }
+
+    /**
      * @return BelongsToMany<MediaAsset>
      */
     public function mediaAssets(): BelongsToMany

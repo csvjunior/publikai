@@ -126,6 +126,18 @@
   Gallery com "Criar variação" + badge "Variação". Sem canvas/máscara/
   inpainting UI, biometria ou vídeo.
 
+## Sprint 5.6.0 — Video Factory foundation (Omni image-to-video)
+
+- `AiVideoProvider` + `GoogleOmniVideoProvider` (`gemini-omni-1.1-flash`
+  via Interactions REST): `input` [image+text] + `response_format`
+  `{type: video, aspect_ratio}`; resposta síncrona com bloco
+  `steps→model_output→content[type=video]` (async via Job/queue).
+- `VideoGenerationRequest` + `GenerateVideoJob` (tries=1, timeout 600s,
+  `failed()` anti-preso, idempotente); `ai_generations.video_generation`
+  sem prompt/binário; `invalid_request` p/ 400. Tela admin + contextual
+  por Script (seção Vídeos com `<video controls>`, sem autoplay).
+  Sem composição FFmpeg, áudio/TTS, multi-clip ou publicação.
+
 ## Microcorreção async (geração longa > request web)
 
 - Parser REST corrigido: `steps→model_output→content` (conveniências de SDK

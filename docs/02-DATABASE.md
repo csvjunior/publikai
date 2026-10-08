@@ -39,6 +39,7 @@
 | `2026_10_03_000020_create_avatar_reference_media_assets` (**nova, Sprint 5.5.3**) | pivot Avatar↔assets (`is_primary`, `position`); migra referência singular (primary/1) e remove coluna |
 | `2026_10_03_000021_create_image_generation_request_references` (**nova, Sprint 5.5.3**) | snapshot múltiplo por request; migra snapshot singular e remove coluna |
 | `2026_10_04_000022_add_image_edit_support` (**nova, Sprint 5.5.4**) | `media_assets.parent_media_asset_id` + `image_generation_requests.source_media_asset_id` (nullable, `nullOnDelete`) |
+| `2026_10_06_000023_create_video_generation_requests_table` (**nova, Sprint 5.6.0**) | `video_generation_requests` (operação externa, polling, source snapshot, output) |
 | `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
@@ -109,6 +110,9 @@ em migrations novas com `up`/`down` reversíveis.
 - Edição controlada (Sprint 5.5.4): `media_assets.parent_media_asset_id`
   (origem imutável, variação é novo asset); `image_generation_requests.
   source_media_asset_id` (snapshot da base, distinto das references).
+- Vídeo image-to-video (Sprint 5.6.0): `video_generation_requests` (status
+  pending→starting→processing→success|failed, `operation_external_id`,
+  source snapshot, output); output `video` com `parent` = source image.
 - `content_blueprints`: `id, name, slug (único), description?, content_type?,
   objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
   language/market/niche?, status, source_type (manual|ai_assisted),

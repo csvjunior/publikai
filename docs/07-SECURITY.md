@@ -68,6 +68,13 @@
   request; base64 de source/refs só no HTTP em memória; original nunca
   sobrescrito (novo path UUID); `source_missing`/`source_invalid` sem custo.
 
+## Vídeo image-to-video (Sprint 5.6.0)
+
+- Source obrigatória (image pronta do Script; 404/422); prompt só no
+  request; base64 só no start; URIs temporárias nunca persistidas;
+  download com teto (100 MB) + validação FFprobe; temp sempre limpo;
+  `source_missing`/`invalid`/`unsupported` sem provider call.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

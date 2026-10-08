@@ -108,11 +108,16 @@
   Visual DNA only); snapshot múltiplo; provider text+N images; consistência
   visual do personagem validada em QA real.
 
-## Sprint 5.5.4 — Controlled image editing (implementada, QA real pendente)
+## Sprint 5.5.4 — Controlled image editing (concluída, QA real success)
 
 - "Criar variação" por asset: source snapshot + mudança desejada (+ refs
-  opcionais) → `image_edit` → novo asset derivado; QA real posterior
-  (responsável, UMA edição).
+  opcionais) → `image_edit` → novo asset derivado; consistência visual
+  validada em QA real.
+
+## Sprint 5.6.0 — Video Factory foundation (implementada, QA real pendente)
+
+- Omni image-to-video (9:16): técnica admin + contextual por Script;
+  QA real posterior (responsável, UM clipe).
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

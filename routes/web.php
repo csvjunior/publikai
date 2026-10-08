@@ -3,6 +3,7 @@
 use App\Http\Controllers\AffiliateLinkController;
 use App\Http\Controllers\AiImageController;
 use App\Http\Controllers\AiSettingsController;
+use App\Http\Controllers\AiVideoController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\ReferenceAnalysisController;
 use App\Http\Controllers\ReferenceContentController;
 use App\Http\Controllers\ReferenceProfileController;
 use App\Http\Controllers\ScriptImageController;
+use App\Http\Controllers\ScriptVideoController;
 use App\Http\Controllers\SocialAccountController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +64,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/ai/images', [AiImageController::class, 'store'])
         ->middleware('throttle:3,1')
         ->name('settings.ai.images.store');
+    Route::get('/settings/ai/videos', [AiVideoController::class, 'index'])->name('settings.ai.videos');
+    Route::post('/settings/ai/videos', [AiVideoController::class, 'store'])
+        ->middleware('throttle:3,1')
+        ->name('settings.ai.videos.store');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
@@ -127,6 +133,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/scripts/{contentScript}/images/{mediaAsset}/primary', [ScriptImageController::class, 'markPrimary'])->name('scripts.images.primary');
         Route::get('/scripts/{contentScript}/images/{mediaAsset}/edit', [ScriptImageController::class, 'createVariation'])->name('scripts.images.edit');
         Route::post('/scripts/{contentScript}/images/{mediaAsset}/edit', [ScriptImageController::class, 'storeVariation'])->name('scripts.images.edit.store');
+        Route::get('/scripts/{contentScript}/videos/create', [ScriptVideoController::class, 'create'])->name('scripts.videos.create');
+        Route::post('/scripts/{contentScript}/videos', [ScriptVideoController::class, 'store'])->name('scripts.videos.store');
     });
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');

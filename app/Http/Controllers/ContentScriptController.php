@@ -86,6 +86,7 @@ class ContentScriptController extends Controller
         return view('scripts.show', [
             'script' => $contentScript,
             'imageRequests' => $contentScript->imageRequests()->limit(10)->get(),
+            'videoRequests' => $contentScript->videoRequests()->limit(10)->get(),
         ]);
     }
 

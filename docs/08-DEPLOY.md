@@ -28,6 +28,13 @@ php artisan serve
 - Servidor web + supervisor de filas quando houver jobs.
 - `APP_DEBUG=false`, `MAIL_*` real, backups do banco.
 
+## Filas de vídeo (Sprint 5.6.0)
+
+- Local: `php artisan queue:work --tries=1 --timeout=600` (chamada síncrona
+  longa dentro do Job; sem Redis/Horizon).
+- Produção futura: worker dedicado via systemd/Supervisor + `FFPROBE_BINARY`
+  no ambiente (só inspeção, sem composição). Sem config aqui.
+
 ## Pendências
 
 - Definir hospedagem, pipeline de deploy e estratégia de backup.

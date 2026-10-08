@@ -41,6 +41,8 @@
 - Sprint 5.5.4 adicionou **variação controlada** ("Criar variação" na
   gallery: imagem base + mudança desejada → novo asset derivado, original
   intacto).
+- Sprint 5.6.0 adicionou **vídeo image-to-video** (Omni: imagem do roteiro +
+  movimento → clipe 8s 9:16, seção Vídeos no detalhe).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

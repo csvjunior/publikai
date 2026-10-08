@@ -110,4 +110,21 @@ class MediaAsset extends Model
     {
         return $this->parent_media_asset_id !== null;
     }
+
+    /**
+     * Classe de apresentação do player conforme orientação real
+     * (Sprint 5.6.0 microajuste). Sem dims: comportamento anterior.
+     */
+    public function orientationClass(): string
+    {
+        if (($this->height ?? 0) > ($this->width ?? 0)) {
+            return 'mx-auto aspect-[9/16] max-w-44';
+        }
+
+        if (($this->width ?? 0) > ($this->height ?? 0)) {
+            return 'aspect-video';
+        }
+
+        return 'aspect-square';
+    }
 }

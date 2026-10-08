@@ -195,6 +195,7 @@
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
                                 <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
                                 <a href="{{ route('scripts.images.edit', [$script, $asset]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar variação</a>
+                                <a href="{{ route('scripts.videos.create', [$script, 'source' => $asset->id]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar vídeo</a>
                                 @if (! $asset->pivot->is_primary)
                                     <form method="POST" action="{{ route('scripts.images.primary', [$script, $asset]) }}">
                                         @csrf
@@ -235,6 +236,41 @@
                         </li>
                     @endforeach
                 </ul>
+            </div>
+        @endif
+    </x-ui.card>
+
+    <x-ui.card title="Vídeos" description="Clipes image-to-video gerados a partir deste roteiro.">
+        @if ($videoRequests->isEmpty())
+            <x-ui.empty-state
+                title="Nenhum vídeo gerado"
+                description="Crie um clipe curto a partir de uma imagem deste roteiro."
+            />
+        @else
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                @foreach ($videoRequests as $videoRequest)
+                    <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+                        @if ($videoRequest->status->value === 'success' && $videoRequest->mediaAsset?->url())
+                            <video src="{{ $videoRequest->mediaAsset->url() }}" controls preload="metadata" class="w-full bg-black {{ $videoRequest->mediaAsset->orientationClass() }}"></video>
+                        @else
+                            <div class="flex aspect-video w-full items-center justify-center bg-surface-muted">
+                                <x-ui.badge :variant="$videoRequest->status->value === 'failed' ? 'danger' : 'info'">{{ $videoRequest->status->label() }}</x-ui.badge>
+                            </div>
+                        @endif
+                        <div class="space-y-1 p-2.5">
+                            @if ($videoRequest->status->value === 'success' && $videoRequest->mediaAsset)
+                                <p class="t-muted">{{ $videoRequest->mediaAsset->duration_seconds }}s · {{ $videoRequest->aspect_ratio }}@if ($videoRequest->mediaAsset->mime_type) · {{ $videoRequest->mediaAsset->mime_type }}@endif</p>
+                            @else
+                                <p class="t-muted">Clipe curto · {{ $videoRequest->aspect_ratio }}</p>
+                            @endif
+                            @if ($videoRequest->status->value === 'failed')
+                                <p class="t-small">{{ match ($videoRequest->error_code) { 'timeout' => 'A geração excedeu o tempo esperado.', 'rate_limited' => 'O limite temporário foi atingido.', 'service_unavailable' => 'O serviço está temporariamente indisponível.', 'source_missing', 'source_invalid' => 'A imagem base não está mais disponível.', 'download_failed' => 'Falha ao baixar o vídeo gerado.', 'invalid_video' => 'O provider não retornou um vídeo válido.', 'provider_failed' => 'A geração falhou no provider.', default => 'Não foi possível gerar o vídeo.' } }}</p>
+                            @elseif ($videoRequest->mediaAsset?->url())
+                                <a href="{{ $videoRequest->mediaAsset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir vídeo</a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
             </div>
         @endif
     </x-ui.card>

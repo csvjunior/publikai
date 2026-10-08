@@ -42,6 +42,19 @@ return [
             // aceita até 4 imagens de personagem (docs oficiais); sem segredo.
             'max_references' => (int) env('GOOGLE_AI_IMAGE_MAX_REFERENCES', 4),
         ],
+
+        // Vídeo (Sprint 5.6.0, Omni Flash via Interactions REST).
+        // Chamada síncrona (sem operação/polling); async via Job/queue.
+        // HTTP longo: resposta carrega o vídeo em base64.
+        'video' => [
+            'enabled' => (bool) env('GOOGLE_AI_VIDEO_ENABLED', false),
+            'model' => env('GOOGLE_AI_VIDEO_MODEL', 'gemini-omni-1.1-flash'),
+            'timeout' => (int) env('GOOGLE_AI_VIDEO_TIMEOUT', 300),
+            'connect_timeout' => (int) env('GOOGLE_AI_VIDEO_CONNECT_TIMEOUT', 10),
+            'default_aspect_ratio' => env('GOOGLE_AI_VIDEO_DEFAULT_ASPECT_RATIO', '9:16'),
+            'default_duration' => (int) env('GOOGLE_AI_VIDEO_DEFAULT_DURATION', 8),
+            'max_download_bytes' => (int) env('GOOGLE_AI_VIDEO_MAX_DOWNLOAD_BYTES', 104857600),
+        ],
     ],
 
 ];

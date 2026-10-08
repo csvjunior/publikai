@@ -4,10 +4,14 @@ namespace App\Providers;
 
 use App\AI\Contracts\AiImageProvider;
 use App\AI\Contracts\AiTextProvider;
+use App\AI\Contracts\AiVideoProvider;
 use App\AI\Providers\GoogleGeminiImageProvider;
 use App\AI\Providers\GoogleGeminiTextProvider;
+use App\AI\Providers\GoogleOmniVideoProvider;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\FfprobeVideoInspector;
+use App\Services\VideoInspector;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +35,14 @@ class AppServiceProvider extends ServiceProvider
                 default => new GoogleGeminiImageProvider,
             };
         });
+
+        $this->app->bind(AiVideoProvider::class, function () {
+            return match (config('ai.provider', 'google')) {
+                default => new GoogleOmniVideoProvider,
+            };
+        });
+
+        $this->app->bind(VideoInspector::class, FfprobeVideoInspector::class);
     }
 
     /**
