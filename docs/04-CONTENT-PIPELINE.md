@@ -48,6 +48,8 @@
   badge "Composição").
 - Sprint 5.6.2 adicionou **narração por voz** ("Gerar narração": texto do
   roteiro + voz oficial → áudio WAV, seção Narrações no detalhe).
+- Sprint 5.6.3 adicionou **merge vídeo+narração** ("Adicionar narração ao
+  vídeo": MP4 + WAV → MP4 com faixa AAC, badge "Com narração").
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

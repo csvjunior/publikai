@@ -89,6 +89,7 @@ class ContentScriptController extends Controller
             'videoRequests' => $contentScript->videoRequests()->limit(10)->get(),
             'compositions' => $contentScript->compositions()->with(['inputs', 'output'])->limit(10)->get(),
             'audioRequests' => $contentScript->audioRequests()->limit(10)->get(),
+            'merges' => $contentScript->merges()->limit(10)->get(),
         ]);
     }
 

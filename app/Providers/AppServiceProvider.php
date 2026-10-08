@@ -13,6 +13,8 @@ use App\AI\Providers\GoogleOmniVideoProvider;
 use App\Enums\UserRole;
 use App\Models\User;
 use App\Services\AudioInspector;
+use App\Services\AudioVideoMerger;
+use App\Services\FfmpegAudioVideoMerger;
 use App\Services\FfmpegVideoComposer;
 use App\Services\FfprobeAudioInspector;
 use App\Services\FfprobeVideoInspector;
@@ -59,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(VideoInspector::class, FfprobeVideoInspector::class);
 
         $this->app->bind(VideoComposer::class, FfmpegVideoComposer::class);
+
+        $this->app->bind(AudioVideoMerger::class, FfmpegAudioVideoMerger::class);
     }
 
     /**

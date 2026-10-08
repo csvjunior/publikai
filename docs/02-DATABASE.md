@@ -42,6 +42,7 @@
 | `2026_10_06_000023_create_video_generation_requests_table` (**nova, Sprint 5.6.0**) | `video_generation_requests` (operação externa, polling, source snapshot, output) |
 | `2026_10_08_000024_create_video_composition_requests_tables` (**nova, Sprint 5.6.1**) | `video_composition_requests` + `video_composition_inputs` (ordem, trim, duração) |
 | `2026_10_08_000025_create_audio_generation_requests_table` (**nova, Sprint 5.6.2**) | `audio_generation_requests` (texto funcional, voz, status, output) |
+| `2026_10_08_000026_create_audio_video_merge_requests_table` (**nova, Sprint 5.6.3**) | `audio_video_merge_requests` (inputs snapshot, policy, output) |
 | `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
@@ -122,6 +123,9 @@ em migrations novas com `up`/`down` reversíveis.
 - Narração TTS (Sprint 5.6.2): `audio_generation_requests` (texto
   funcional p/ o Job, voz, idioma, estilo; fora de logs/ai_generations);
   output em `media_asset_id`.
+- Merge A/V (Sprint 5.6.3): `audio_video_merge_requests` (snapshot vídeo +
+  áudio, `duration_policy`, output); proveniência oficial nos 3 IDs
+  (sem parent único).
 - `content_blueprints`: `id, name, slug (único), description?, content_type?,
   objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
   language/market/niche?, status, source_type (manual|ai_assisted),

@@ -249,8 +249,9 @@
     </x-ui.card>
 
     <x-ui.card title="Vídeos" description="Clipes image-to-video gerados a partir deste roteiro.">
-        <div class="mb-4">
+        <div class="mb-4 flex flex-wrap gap-2">
             <x-ui.button :href="route('scripts.compositions.create', $script)" variant="outline">Criar composição</x-ui.button>
+            <x-ui.button :href="route('scripts.merges.create', $script)" variant="outline">Adicionar narração ao vídeo</x-ui.button>
         </div>
         @if ($videoRequests->isEmpty() && $compositions->isEmpty())
             <x-ui.empty-state
@@ -307,6 +308,34 @@
                             @elseif ($composition->output?->url())
                                 <p class="t-muted">{{ $composition->output->duration_seconds }}s · 9:16 · {{ $composition->output->mime_type }}</p>
                                 <a href="{{ $composition->output->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir vídeo</a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @if ($merges->isNotEmpty())
+            <h4 class="t-section-title mt-5">Vídeos com narração</h4>
+            <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                @foreach ($merges as $merge)
+                    <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+                        @if ($merge->status->value === 'success' && $merge->output?->url())
+                            <video src="{{ $merge->output->url() }}" controls preload="metadata" class="w-full bg-black {{ $merge->output->orientationClass() }}"></video>
+                        @else
+                            <div class="flex aspect-video w-full items-center justify-center bg-surface-muted">
+                                <x-ui.badge :variant="$merge->status->value === 'failed' ? 'danger' : 'info'">{{ $merge->status->label() }}</x-ui.badge>
+                            </div>
+                        @endif
+                        <div class="space-y-1 p-2.5">
+                            <div class="flex flex-wrap items-center gap-1">
+                                <x-ui.badge variant="ai">Com narração</x-ui.badge>
+                            </div>
+                            @if ($merge->status->value === 'failed')
+                                <p class="t-small">{{ match ($merge->error_code) { 'video_missing', 'audio_missing' => 'Um dos itens não está mais disponível.', 'video_invalid', 'audio_invalid' => 'Um dos itens não é mais válido.', 'ffmpeg_failed' => 'Falha ao combinar vídeo e narração.', 'invalid_output' => 'O merge não gerou um vídeo válido com narração.', 'timeout' => 'O merge excedeu o tempo esperado.', default => 'Não foi possível gerar o vídeo com narração.' } }}</p>
+                            @elseif ($merge->output?->url())
+                                <p class="t-muted">{{ $merge->output->duration_seconds }}s · 9:16 · {{ $merge->output->mime_type }}</p>
+                                <a href="{{ $merge->output->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir vídeo</a>
                             @endif
                         </div>
                     </div>

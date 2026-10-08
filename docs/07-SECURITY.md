@@ -88,6 +88,12 @@
   base64 só no HTTP em memória; sem cloning/replication/design de voz;
   tom da Persona como style (sem traço físico/identidade).
 
+## Merge A/V (Sprint 5.6.3)
+
+- Vídeo + áudio restritos ao mesmo Script (404/422; merged bloqueado
+  como input); map explícito, `-t` = vídeo; Process com array; paths
+  internos UUID; temp isolado sempre limpo; stderr nunca no banco.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

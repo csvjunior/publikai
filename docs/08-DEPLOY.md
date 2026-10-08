@@ -46,6 +46,10 @@ php artisan serve
 - Nenhuma dependência nova além da API (FFprobe já requisito).
   Job de 180s; worker `queue:work --tries=1` padrão.
 
+## Merge A/V (Sprint 5.6.3)
+
+- Mesmo FFmpeg/FFprobe (Job de 300s). Sem dependência nova.
+
 ## Pendências
 
 - Definir hospedagem, pipeline de deploy e estratégia de backup.

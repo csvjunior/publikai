@@ -26,8 +26,7 @@ class FfprobeVideoInspector implements VideoInspector
             (string) config('video-inspector.binary', 'ffprobe'),
             '-v', 'error',
             '-show_entries', 'format=duration,size',
-            '-show_entries', 'stream=width,height,codec_name',
-            '-select_streams', 'v:0',
+            '-show_entries', 'stream=index,codec_type,codec_name,width,height',
             '-of', 'json',
             $path,
         ]);
@@ -42,10 +41,26 @@ class FfprobeVideoInspector implements VideoInspector
             return null;
         }
 
-        $stream = $json['streams'][0] ?? null;
+        $videoStream = null;
+        $audioStream = null;
+
+        foreach ((array) ($json['streams'] ?? []) as $stream) {
+            if (! is_array($stream)) {
+                continue;
+            }
+
+            if (($stream['codec_type'] ?? null) === 'video' && $videoStream === null) {
+                $videoStream = $stream;
+            }
+
+            if (($stream['codec_type'] ?? null) === 'audio' && $audioStream === null) {
+                $audioStream = $stream;
+            }
+        }
+
         $format = $json['format'] ?? [];
 
-        if (! is_array($stream) || ($stream['width'] ?? 0) <= 0) {
+        if ($videoStream === null || ($videoStream['width'] ?? 0) <= 0) {
             return null;
         }
 
@@ -57,10 +72,13 @@ class FfprobeVideoInspector implements VideoInspector
 
         return new VideoMetadata(
             mimeType: $mime,
-            width: (int) $stream['width'],
-            height: (int) ($stream['height'] ?? 0) ?: null,
+            width: (int) $videoStream['width'],
+            height: (int) ($videoStream['height'] ?? 0) ?: null,
             durationSeconds: is_numeric($format['duration'] ?? null) ? (float) $format['duration'] : null,
             sizeBytes: is_numeric($format['size'] ?? null) ? (int) $format['size'] : null,
+            hasAudio: $audioStream !== null,
+            videoCodec: is_string($videoStream['codec_name'] ?? null) ? $videoStream['codec_name'] : null,
+            audioCodec: is_string($audioStream['codec_name'] ?? null) ? $audioStream['codec_name'] : null,
         );
     }
 

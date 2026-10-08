@@ -21,6 +21,7 @@ use App\Http\Controllers\ReferenceAnalysisController;
 use App\Http\Controllers\ReferenceContentController;
 use App\Http\Controllers\ReferenceProfileController;
 use App\Http\Controllers\ScriptAudioController;
+use App\Http\Controllers\ScriptAudioVideoController;
 use App\Http\Controllers\ScriptCompositionController;
 use App\Http\Controllers\ScriptImageController;
 use App\Http\Controllers\ScriptVideoController;
@@ -146,6 +147,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/scripts/{contentScript}/compositions', [ScriptCompositionController::class, 'store'])->name('scripts.compositions.store');
         Route::get('/scripts/{contentScript}/audio/create', [ScriptAudioController::class, 'create'])->name('scripts.audio.create');
         Route::post('/scripts/{contentScript}/audio', [ScriptAudioController::class, 'store'])->name('scripts.audio.store');
+        Route::get('/scripts/{contentScript}/audio-video/create', [ScriptAudioVideoController::class, 'create'])->name('scripts.merges.create');
+        Route::post('/scripts/{contentScript}/audio-video', [ScriptAudioVideoController::class, 'store'])->name('scripts.merges.store');
     });
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');

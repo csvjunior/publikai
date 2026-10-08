@@ -124,10 +124,15 @@
 - Composição local (trim + imagem + concat 720p30 sem áudio);
   request + inputs com snapshot; composer UI; badge "Composição".
 
-## Sprint 5.6.2 — Voice/TTS + audio pipeline (implementada, QA real pendente)
+## Sprint 5.6.2 — Voice/TTS + audio pipeline (concluída, QA real success)
 
-- Narração TTS (voz oficial + texto do roteiro → WAV);
-  QA real posterior (responsável, UMA narração).
+- Narração TTS (voz Kore validada, WAV 24kHz); request 6 validou fila
+  (pending por worker parado → success); worker operacionalmente obrigatório.
+
+## Sprint 5.6.3 — Merge voice + video (implementada, QA local pendente)
+
+- Merge local FFmpeg (vídeo master + narração AAC);
+  QA local real com FFmpeg permitido nesta Sprint.
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

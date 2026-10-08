@@ -3,7 +3,7 @@
 namespace App\Services;
 
 /**
- * Metadata de um arquivo de vídeo (Sprint 5.6.0).
+ * Metadata de um arquivo de vídeo (Sprint 5.6.0; áudio estendido na 5.6.3).
  */
 class VideoMetadata
 {
@@ -13,5 +13,8 @@ class VideoMetadata
         public readonly ?int $height = null,
         public readonly ?float $durationSeconds = null,
         public readonly ?int $sizeBytes = null,
+        public readonly ?bool $hasAudio = null,
+        public readonly ?string $videoCodec = null,
+        public readonly ?string $audioCodec = null,
     ) {}
 }

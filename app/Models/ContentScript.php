@@ -139,6 +139,14 @@ class ContentScript extends Model
     }
 
     /**
+     * @return HasMany<AudioVideoMergeRequest>
+     */
+    public function merges(): HasMany
+    {
+        return $this->hasMany(AudioVideoMergeRequest::class, 'content_script_id')->latest();
+    }
+
+    /**
      * @return BelongsToMany<MediaAsset>
      */
     public function mediaAssets(): BelongsToMany
