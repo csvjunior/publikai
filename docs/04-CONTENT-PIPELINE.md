@@ -46,6 +46,8 @@
 - Sprint 5.6.1 adicionou **composição local FFmpeg** ("Criar composição":
   clipes/imagens ordenados com trim → MP4 720×1280 30fps sem áudio,
   badge "Composição").
+- Sprint 5.6.2 adicionou **narração por voz** ("Gerar narração": texto do
+  roteiro + voz oficial → áudio WAV, seção Narrações no detalhe).
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 

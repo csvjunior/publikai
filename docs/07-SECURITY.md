@@ -81,6 +81,13 @@
   durações reais; Process com array (sem shell); paths internos UUID;
   temp isolado por request e sempre limpo; stderr nunca no banco.
 
+## Narração TTS (Sprint 5.6.2)
+
+- Texto validado (10–2000, sem truncamento silencioso); voz restrita ao
+  catálogo oficial (422); texto só no request (fora de logs/ai_generations);
+  base64 só no HTTP em memória; sem cloning/replication/design de voz;
+  tom da Persona como style (sem traço físico/identidade).
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

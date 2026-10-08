@@ -138,6 +138,21 @@
   por Script (seção Vídeos com `<video controls>`, sem autoplay).
   Sem composição FFmpeg, áudio/TTS, multi-clip ou publicação.
 
+## Sprint 5.6.2 — Voice/TTS + audio pipeline
+
+- `AiAudioProvider` + `GoogleGeminiAudioProvider` (`gemini-3.8-flash-tts`
+  via Interactions REST): `input` [user_input+speech_metadata],
+  `response_format` audio (WAV RIFF direto), `generation_config`
+  `speech_config` (só vozes prebuilt oficiais); saída em
+  `steps→model_output→content[type=audio]`.
+- `NarrationTextBuilder` determinístico (hook+body+CTA); voz do catálogo
+  em config, default Kore; idioma do Script; tom da Persona como style
+  (sem inferência física/identidade); sem cloning/replication.
+- `AudioGenerationRequest` + `GenerateAudioJob` (tries=1, timeout 180s);
+  `AudioInspector` FFprobe só-metadata; `MediaAsset audio` (WAV);
+  `ai_generations.audio_generation` sem texto/binário. Admin + contextual
+  ("Narrações" com `<audio controls>`). Sem merge/lip-sync/música.
+
 ## Microcorreção async (geração longa > request web)
 
 - Parser REST corrigido: `steps→model_output→content` (conveniências de SDK

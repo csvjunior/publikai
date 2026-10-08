@@ -2,15 +2,19 @@
 
 namespace App\Providers;
 
+use App\AI\Contracts\AiAudioProvider;
 use App\AI\Contracts\AiImageProvider;
 use App\AI\Contracts\AiTextProvider;
 use App\AI\Contracts\AiVideoProvider;
+use App\AI\Providers\GoogleGeminiAudioProvider;
 use App\AI\Providers\GoogleGeminiImageProvider;
 use App\AI\Providers\GoogleGeminiTextProvider;
 use App\AI\Providers\GoogleOmniVideoProvider;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\AudioInspector;
 use App\Services\FfmpegVideoComposer;
+use App\Services\FfprobeAudioInspector;
 use App\Services\FfprobeVideoInspector;
 use App\Services\VideoComposer;
 use App\Services\VideoInspector;
@@ -43,6 +47,14 @@ class AppServiceProvider extends ServiceProvider
                 default => new GoogleOmniVideoProvider,
             };
         });
+
+        $this->app->bind(AiAudioProvider::class, function () {
+            return match (config('ai.provider', 'google')) {
+                default => new GoogleGeminiAudioProvider,
+            };
+        });
+
+        $this->app->bind(AudioInspector::class, FfprobeAudioInspector::class);
 
         $this->app->bind(VideoInspector::class, FfprobeVideoInspector::class);
 

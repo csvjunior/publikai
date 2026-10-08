@@ -55,6 +55,28 @@ return [
             'default_duration' => (int) env('GOOGLE_AI_VIDEO_DEFAULT_DURATION', 8),
             'max_download_bytes' => (int) env('GOOGLE_AI_VIDEO_MAX_DOWNLOAD_BYTES', 104857600),
         ],
+
+        // Áudio/TTS (Sprint 5.6.2, Gemini 3.8 Flash TTS via Interactions REST).
+        // Chamada síncrona (sem operação/polling); async via Job/queue.
+        // Vozes: somente prebuilt oficiais (sem design/replication/cloning).
+        'audio' => [
+            'enabled' => (bool) env('GOOGLE_AI_AUDIO_ENABLED', false),
+            'model' => env('GOOGLE_AI_AUDIO_MODEL', 'gemini-3.8-flash-tts'),
+            'timeout' => (int) env('GOOGLE_AI_AUDIO_TIMEOUT', 120),
+            'connect_timeout' => (int) env('GOOGLE_AI_AUDIO_CONNECT_TIMEOUT', 10),
+            'default_voice' => env('GOOGLE_AI_AUDIO_DEFAULT_VOICE', 'Kore'),
+            'max_text_length' => (int) env('GOOGLE_AI_AUDIO_MAX_TEXT_LENGTH', 2000),
+            'voices' => [
+                'Kore' => 'Kore · Firme',
+                'Puck' => 'Puck · Animada',
+                'Charon' => 'Charon · Informativa',
+                'Fenrir' => 'Fenrir · Empolgada',
+                'Leda' => 'Leda · Jovem',
+                'Aoede' => 'Aoede · Leve',
+                'Callirrhoe' => 'Callirrhoe · Tranquila',
+                'Autonoe' => 'Autonoe · Clara',
+            ],
+        ],
     ],
 
 ];

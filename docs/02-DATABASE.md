@@ -41,6 +41,7 @@
 | `2026_10_04_000022_add_image_edit_support` (**nova, Sprint 5.5.4**) | `media_assets.parent_media_asset_id` + `image_generation_requests.source_media_asset_id` (nullable, `nullOnDelete`) |
 | `2026_10_06_000023_create_video_generation_requests_table` (**nova, Sprint 5.6.0**) | `video_generation_requests` (operação externa, polling, source snapshot, output) |
 | `2026_10_08_000024_create_video_composition_requests_tables` (**nova, Sprint 5.6.1**) | `video_composition_requests` + `video_composition_inputs` (ordem, trim, duração) |
+| `2026_10_08_000025_create_audio_generation_requests_table` (**nova, Sprint 5.6.2**) | `audio_generation_requests` (texto funcional, voz, status, output) |
 | `2026_10_02_000017_create_image_generation_requests_table` (**nova, microcorreção 5.5.0**) | `image_generation_requests` (execuções async, prompt funcional) |
 | `2026_09_29_000012_create_identity_proposals_table` (**nova, Sprint 5.2**) | `identity_proposals` (propostas Persona/Avatar + rationale) |
 
@@ -118,6 +119,9 @@ em migrations novas com `up`/`down` reversíveis.
   provider/model) + `video_composition_inputs` (position única, trim ms,
   duração de imagem ms); output em `output_media_asset_id`; proveniência
   multi-input nos inputs (sem grafo).
+- Narração TTS (Sprint 5.6.2): `audio_generation_requests` (texto
+  funcional p/ o Job, voz, idioma, estilo; fora de logs/ai_generations);
+  output em `media_asset_id`.
 - `content_blueprints`: `id, name, slug (único), description?, content_type?,
   objective?, hook/structure/cta/visual/communication patterns?, duration uint?,
   language/market/niche?, status, source_type (manual|ai_assisted),

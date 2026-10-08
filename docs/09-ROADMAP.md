@@ -119,10 +119,15 @@
 - Omni image-to-video: técnica admin + contextual por Script; MP4 720×1280
   validado em QA real com FFprobe; playback na gallery.
 
-## Sprint 5.6.1 — Video composition with FFmpeg (implementada, QA local pendente)
+## Sprint 5.6.1 — Video composition with FFmpeg (concluída)
 
 - Composição local (trim + imagem + concat 720p30 sem áudio);
-  QA local real com FFmpeg permitido nesta Sprint.
+  request + inputs com snapshot; composer UI; badge "Composição".
+
+## Sprint 5.6.2 — Voice/TTS + audio pipeline (implementada, QA real pendente)
+
+- Narração TTS (voz oficial + texto do roteiro → WAV);
+  QA real posterior (responsável, UMA narração).
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

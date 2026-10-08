@@ -41,6 +41,11 @@ php artisan serve
   Check: `ffmpeg -version` / `ffprobe -version` (+ `libx264` em encoders).
 - Job de 300s; composições até 120s/10 inputs por config.
 
+## Narração TTS (Sprint 5.6.2)
+
+- Nenhuma dependência nova além da API (FFprobe já requisito).
+  Job de 180s; worker `queue:work --tries=1` padrão.
+
 ## Pendências
 
 - Definir hospedagem, pipeline de deploy e estratégia de backup.

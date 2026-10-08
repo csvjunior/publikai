@@ -314,5 +314,37 @@
             </div>
         @endif
     </x-ui.card>
+
+    <x-ui.card title="Narrações" description="Vozes geradas a partir deste roteiro.">
+        @if ($script->isReady() || $script->isApproved())
+            <div class="mb-4">
+                <x-ui.button :href="route('scripts.audio.create', $script)" variant="ai">Gerar narração</x-ui.button>
+            </div>
+        @endif
+
+        @if ($audioRequests->isEmpty())
+            <x-ui.empty-state
+                title="Nenhuma narração gerada"
+                description="Gere uma voz a partir do texto deste roteiro."
+            />
+        @else
+            <ul class="space-y-2">
+                @foreach ($audioRequests as $audioRequest)
+                    <li class="flex flex-wrap items-center gap-2 text-sm">
+                        <x-ui.badge :variant="$audioRequest->status->value === 'failed' ? 'danger' : ($audioRequest->status->value === 'success' ? 'success' : 'info')">{{ $audioRequest->status->label() }}</x-ui.badge>
+                        <span class="t-small font-medium">{{ $audioRequest->voice ?? '—' }}</span>
+                        @if ($audioRequest->status->value === 'success' && $audioRequest->mediaAsset?->url())
+                            <audio src="{{ $audioRequest->mediaAsset->url() }}" controls preload="metadata" class="h-9 w-full max-w-64"></audio>
+                            <span class="t-muted">{{ $audioRequest->mediaAsset->duration_seconds }}s · {{ $audioRequest->mediaAsset->mime_type }}</span>
+                            <a href="{{ $audioRequest->mediaAsset->url() }}" target="_blank" rel="noopener" class="font-medium text-primary hover:text-primary-hover">Abrir áudio</a>
+                        @endif
+                        @if ($audioRequest->status->value === 'failed')
+                            <span class="t-small">{{ match ($audioRequest->error_code) { 'timeout' => 'A geração excedeu o tempo esperado.', 'rate_limited' => 'O limite temporário foi atingido.', 'service_unavailable' => 'O serviço está temporariamente indisponível.', 'invalid_request' => 'Solicitação inválida para o provider.', 'invalid_audio' => 'O provider não retornou um áudio válido.', default => 'Não foi possível gerar a narração.' } }}</span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </x-ui.card>
 </div>
 @endsection

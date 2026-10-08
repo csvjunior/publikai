@@ -131,6 +131,14 @@ class ContentScript extends Model
     }
 
     /**
+     * @return HasMany<AudioGenerationRequest>
+     */
+    public function audioRequests(): HasMany
+    {
+        return $this->hasMany(AudioGenerationRequest::class, 'content_script_id')->latest();
+    }
+
+    /**
      * @return BelongsToMany<MediaAsset>
      */
     public function mediaAssets(): BelongsToMany
