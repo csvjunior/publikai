@@ -75,6 +75,12 @@
   download com teto (100 MB) + validação FFprobe; temp sempre limpo;
   `source_missing`/`invalid`/`unsupported` sem provider call.
 
+## Composição local (Sprint 5.6.1)
+
+- Assets restritos ao Script (404/422); trims/durações validados contra
+  durações reais; Process com array (sem shell); paths internos UUID;
+  temp isolado por request e sempre limpo; stderr nunca no banco.
+
 ## Pendências
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).

@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReferenceAnalysisController;
 use App\Http\Controllers\ReferenceContentController;
 use App\Http\Controllers\ReferenceProfileController;
+use App\Http\Controllers\ScriptCompositionController;
 use App\Http\Controllers\ScriptImageController;
 use App\Http\Controllers\ScriptVideoController;
 use App\Http\Controllers\SocialAccountController;
@@ -135,6 +136,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/scripts/{contentScript}/images/{mediaAsset}/edit', [ScriptImageController::class, 'storeVariation'])->name('scripts.images.edit.store');
         Route::get('/scripts/{contentScript}/videos/create', [ScriptVideoController::class, 'create'])->name('scripts.videos.create');
         Route::post('/scripts/{contentScript}/videos', [ScriptVideoController::class, 'store'])->name('scripts.videos.store');
+        Route::get('/scripts/{contentScript}/compositions/create', [ScriptCompositionController::class, 'create'])->name('scripts.compositions.create');
+        Route::post('/scripts/{contentScript}/compositions', [ScriptCompositionController::class, 'store'])->name('scripts.compositions.store');
     });
 
     Route::get('/references', [ReferenceProfileController::class, 'index'])->name('references.index');

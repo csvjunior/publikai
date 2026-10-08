@@ -114,10 +114,15 @@
   opcionais) → `image_edit` → novo asset derivado; consistência visual
   validada em QA real.
 
-## Sprint 5.6.0 — Video Factory foundation (implementada, QA real pendente)
+## Sprint 5.6.0 — Video Factory foundation (concluída, QA real success)
 
-- Omni image-to-video (9:16): técnica admin + contextual por Script;
-  QA real posterior (responsável, UM clipe).
+- Omni image-to-video: técnica admin + contextual por Script; MP4 720×1280
+  validado em QA real com FFprobe; playback na gallery.
+
+## Sprint 5.6.1 — Video composition with FFmpeg (implementada, QA local pendente)
+
+- Composição local (trim + imagem + concat 720p30 sem áudio);
+  QA local real com FFmpeg permitido nesta Sprint.
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

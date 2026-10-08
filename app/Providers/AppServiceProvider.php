@@ -10,7 +10,9 @@ use App\AI\Providers\GoogleGeminiTextProvider;
 use App\AI\Providers\GoogleOmniVideoProvider;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\FfmpegVideoComposer;
 use App\Services\FfprobeVideoInspector;
+use App\Services\VideoComposer;
 use App\Services\VideoInspector;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
@@ -43,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(VideoInspector::class, FfprobeVideoInspector::class);
+
+        $this->app->bind(VideoComposer::class, FfmpegVideoComposer::class);
     }
 
     /**

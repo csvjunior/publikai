@@ -35,6 +35,12 @@ php artisan serve
 - Produção futura: worker dedicado via systemd/Supervisor + `FFPROBE_BINARY`
   no ambiente (só inspeção, sem composição). Sem config aqui.
 
+## Composição local (Sprint 5.6.1)
+
+- Produção precisa de `ffmpeg` + `ffprobe` (`FFMPEG_BINARY`/`FFPROBE_BINARY`).
+  Check: `ffmpeg -version` / `ffprobe -version` (+ `libx264` em encoders).
+- Job de 300s; composições até 120s/10 inputs por config.
+
 ## Pendências
 
 - Definir hospedagem, pipeline de deploy e estratégia de backup.

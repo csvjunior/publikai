@@ -179,7 +179,11 @@
                     @php($purposeLabel = \App\Enums\ContentScriptAssetPurpose::tryFrom((string) ($asset->pivot->purpose ?? ''))?->label() ?? $asset->pivot->purpose)
                     <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
                         <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="block">
-                            <img src="{{ $asset->url() }}" alt="Imagem do roteiro" loading="lazy" class="aspect-[9/16] w-full object-cover">
+                            @if ($asset->type->value === 'video')
+                                <video src="{{ $asset->url() }}" preload="metadata" class="aspect-[9/16] w-full object-cover"></video>
+                            @else
+                                <img src="{{ $asset->url() }}" alt="Imagem do roteiro" loading="lazy" class="aspect-[9/16] w-full object-cover">
+                            @endif
                         </a>
                         <div class="space-y-1 p-2.5">
                             <div class="flex flex-wrap items-center gap-1">
@@ -193,9 +197,13 @@
                             </div>
                             <p class="t-muted">{{ $asset->width }} × {{ $asset->height }}</p>
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
-                                <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
-                                <a href="{{ route('scripts.images.edit', [$script, $asset]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar variação</a>
-                                <a href="{{ route('scripts.videos.create', [$script, 'source' => $asset->id]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar vídeo</a>
+                                @if ($asset->type->value === 'video')
+                                    <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir vídeo</a>
+                                @else
+                                    <a href="{{ $asset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir imagem</a>
+                                    <a href="{{ route('scripts.images.edit', [$script, $asset]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar variação</a>
+                                    <a href="{{ route('scripts.videos.create', [$script, 'source' => $asset->id]) }}" class="text-xs font-medium text-primary hover:text-primary-hover">Criar vídeo</a>
+                                @endif
                                 @if (! $asset->pivot->is_primary)
                                     <form method="POST" action="{{ route('scripts.images.primary', [$script, $asset]) }}">
                                         @csrf
@@ -241,7 +249,10 @@
     </x-ui.card>
 
     <x-ui.card title="Vídeos" description="Clipes image-to-video gerados a partir deste roteiro.">
-        @if ($videoRequests->isEmpty())
+        <div class="mb-4">
+            <x-ui.button :href="route('scripts.compositions.create', $script)" variant="outline">Criar composição</x-ui.button>
+        </div>
+        @if ($videoRequests->isEmpty() && $compositions->isEmpty())
             <x-ui.empty-state
                 title="Nenhum vídeo gerado"
                 description="Crie um clipe curto a partir de uma imagem deste roteiro."
@@ -267,6 +278,35 @@
                                 <p class="t-small">{{ match ($videoRequest->error_code) { 'timeout' => 'A geração excedeu o tempo esperado.', 'rate_limited' => 'O limite temporário foi atingido.', 'service_unavailable' => 'O serviço está temporariamente indisponível.', 'source_missing', 'source_invalid' => 'A imagem base não está mais disponível.', 'download_failed' => 'Falha ao baixar o vídeo gerado.', 'invalid_video' => 'O provider não retornou um vídeo válido.', 'provider_failed' => 'A geração falhou no provider.', default => 'Não foi possível gerar o vídeo.' } }}</p>
                             @elseif ($videoRequest->mediaAsset?->url())
                                 <a href="{{ $videoRequest->mediaAsset->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir vídeo</a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @if ($compositions->isNotEmpty())
+            <h4 class="t-section-title mt-5">Composições</h4>
+            <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                @foreach ($compositions as $composition)
+                    <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+                        @if ($composition->status->value === 'success' && $composition->output?->url())
+                            <video src="{{ $composition->output->url() }}" controls preload="metadata" class="w-full bg-black {{ $composition->output->orientationClass() }}"></video>
+                        @else
+                            <div class="flex aspect-video w-full items-center justify-center bg-surface-muted">
+                                <x-ui.badge :variant="$composition->status->value === 'failed' ? 'danger' : 'info'">{{ $composition->status->label() }}</x-ui.badge>
+                            </div>
+                        @endif
+                        <div class="space-y-1 p-2.5">
+                            <div class="flex flex-wrap items-center gap-1">
+                                <x-ui.badge variant="neutral">Composição</x-ui.badge>
+                                <span class="t-small font-medium">{{ $composition->inputs->count() }} itens</span>
+                            </div>
+                            @if ($composition->status->value === 'failed')
+                                <p class="t-small">{{ match ($composition->error_code) { 'source_missing' => 'Um dos itens não está mais disponível.', 'source_invalid' => 'Um dos itens não é mais válido.', 'ffmpeg_failed' => 'Falha ao compor o vídeo.', 'invalid_output' => 'A composição não gerou um vídeo válido.', 'timeout' => 'A composição excedeu o tempo esperado.', default => 'Não foi possível compor o vídeo.' } }}</p>
+                            @elseif ($composition->output?->url())
+                                <p class="t-muted">{{ $composition->output->duration_seconds }}s · 9:16 · {{ $composition->output->mime_type }}</p>
+                                <a href="{{ $composition->output->url() }}" target="_blank" rel="noopener" class="text-xs font-medium text-primary hover:text-primary-hover">Abrir vídeo</a>
                             @endif
                         </div>
                     </div>

@@ -87,6 +87,7 @@ class ContentScriptController extends Controller
             'script' => $contentScript,
             'imageRequests' => $contentScript->imageRequests()->limit(10)->get(),
             'videoRequests' => $contentScript->videoRequests()->limit(10)->get(),
+            'compositions' => $contentScript->compositions()->with(['inputs', 'output'])->limit(10)->get(),
         ]);
     }
 

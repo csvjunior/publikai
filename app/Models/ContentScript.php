@@ -123,6 +123,14 @@ class ContentScript extends Model
     }
 
     /**
+     * @return HasMany<VideoCompositionRequest>
+     */
+    public function compositions(): HasMany
+    {
+        return $this->hasMany(VideoCompositionRequest::class, 'content_script_id')->latest();
+    }
+
+    /**
      * @return BelongsToMany<MediaAsset>
      */
     public function mediaAssets(): BelongsToMany

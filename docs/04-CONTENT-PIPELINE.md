@@ -43,6 +43,9 @@
   intacto).
 - Sprint 5.6.0 adicionou **vídeo image-to-video** (Omni: imagem do roteiro +
   movimento → clipe 8s 9:16, seção Vídeos no detalhe).
+- Sprint 5.6.1 adicionou **composição local FFmpeg** ("Criar composição":
+  clipes/imagens ordenados com trim → MP4 720×1280 30fps sem áudio,
+  badge "Composição").
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 
