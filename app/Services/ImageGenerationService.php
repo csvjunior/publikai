@@ -48,7 +48,7 @@ class ImageGenerationService
     public function __construct(protected AiImageProvider $provider) {}
 
     /**
-     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, source_media_asset_id?: ?int, reference_media_asset_ids?: ?int[], purpose?: ?string, is_primary?: bool}  $options
+     * @param  array{aspect_ratio?: ?string, image_size?: ?string, mime_type?: ?string, content_script_id?: ?int, content_production_id?: ?int, source_media_asset_id?: ?int, reference_media_asset_ids?: ?int[], purpose?: ?string, is_primary?: bool}  $options
      *
      * @throws ValidationException
      */
@@ -61,6 +61,7 @@ class ImageGenerationService
             'image_size' => $options['image_size'] ?? $config['default_size'],
             'mime_type' => $options['mime_type'] ?? $config['default_mime_type'],
             'content_script_id' => $options['content_script_id'] ?? null,
+            'content_production_id' => $options['content_production_id'] ?? null,
             'source_media_asset_id' => isset($options['source_media_asset_id']) ? (int) $options['source_media_asset_id'] : null,
             'reference_media_asset_ids' => array_values(array_unique(array_map(
                 'intval',
@@ -78,6 +79,7 @@ class ImageGenerationService
                 'image_size' => ['required', 'in:'.implode(',', self::SIZES)],
                 'mime_type' => ['required', 'in:'.implode(',', self::MIMES)],
                 'content_script_id' => ['nullable', 'integer', 'exists:content_scripts,id'],
+                'content_production_id' => ['nullable', 'integer', 'exists:content_productions,id'],
                 'source_media_asset_id' => ['nullable', 'integer', 'exists:media_assets,id'],
                 'reference_media_asset_ids' => ['nullable', 'array', 'max:'.$this->maxReferences()],
                 'reference_media_asset_ids.*' => ['integer', 'exists:media_assets,id'],
@@ -96,6 +98,7 @@ class ImageGenerationService
                 'provider' => config('ai.provider', 'google'),
                 'model' => (string) $config['model'],
                 'content_script_id' => $options['content_script_id'],
+                'content_production_id' => $options['content_production_id'],
                 'source_media_asset_id' => $options['source_media_asset_id'],
                 'purpose' => $options['purpose'],
                 'is_primary' => $options['is_primary'],

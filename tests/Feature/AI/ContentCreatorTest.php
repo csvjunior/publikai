@@ -158,6 +158,32 @@ class ContentCreatorTest extends TestCase
             ->assertSee('value="'.$avatar->id.'" selected', false);
     }
 
+    public function test_store_validacao_em_portugues(): void
+    {
+        $user = User::factory()->create();
+
+        foreach (['video', 'image'] as $type) {
+            $response = $this->actingAs($user)
+                ->from(route('content.create', ['type' => $type]))
+                ->post(route('content.store'), ['type' => $type]);
+
+            $response->assertSessionHasErrors(['product_id', 'persona_id', 'avatar_id', 'objective']);
+
+            $errors = session('errors')->getBag('default');
+
+            $this->assertSame('Selecione um produto.', $errors->first('product_id'));
+            $this->assertSame('Selecione uma persona.', $errors->first('persona_id'));
+            $this->assertSame('Selecione um avatar.', $errors->first('avatar_id'));
+            $this->assertSame('Informe o objetivo do conteúdo.', $errors->first('objective'));
+
+            foreach (['product_id', 'persona_id', 'avatar_id'] as $field) {
+                $this->assertStringNotContainsString('field is required', $errors->first($field));
+            }
+        }
+
+        $this->assertDatabaseCount('content_scripts', 0);
+    }
+
     public function test_store_video_cria_roteiro_com_tipo(): void
     {
         $this->enableAi();
@@ -269,9 +295,12 @@ class ContentCreatorTest extends TestCase
 
         $this->withoutVite()->actingAs($user)->get(route('content.show', ['content' => $script]))
             ->assertOk()
-            ->assertSee('Produção', false)
+            ->assertSee('Roteiro pronto para revisão', false)
             ->assertSee('Detalhes', false)
-            ->assertSee('Ver detalhes técnicos', false);
+            ->assertSee('Ver detalhes técnicos', false)
+            ->assertDontSee('Gerar imagem', false)
+            ->assertDontSee('Montar vídeo', false)
+            ->assertDontSee('GenerateImageJob', false);
     }
 
     // ---- serviço ----

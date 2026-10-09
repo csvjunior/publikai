@@ -50,3 +50,7 @@
 | 29 | 2026-09-30 | Revisão visual da Sprint 5.3 **aprovada** (index, form, detail, origem manual); Blueprint = padrões abstratos, nunca cópia literal; pendência de separar taxonomia se divergir | Fechamento técnico da Sprint 5.3 | Atual |
 | 27 | 2026-09-29 | Microcorreção 5.1: feedback da análise depende do status final (failed nunca como success, mensagens por error_code); timestamps seguem UTC no banco, apresentação via `APP_DISPLAY_TIMEZONE` + `Carbon::display()` (ponto único reutilizável) | Consistência de UX + base p/ calendário/publicações futuras | Atual |
 | 28 | 2026-09-29 | Microcorreção bloqueadora 5.1: orçamento síncrono `GOOGLE_AI_TIMEOUT=10` + `GOOGLE_AI_CONNECT_TIMEOUT=5` (pior caso ~20s < 30s do PHP); retry mantido só 429/5xx; sem `set_time_limit`; análise id 4 presa pelo fatal marcada failed/timeout manualmente; Jobs quando volume justificar | Falha de IA nunca vira HTTP 500; retry manual pelo histórico | Atual |
+
+## 5.6.5 Orquestrador
+- markStep ANTES do dispatch (sync inline sobrescrevia fail/success); latestFailedChild so o filho mais novo por tipo; retry reabre a MESMA producao falhada; Http::fake acumula (usar closure com flag); force_new reusa imagem, gera video novo, reusa narracao, novo merge.
+

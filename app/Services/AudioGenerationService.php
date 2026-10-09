@@ -41,7 +41,7 @@ class AudioGenerationService
     }
 
     /**
-     * @param  array{voice?: ?string, language?: ?string, style?: ?string, content_script_id?: ?int}  $options
+     * @param  array{voice?: ?string, language?: ?string, style?: ?string, content_script_id?: ?int, content_production_id?: ?int}  $options
      *
      * @throws ValidationException
      */
@@ -54,6 +54,7 @@ class AudioGenerationService
             'language' => $options['language'] ?? null,
             'style' => $options['style'] ?? null,
             'content_script_id' => $options['content_script_id'] ?? null,
+            'content_production_id' => $options['content_production_id'] ?? null,
         ];
 
         validator(
@@ -63,6 +64,7 @@ class AudioGenerationService
                 'voice' => ['required', 'string', 'in:'.implode(',', array_keys($this->voices()))],
                 'language' => ['nullable', 'string', 'max:10'],
                 'content_script_id' => ['nullable', 'integer', 'exists:content_scripts,id'],
+                'content_production_id' => ['nullable', 'integer', 'exists:content_productions,id'],
             ]
         )->validate();
 
@@ -75,6 +77,7 @@ class AudioGenerationService
             'provider' => config('ai.provider', 'google'),
             'model' => (string) $config['model'],
             'content_script_id' => $options['content_script_id'],
+            'content_production_id' => $options['content_production_id'],
             'created_by' => $createdBy,
         ]);
     }

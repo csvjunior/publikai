@@ -185,3 +185,6 @@ Depois: Distribution/Publishing.
 
 Assinaturas, billing, planos, checkout, multi-tenancy comercial,
 white-label, onboarding de clientes, marketplace.
+
+- **5.6.5 DONE:** orchestrator video-first (ContentProduction + reuse-first + retry do ponto da falha). Proximo: captions, Cost Guard.
+

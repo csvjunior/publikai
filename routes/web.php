@@ -122,6 +122,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/content/create', [ContentController::class, 'create'])->name('content.create');
     Route::post('/content', [ContentController::class, 'store'])->name('content.store');
     Route::get('/content/{content}', [ContentController::class, 'show'])->name('content.show');
+    Route::post('/content/{content}/produce', [ContentController::class, 'produce'])->name('content.produce');
 
     Route::get('/scripts', [ContentScriptController::class, 'index'])->name('scripts.index');
     Route::get('/scripts/create', [ContentScriptController::class, 'create'])->name('scripts.create');

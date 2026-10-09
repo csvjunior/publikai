@@ -98,3 +98,7 @@
 
 - Avaliar verificação de e-mail, 2FA e política de senha além do mínimo (8 chars).
 - Headers de segurança / CSP quando houver deploy.
+
+## 5.6.5 Orchestrator
+- Elegibilidade Ready/Approved (403 fora); policy update do Script; sem IDs tecnicos na UI; error_code amigavel; idempotencia via lock + 1 ativa por Script.
+

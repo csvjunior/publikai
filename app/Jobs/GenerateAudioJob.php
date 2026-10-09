@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 class GenerateAudioJob implements ShouldQueue
 {
     use Queueable;
+    use RelaysContentProduction;
 
     public int $tries = 1;
 
@@ -55,6 +56,8 @@ class GenerateAudioJob implements ShouldQueue
 
             report($e);
         }
+
+        $this->relayToProduction($request->fresh() ?? $request);
     }
 
     /**
@@ -72,6 +75,8 @@ class GenerateAudioJob implements ShouldQueue
                 'error_message' => 'A geração da narração excedeu o tempo esperado.',
                 'completed_at' => now(),
             ]);
+
+            $this->relayToProduction($request->fresh() ?? $request);
         }
     }
 }

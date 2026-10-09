@@ -166,3 +166,8 @@ em migrations novas com `up`/`down` reversíveis.
   `nullOnDelete`): belongsTo reutilizável por várias contas, sem N:N.
   Arquivar persona/avatar não remove a referência (histórico); selects de
   troca listam só ativos/pausados.
+
+## 5.6.5 ContentProduction (orchestrator)
+- content_productions (script FK cascade; 4 asset FKs nullable nullOnDelete; status pending/processing/success/failed; current_step preparing/image/video/audio/finalizing/completed; force_new; error_code; created_by; started/completed_at; index script+status).
+- image/video/audio/merge requests ganham content_production_id nullable nullOnDelete (fluxos manuais intactos).
+

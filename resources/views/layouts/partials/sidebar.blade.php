@@ -95,5 +95,5 @@
             Sair
         </button>
     </form>
-    <p class="mt-3 text-[11px] text-sidebar-muted">Fase inicial · Sprint 0.2</p>
+    <p class="mt-3 text-[11px] text-sidebar-muted">Publikai · Jaguartec</p>
 </div>

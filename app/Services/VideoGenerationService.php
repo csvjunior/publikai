@@ -41,7 +41,7 @@ class VideoGenerationService
     ) {}
 
     /**
-     * @param  array{aspect_ratio?: ?string, duration_seconds?: ?int, content_script_id?: ?int, source_media_asset_id?: ?int}  $options
+     * @param  array{aspect_ratio?: ?string, duration_seconds?: ?int, content_script_id?: ?int, content_production_id?: ?int, source_media_asset_id?: ?int}  $options
      *
      * @throws ValidationException
      */
@@ -53,6 +53,7 @@ class VideoGenerationService
             'aspect_ratio' => $options['aspect_ratio'] ?? $config['default_aspect_ratio'],
             'duration_seconds' => $options['duration_seconds'] ?? $config['default_duration'],
             'content_script_id' => $options['content_script_id'] ?? null,
+            'content_production_id' => $options['content_production_id'] ?? null,
             'source_media_asset_id' => isset($options['source_media_asset_id']) ? (int) $options['source_media_asset_id'] : null,
         ];
 
@@ -63,6 +64,7 @@ class VideoGenerationService
                 'aspect_ratio' => ['required', 'in:'.implode(',', self::RATIOS)],
                 'duration_seconds' => ['required', 'integer', 'in:8'],
                 'content_script_id' => ['nullable', 'integer', 'exists:content_scripts,id'],
+                'content_production_id' => ['nullable', 'integer', 'exists:content_productions,id'],
                 'source_media_asset_id' => ['required', 'integer', 'exists:media_assets,id'],
             ]
         )->validate();
@@ -75,6 +77,7 @@ class VideoGenerationService
             'provider' => config('ai.provider', 'google'),
             'model' => (string) $config['model'],
             'content_script_id' => $options['content_script_id'],
+            'content_production_id' => $options['content_production_id'],
             'source_media_asset_id' => $options['source_media_asset_id'],
             'created_by' => $createdBy,
         ]);

@@ -29,6 +29,7 @@ class ImageGenerationRequest extends Model
         'model',
         'content_script_id',
         'source_media_asset_id',
+        'content_production_id',
         'purpose',
         'is_primary',
         'media_asset_id',

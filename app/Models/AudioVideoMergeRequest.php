@@ -23,6 +23,7 @@ class AudioVideoMergeRequest extends Model
         'status',
         'duration_policy',
         'content_script_id',
+        'content_production_id',
         'video_media_asset_id',
         'audio_media_asset_id',
         'output_media_asset_id',

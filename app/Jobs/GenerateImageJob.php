@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 class GenerateImageJob implements ShouldQueue
 {
     use Queueable;
+    use RelaysContentProduction;
 
     public int $tries = 1;
 
@@ -52,7 +53,7 @@ class GenerateImageJob implements ShouldQueue
             $service->process($request);
         } catch (\Throwable $e) {
             $request->update([
-                'status' => ImageGenerationStatus::Failed,
+                'status' => ImageGenerationRequestStatus::Failed,
                 'error_code' => 'internal_error',
                 'error_message' => 'Falha inesperada na geração da imagem.',
                 'completed_at' => now(),
@@ -60,6 +61,8 @@ class GenerateImageJob implements ShouldQueue
 
             report($e);
         }
+
+        $this->relayToProduction($request->fresh() ?? $request);
     }
 
     /**
@@ -78,6 +81,8 @@ class GenerateImageJob implements ShouldQueue
                 'error_message' => 'A geração excedeu o tempo esperado.',
                 'completed_at' => now(),
             ]);
+
+            $this->relayToProduction($request->fresh() ?? $request);
         }
     }
 }

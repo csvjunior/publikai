@@ -37,7 +37,7 @@ class AudioVideoMergeService
     /**
      * @throws ValidationException
      */
-    public function createRequest(int $contentScriptId, int $videoId, int $audioId, ?int $createdBy = null): AudioVideoMergeRequest
+    public function createRequest(int $contentScriptId, int $videoId, int $audioId, ?int $createdBy = null, ?int $productionId = null): AudioVideoMergeRequest
     {
         $script = ContentScript::findOrFail($contentScriptId);
 
@@ -57,6 +57,7 @@ class AudioVideoMergeService
             'status' => AudioVideoMergeRequestStatus::Pending,
             'duration_policy' => AudioVideoDurationPolicy::VideoMaster,
             'content_script_id' => $contentScriptId,
+            'content_production_id' => $productionId,
             'video_media_asset_id' => $video->id,
             'audio_media_asset_id' => $audio->id,
             'created_by' => $createdBy,

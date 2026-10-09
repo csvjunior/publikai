@@ -54,3 +54,7 @@ php artisan serve
 
 - Definir hospedagem, pipeline de deploy e estratégia de backup.
 - Inicializar repositório Git e definir fluxo de branches.
+
+## 5.6.5 Fila obrigatoria
+- Producao depende de queue:work (orchestrator + 4 Jobs filhos, database). Sem Supervisor/systemd nesta Sprint.
+

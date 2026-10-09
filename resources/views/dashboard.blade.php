@@ -31,7 +31,7 @@
             <a href="{{ route('products.index') }}" class="text-sm font-medium text-primary hover:text-primary-hover">Ver produtos</a>
         </x-ui.stat-card>
 
-        <x-ui.stat-card title="Conteúdos" value="—" hint="Vídeos e imagens criados a partir dos roteiros.">
+        <x-ui.stat-card title="Conteúdos" value="—" hint="Vídeos e imagens criados e acompanhados no Publikai.">
             <a href="{{ route('content.index') }}" class="text-sm font-medium text-primary hover:text-primary-hover">Ver conteúdos</a>
         </x-ui.stat-card>
 

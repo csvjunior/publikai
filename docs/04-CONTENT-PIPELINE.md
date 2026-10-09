@@ -63,3 +63,7 @@
 ## Pendências
 
 - Modelar entidades (produtos, campanhas, conteúdos, ideias, roteiros) na Sprint de domínio.
+
+## 5.6.5 Orquestrador de video (video-first)
+- Uma acao (Produzir video) -> image -> video -> audio -> merge video_master. Reuse-first, sem retry caro automatico, retry continua do ponto da falha, composicao fora do pipeline.
+

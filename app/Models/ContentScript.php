@@ -150,6 +150,14 @@ class ContentScript extends Model
     }
 
     /**
+     * @return HasMany<ContentProduction>
+     */
+    public function productions(): HasMany
+    {
+        return $this->hasMany(ContentProduction::class, 'content_script_id')->latest();
+    }
+
+    /**
      * @return BelongsToMany<MediaAsset>
      */
     public function mediaAssets(): BelongsToMany

@@ -27,6 +27,7 @@ class AudioGenerationRequest extends Model
         'provider',
         'model',
         'content_script_id',
+        'content_production_id',
         'media_asset_id',
         'error_code',
         'error_message',

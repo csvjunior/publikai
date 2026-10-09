@@ -27,6 +27,7 @@ class VideoGenerationRequest extends Model
         'model',
         'content_script_id',
         'source_media_asset_id',
+        'content_production_id',
         'media_asset_id',
         'operation_external_id',
         'error_code',

@@ -167,3 +167,7 @@
 - Confirmar mapeamento de `usage` da Interactions API no teste real
   (extração defensiva implementada; campos exatos a validar).
 - Estratégia de custo com tabela/config atualizável.
+
+## 5.6.5 Orchestrator (sem nova capacidade)
+- ContentProductionService (start com lock; advance so passos sincronos, reuse-first via ProductionFlowService) + RunContentProductionJob (tries=1, sem espera). Continuacao via RelaysContentProduction nos 4 Jobs filhos. VideoMotionPromptBuilder deterministico, sem IA extra.
+

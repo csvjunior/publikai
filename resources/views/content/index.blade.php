@@ -26,7 +26,7 @@
             <x-ui.card :title="$script->product?->name ?? $script->title" description="">
                 <div class="flex flex-wrap items-center gap-1">
                     <x-ui.badge variant="ai">{{ $script->contentTypeLabel() }}</x-ui.badge>
-                    <x-ui.badge variant="neutral">{{ $script->contentStatusLabel() }}</x-ui.badge>
+                    <x-ui.badge variant="neutral">{{ $statuses->for($script) }}</x-ui.badge>
                 </div>
                 <p class="t-small mt-2">
                     {{ $script->persona?->name ?? '—' }} · {{ $script->avatar?->name ?? '—' }} · {{ $script->created_at?->display() }}

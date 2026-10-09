@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 class MergeAudioVideoJob implements ShouldQueue
 {
     use Queueable;
+    use RelaysContentProduction;
 
     public int $tries = 1;
 
@@ -56,6 +57,8 @@ class MergeAudioVideoJob implements ShouldQueue
 
             report($e);
         }
+
+        $this->relayToProduction($request->fresh() ?? $request);
     }
 
     /**
@@ -73,6 +76,8 @@ class MergeAudioVideoJob implements ShouldQueue
                 'error_message' => 'O merge excedeu o tempo esperado.',
                 'completed_at' => now(),
             ]);
+
+            $this->relayToProduction($request->fresh() ?? $request);
         }
     }
 }
