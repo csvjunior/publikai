@@ -9,6 +9,7 @@ use App\Models\ReferenceAnalysis;
 use App\Models\ReferenceProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class ContentBlueprintTest extends TestCase
@@ -180,8 +181,11 @@ class ContentBlueprintTest extends TestCase
     {
         $user = User::factory()->create();
 
+        // Blueprints seguem acessíveis por rota/fluxo interno, fora do menu.
+        $this->assertTrue(Route::has('blueprints.index'));
+
         $this->withoutVite()->actingAs($user)->get('/dashboard')
             ->assertOk()
-            ->assertSee(route('blueprints.index'), false);
+            ->assertDontSee(route('blueprints.index'), false);
     }
 }

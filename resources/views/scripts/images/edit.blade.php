@@ -14,7 +14,7 @@
 @endif
 
 <div class="space-y-6">
-    <x-ui.card title="Imagem base" description="Composição a transformar. Não será alterada.">
+    <x-ui.card title="Imagem base" description="Imagem a transformar. Não será alterada.">
         <div class="flex flex-col gap-4 sm:flex-row">
             <span class="block w-full max-w-44 shrink-0">
                 <img src="{{ $source->url() }}" alt="Imagem base" class="aspect-[9/16] w-full rounded-lg object-cover">

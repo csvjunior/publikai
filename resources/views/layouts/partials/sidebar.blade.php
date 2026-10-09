@@ -33,20 +33,21 @@
 
     @php
         $sections = [
-            'Operação' => ['Produtos', 'Campanhas', 'Conteúdos'],
-            'Creative Studio' => ['Personas', 'Avatares', 'Roteiros', 'Ideias', 'Imagens', 'Vídeos'],
-            'Inteligência' => ['Referências', 'Blueprints'],            'Distribuição' => ['Contas', 'Calendário', 'Publicações'],
-            'Performance' => ['Métricas', 'Conversões'],
-            'Sistema' => ['IA', 'Custos', 'Integrações', 'Configurações'],
+            'Conteúdo' => ['Criar conteúdo', 'Meus conteúdos'],
+            'Identidade' => ['Personas', 'Avatares'],
+            'Catálogo' => ['Produtos'],
+            'Inteligência' => ['Referências'],
+            'Distribuição' => ['Contas', 'Publicações'],
+            'Sistema' => ['IA', 'Custos', 'Configurações'],
         ];
         $activeLinks = [
-            'Produtos' => ['route' => 'products.index', 'active' => request()->routeIs('products.*')],
-            'Contas' => ['route' => 'social-accounts.index', 'active' => request()->routeIs('social-accounts.*')],
+            'Criar conteúdo' => ['route' => 'content.create', 'active' => request()->routeIs('content.create')],
+            'Meus conteúdos' => ['route' => 'content.index', 'active' => request()->routeIs('content.index', 'content.show')],
             'Personas' => ['route' => 'personas.index', 'active' => request()->routeIs('personas.*')],
             'Avatares' => ['route' => 'avatars.index', 'active' => request()->routeIs('avatars.*')],
-            'Roteiros' => ['route' => 'scripts.index', 'active' => request()->routeIs('scripts.*')],
+            'Produtos' => ['route' => 'products.index', 'active' => request()->routeIs('products.*')],
             'Referências' => ['route' => 'references.index', 'active' => request()->routeIs('references.*')],
-            'Blueprints' => ['route' => 'blueprints.index', 'active' => request()->routeIs('blueprints.*')],
+            'Contas' => ['route' => 'social-accounts.index', 'active' => request()->routeIs('social-accounts.*')],
             'IA' => ['route' => 'settings.ai', 'active' => request()->routeIs('settings.ai*')],
         ];
     @endphp

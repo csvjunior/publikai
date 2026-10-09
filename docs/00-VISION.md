@@ -7,6 +7,10 @@
 O Publikai é uma **plataforma interna da Jaguartec Tecnologia** para automatização e
 gerenciamento de operações de conteúdo voltadas a **marketing de afiliados**.
 
+Objetivo principal (Sprint 5.6.4): **criar vídeos e imagens para Instagram e
+TikTok com o menor atrito e o melhor custo-benefício possível** — Produto +
+Persona + Avatar + objetivo → roteiro → revisão → produção → conteúdo final.
+
 ## O que não é
 
 - **Não é um SaaS comercial** neste momento.
@@ -40,3 +44,7 @@ gerenciamento de operações de conteúdo voltadas a **marketing de afiliados**.
 
 Começar simples e crescer somente quando a operação real justificar.
 Prioridade: simplicidade, segurança, clareza e baixo custo operacional.
+
+Regra central (Sprint 5.6.4): **o backend pode ser complexo, a experiência
+não pode ser**. A navegação segue resultado (Criar conteúdo, Meus
+conteúdos), não arquitetura técnica.

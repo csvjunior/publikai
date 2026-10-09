@@ -345,9 +345,9 @@ class VideoCompositionTest extends TestCase
 
         $this->withoutVite()->actingAs($user)->get(route('scripts.compositions.create', $script))
             ->assertOk()
-            ->assertSee('Criar composição', false)
+            ->assertSee('Montar vídeo', false)
             ->assertSee('Posição', false)
-            ->assertSee('Resumo da composição', false)
+            ->assertSee('Resumo da montagem', false)
             ->assertSee('composition-summary', false)
             ->assertSee('Vídeo ·', false)
             ->assertSee('Imagem ·', false)
@@ -367,8 +367,8 @@ class VideoCompositionTest extends TestCase
 
         $this->withoutVite()->actingAs($user)->get(route('scripts.show', $script))
             ->assertOk()
-            ->assertSee('Criar composição', false)
-            ->assertSee('Composição', false)
+            ->assertSee('Montar vídeo', false)
+            ->assertSee('Montagem', false)
             ->assertSee('<video', false);
     }
 

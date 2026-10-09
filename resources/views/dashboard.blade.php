@@ -5,10 +5,17 @@
 @section('content')
 <x-ui.page-header
     title="Dashboard"
-    description="Visão geral da operação. O sistema está em fase inicial: a fundação visual e a autenticação estão prontas; os módulos de operação chegam nas próximas sprints."
+    description="Crie e acompanhe conteúdos para Instagram e TikTok em um só lugar."
 />
 
 <div class="space-y-6">
+    <x-ui.card title="Criar conteúdo" description="Vídeo ou imagem para Instagram e TikTok em poucos passos.">
+        <div class="flex flex-wrap gap-2">
+            <x-ui.button :href="route('content.create', ['type' => 'video'])" variant="ai">Criar vídeo</x-ui.button>
+            <x-ui.button :href="route('content.create', ['type' => 'image'])" variant="outline">Criar imagem</x-ui.button>
+        </div>
+    </x-ui.card>
+
     <x-ui.card
         title="Olá, {{ auth()->user()->name }}!"
         description="Publikai · ferramenta interna da Jaguartec. Seu perfil: {{ auth()->user()->role->value }}."
@@ -24,8 +31,8 @@
             <a href="{{ route('products.index') }}" class="text-sm font-medium text-primary hover:text-primary-hover">Ver produtos</a>
         </x-ui.stat-card>
 
-        <x-ui.stat-card title="Conteúdos" value="—" hint="Roteiros, ideias e peças ainda não existem.">
-            <x-ui.badge variant="neutral">Ainda sem dados</x-ui.badge>
+        <x-ui.stat-card title="Conteúdos" value="—" hint="Vídeos e imagens criados a partir dos roteiros.">
+            <a href="{{ route('content.index') }}" class="text-sm font-medium text-primary hover:text-primary-hover">Ver conteúdos</a>
         </x-ui.stat-card>
 
         <x-ui.stat-card title="Publicações" value="—" hint="Nenhum agendamento realizado até o momento.">

@@ -131,7 +131,7 @@
             </div>
         </x-ui.card>
 
-        <x-ui.card title="Produção">
+        <x-ui.card title="Direção de produção">
             <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <dt class="t-small font-medium uppercase tracking-wide">Texto na tela</dt>
@@ -159,7 +159,11 @@
         </x-ui.card>
     @endif
 
-    <x-ui.card title="Imagens" description="Assets visuais gerados a partir deste roteiro.">
+    @include('scripts.partials.production', ['script' => $script, 'flow' => $flow])
+
+    <h3 id="materiais" class="t-section-title mt-2">Materiais</h3>
+
+    <x-ui.card title="Imagens" description="Assets visuais gerados a partir deste roteiro." id="materiais-imagens">
         @if ($script->isReady() || $script->isApproved())
             <div class="mb-4">
                 <x-ui.button :href="route('scripts.images.create', $script)" variant="ai">Gerar imagem</x-ui.button>
@@ -248,9 +252,9 @@
         @endif
     </x-ui.card>
 
-    <x-ui.card title="Vídeos" description="Clipes image-to-video gerados a partir deste roteiro.">
+    <x-ui.card title="Vídeos" description="Clipes image-to-video gerados a partir deste roteiro." id="materiais-videos">
         <div class="mb-4 flex flex-wrap gap-2">
-            <x-ui.button :href="route('scripts.compositions.create', $script)" variant="outline">Criar composição</x-ui.button>
+            <x-ui.button :href="route('scripts.compositions.create', $script)" variant="outline">Montar vídeo</x-ui.button>
             <x-ui.button :href="route('scripts.merges.create', $script)" variant="outline">Adicionar narração ao vídeo</x-ui.button>
         </div>
         @if ($videoRequests->isEmpty() && $compositions->isEmpty())
@@ -287,7 +291,7 @@
         @endif
 
         @if ($compositions->isNotEmpty())
-            <h4 class="t-section-title mt-5">Composições</h4>
+            <h4 class="t-section-title mt-5">Montagens</h4>
             <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 @foreach ($compositions as $composition)
                     <div class="overflow-hidden rounded-card border border-border bg-surface shadow-card">
@@ -300,7 +304,7 @@
                         @endif
                         <div class="space-y-1 p-2.5">
                             <div class="flex flex-wrap items-center gap-1">
-                                <x-ui.badge variant="neutral">Composição</x-ui.badge>
+                                <x-ui.badge variant="neutral">Montagem</x-ui.badge>
                                 <span class="t-small font-medium">{{ $composition->inputs->count() }} itens</span>
                             </div>
                             @if ($composition->status->value === 'failed')

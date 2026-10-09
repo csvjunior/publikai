@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Criar composição')
+@section('title', 'Montar vídeo')
 @section('header', 'Roteiros')
 @section('content')
 <x-ui.page-header
-    :title="'Criar composição: '.$script->title"
+    :title="'Montar vídeo: '.$script->title"
     description="Combine clipes e imagens em um vídeo vertical 720×1280, 30fps, sem áudio."
-    :breadcrumbs="[['label' => 'Roteiros', 'url' => route('scripts.index')], ['label' => $script->title, 'url' => route('scripts.show', $script)], ['label' => 'Criar composição']]"
+    :breadcrumbs="[['label' => 'Roteiros', 'url' => route('scripts.index')], ['label' => $script->title, 'url' => route('scripts.show', $script)], ['label' => 'Montar vídeo']]"
 />
 
 <div class="space-y-6">
@@ -48,7 +48,7 @@
                 </div>
                 <p class="t-small mt-2">Define a ordem em que os itens aparecerão no vídeo.</p>
                 <div class="mt-3 rounded-lg border border-border bg-surface-muted p-3">
-                    <p class="t-small font-medium">Resumo da composição</p>
+                    <p class="t-small font-medium">Resumo da montagem</p>
                     <ol id="composition-summary" class="t-small mt-1 list-decimal space-y-0.5 pl-5">
                         <li class="text-ink-muted">Nenhum item selecionado.</li>
                     </ol>

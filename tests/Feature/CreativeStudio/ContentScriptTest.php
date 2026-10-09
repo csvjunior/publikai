@@ -424,7 +424,7 @@ class ContentScriptTest extends TestCase
 
         $this->withoutVite()->actingAs($user)->get('/dashboard')
             ->assertOk()
-            ->assertSee(route('scripts.index'), false);
+            ->assertSee(route('content.index'), false);
     }
 
     public function test_index_exibe_editar_conforme_editabilidade(): void

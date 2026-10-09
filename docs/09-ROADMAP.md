@@ -129,10 +129,31 @@
 - Narração TTS (voz Kore validada, WAV 24kHz); request 6 validou fila
   (pending por worker parado → success); worker operacionalmente obrigatório.
 
-## Sprint 5.6.3 — Merge voice + video (implementada, QA local pendente)
+## Sprint 5.6.3 — Merge voice + video (concluída, QA local + visual aprovados)
 
-- Merge local FFmpeg (vídeo master + narração AAC);
-  QA local real com FFmpeg permitido nesta Sprint.
+- Merge local FFmpeg (vídeo master + narração AAC, badge "Com narração",
+  request + inputs com snapshot, composer UI).
+
+## Sprint 5.6.4 — Simplificação / Content Creator (implementada)
+
+- Navegação por resultado ("Criar conteúdo", "Meus conteúdos"); jornada
+  guiada reaproveitada; checkpoint de roteiro (texto barato antes do
+  vídeo caro); `content_type` com inferência p/ linhas antigas.
+- Sem orchestrator (5.6.5), sem nova IA, providers/jobs intactos.
+
+## Sprint 5.6.5 — Content Pipeline Orchestrator (planejada)
+
+- Orquestração script→image→video→tts→merge a partir da revisão aprovada.
+
+## Sprint 5.6.6 — Captions (planejada)
+
+- Legendas para vídeos.
+
+## Sprint 5.6.7 — Cost Guard (planejada)
+
+- Guarda de custo das gerações.
+
+Depois: Distribution/Publishing.
 
 ## Microcorreção async 5.5.0 (geração longa fora do request)
 

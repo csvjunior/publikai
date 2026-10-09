@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\AvatarReferenceController;
 use App\Http\Controllers\ContentBlueprintController;
+use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ContentScriptController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IdentityProposalController;
@@ -116,6 +117,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/blueprints/{contentBlueprint}', [ContentBlueprintController::class, 'show'])->name('blueprints.show');
     Route::get('/blueprints/{contentBlueprint}/edit', [ContentBlueprintController::class, 'edit'])->name('blueprints.edit');
     Route::match(['put', 'patch'], '/blueprints/{contentBlueprint}', [ContentBlueprintController::class, 'update'])->name('blueprints.update');
+
+    Route::get('/content', [ContentController::class, 'index'])->name('content.index');
+    Route::get('/content/create', [ContentController::class, 'create'])->name('content.create');
+    Route::post('/content', [ContentController::class, 'store'])->name('content.store');
+    Route::get('/content/{content}', [ContentController::class, 'show'])->name('content.show');
 
     Route::get('/scripts', [ContentScriptController::class, 'index'])->name('scripts.index');
     Route::get('/scripts/create', [ContentScriptController::class, 'create'])->name('scripts.create');

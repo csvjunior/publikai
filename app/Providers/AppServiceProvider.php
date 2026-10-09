@@ -11,6 +11,7 @@ use App\AI\Providers\GoogleGeminiImageProvider;
 use App\AI\Providers\GoogleGeminiTextProvider;
 use App\AI\Providers\GoogleOmniVideoProvider;
 use App\Enums\UserRole;
+use App\Models\ContentScript;
 use App\Models\User;
 use App\Services\AudioInspector;
 use App\Services\AudioVideoMerger;
@@ -22,6 +23,7 @@ use App\Services\VideoComposer;
 use App\Services\VideoInspector;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -70,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Conteúdo = ContentScript interno (Sprint 5.6.4): /content/{content}.
+        Route::model('content', ContentScript::class);
+
         // Ponto de expansão para autorização futura.
         // Nesta Sprint: apenas distinção simples admin/operator.
         Gate::define('access-admin', fn (User $user) => $user->role === UserRole::Admin);

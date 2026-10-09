@@ -12,6 +12,7 @@ use App\Models\ContentScript;
 use App\Models\Persona;
 use App\Models\Product;
 use App\Services\ContentScriptService;
+use App\Services\ProductionFlowService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -77,7 +78,7 @@ class ContentScriptController extends Controller
         );
     }
 
-    public function show(ContentScript $contentScript): View
+    public function show(ContentScript $contentScript, ProductionFlowService $flow): View
     {
         $this->authorize('view', $contentScript);
 
@@ -90,6 +91,7 @@ class ContentScriptController extends Controller
             'compositions' => $contentScript->compositions()->with(['inputs', 'output'])->limit(10)->get(),
             'audioRequests' => $contentScript->audioRequests()->limit(10)->get(),
             'merges' => $contentScript->merges()->limit(10)->get(),
+            'flow' => $flow->for($contentScript),
         ]);
     }
 

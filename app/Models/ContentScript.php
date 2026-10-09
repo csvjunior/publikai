@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ContentScriptSource;
 use App\Enums\ContentScriptStatus;
+use App\Enums\ContentType;
 use Database\Factories\ContentScriptFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,7 @@ class ContentScript extends Model
         'title',
         'slug',
         'status',
+        'content_type',
         'language',
         'market',
         'objective',
@@ -58,6 +60,7 @@ class ContentScript extends Model
     {
         return [
             'status' => ContentScriptStatus::class,
+            'content_type' => ContentType::class,
             'generation_source' => ContentScriptSource::class,
             'duration_seconds' => 'integer',
             'started_at' => 'datetime',
@@ -180,5 +183,79 @@ class ContentScript extends Model
     public function isEditable(): bool
     {
         return in_array($this->status, [ContentScriptStatus::Draft, ContentScriptStatus::Ready], true);
+    }
+
+    /**
+     * Tipo pretendido (Sprint 5.6.4): coluna quando definida; inferência
+     * segura para linhas antigas (com vídeo → Vídeo, senão Imagem).
+     */
+    public function resolveContentType(): ContentType
+    {
+        if ($this->content_type instanceof ContentType) {
+            return $this->content_type;
+        }
+
+        $hasVideo = $this->videoRequests()->exists()
+            || $this->merges()->exists()
+            || $this->compositions()->exists();
+
+        return $hasVideo ? ContentType::Video : ContentType::Image;
+    }
+
+    public function contentTypeLabel(): string
+    {
+        return $this->resolveContentType()->label();
+    }
+
+    /**
+     * Status amigável do conteúdo (view-model, sem enum novo).
+     */
+    public function resolveContentStatus(): string
+    {
+        if ($this->status === ContentScriptStatus::Failed) {
+            return 'Falhou';
+        }
+
+        if ($this->status === ContentScriptStatus::Archived) {
+            return 'Arquivado';
+        }
+
+        if ($this->status === ContentScriptStatus::Draft) {
+            return 'Rascunho';
+        }
+
+        if ($this->status === ContentScriptStatus::Generating) {
+            return 'Processando';
+        }
+
+        if (in_array($this->status->value, ['ready', 'approved'], true)
+            && ($this->imageRequests()->whereIn('status', ['pending', 'processing'])->exists()
+                || $this->videoRequests()->whereIn('status', ['pending', 'processing', 'starting'])->exists()
+                || $this->audioRequests()->whereIn('status', ['pending', 'processing'])->exists())
+        ) {
+            return 'Processando';
+        }
+
+        if (in_array($this->status->value, ['ready', 'approved'], true)
+            && ! $this->mediaAssets()->exists()
+            && ! $this->videoRequests()->where('status', 'success')->exists()
+            && ! $this->merges()->where('status', 'success')->exists()
+        ) {
+            return 'Roteiro para revisar';
+        }
+
+        if ($this->merges()->where('status', 'success')->exists()
+            || $this->videoRequests()->where('status', 'success')->exists()
+            || $this->mediaAssets()->exists()
+        ) {
+            return 'Pronto';
+        }
+
+        return 'Roteiro para revisar';
+    }
+
+    public function contentStatusLabel(): string
+    {
+        return $this->resolveContentStatus();
     }
 }

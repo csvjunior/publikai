@@ -50,6 +50,13 @@
   roteiro + voz oficial → áudio WAV, seção Narrações no detalhe).
 - Sprint 5.6.3 adicionou **merge vídeo+narração** ("Adicionar narração ao
   vídeo": MP4 + WAV → MP4 com faixa AAC, badge "Com narração").
+- Sprint 5.6.4 adicionou **jornada guiada de produção** ("Produção" antes
+  das galerias: Visual→Vídeo→Narração→Finalização, 1 ação recomendada,
+  Montagem opcional, galerias como Materiais/histórico).
+- Sprint 5.6.4 (refactor) trocou a navegação por **resultado**: "Criar
+  conteúdo" (Vídeo/Imagem) → roteiro → revisão → produção; "Meus
+  conteúdos" agrega roteiros; módulos técnicos saíram do menu (rotas
+  preservadas); `content_type` com fallback por inferência.
 - O preenchimento manual de Persona e Avatar continua disponível como
   fallback e edição final.
 
